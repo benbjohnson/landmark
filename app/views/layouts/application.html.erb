@@ -17,8 +17,12 @@
 
       <div class="nav-collapse collapse" id="nav-collapse-01">
         <ul class="nav">
-          <li class="active"><a href="#">Flow</a></li>
-          <li><a href="#">Properties</a></li>
+          <li class="<%= request.path == '/' ? 'active' : '' %>">
+            <%= link_to('Flow', root_path) %>
+          </li>
+          <li class="<%= request.path.index('/properties') == 0 ? 'active' : '' %>">
+            <%= link_to('Properties', properties_path) %>
+          </li>
           <li><a href="#">Account</a></li>
         </ul> <!-- /nav -->
 

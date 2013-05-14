@@ -6,3 +6,7 @@
  *= require flat-ui
  *= require font-awesome
  */
+
+table tr th:first-child, table tr td:first-child {
+  padding-left: 2px;
+}
