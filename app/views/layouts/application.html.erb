@@ -8,6 +8,33 @@
 </head>
 <body>
 
+<div class="navbar header">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#nav-collapse-01">
+      </button>
+      <a href="#" class="brand">Landmark</a>
+
+      <div class="nav-collapse collapse" id="nav-collapse-01">
+        <ul class="nav">
+          <li class="active"><a href="#">Flow</a></li>
+          <li><a href="#">Properties</a></li>
+          <li><a href="#">Account</a></li>
+        </ul> <!-- /nav -->
+
+        <form class="navbar-search form-search pull-right" action="">
+          <div class="input-append">
+            <input type="text" class="search-query span3" placeholder="Search">
+            <button type="submit" class="btn btn-large">
+              <i class="fui-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <%= yield %>
 
 </body>
