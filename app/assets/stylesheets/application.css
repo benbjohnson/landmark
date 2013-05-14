@@ -1,12 +1,17 @@
 /*
- *= require_self
  *= require bootstrap
  *= require bootstrap-responsive
  *= require bootstrap-responsive
  *= require flat-ui
  *= require font-awesome
+ *= require_self
  */
 
 table tr th:first-child, table tr td:first-child {
   padding-left: 2px;
+}
+
+label {
+  font-size: 18.004px;
+  line-height: 1.722169;
 }
