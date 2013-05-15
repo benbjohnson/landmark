@@ -11,13 +11,18 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130514203751) do
+ActiveRecord::Schema.define(:version => 20130515002747) do
 
   create_table "accounts", :force => true do |t|
     t.string   "name",       :null => false
     t.string   "api_key",    :null => false
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "actions", :force => true do |t|
+    t.integer "account_id"
+    t.string  "name"
   end
 
   create_table "users", :force => true do |t|

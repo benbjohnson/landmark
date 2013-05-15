@@ -5,6 +5,7 @@ gem 'pg', '~> 0.15.1'
 gem 'jquery-rails', '~> 2.2.1'
 gem 'thin', '~> 1.5.1'
 gem 'devise', '~> 2.2.4'
+gem 'skydb', :git => 'git@github.com:skydb/sky.rb.git', :ref => 'd8d306fe9a'
 
 group :assets do
   gem 'sass-rails', '~> 3.2.3'
@@ -16,10 +17,12 @@ end
 
 group :test do
   gem 'mocha', '~> 0.13.2', :require => false
+  gem "timecop", "~> 0.6.1"
 end
 
-group :development do
+group :development, :test do
   gem 'debugger', '~> 1.5.0'
+  gem 'pry', '~> 0.9.12.2'
   gem 'capistrano', '~> 2.15.4'
 end
 
