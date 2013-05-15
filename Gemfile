@@ -5,6 +5,7 @@ gem 'pg', '~> 0.15.1'
 gem 'jquery-rails', '~> 2.2.1'
 gem 'thin', '~> 1.5.1'
 gem 'devise', '~> 2.2.4'
+gem 'rack-cors', '~> 0.2.7', :require => 'rack/cors'
 gem 'skydb', :git => 'git@github.com:skydb/sky.rb.git', :ref => 'd8d306fe9a'
 
 group :assets do
