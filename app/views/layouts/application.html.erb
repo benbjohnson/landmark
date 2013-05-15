@@ -26,6 +26,7 @@
           <li><a href="#">Account</a></li>
         </ul> <!-- /nav -->
 
+
         <!--
         <form class="navbar-search form-search pull-right" action="">
           <div class="input-append">
@@ -40,6 +41,13 @@
     </div>
   </div>
 </div>
+
+<% if !notice.blank? %>
+  <p class="notice"><%= notice %></p>
+<% end %>
+<% if !alert.blank? %>
+  <p class="alert"><%= alert %></p>
+<% end %>
 
 <%= yield %>
 
