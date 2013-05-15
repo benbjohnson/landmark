@@ -1,9 +1,16 @@
 class EventsController < ApplicationController
-  # PATCH /track
+  RESERVED = %w(id api_key action controller)
+  
+  # GET /track
+  # GET /track.gif
+  # POST /track
   def track
     # Require API key & event object.
-    api_key, id, event = params['api_key'], params['id'], params['event']
-    return head 422 if api_key.blank? || id.blank? || event.nil?
+    api_key, id = params['api_key'], params['id']
+    event = params.clone
+    event.delete_if { |k,v| !RESERVED.index(k).nil? }
+    event['action'] = event.delete('_action') if event.has_key?('_action')
+    return head 422 if api_key.blank? || id.blank? || event.nil? || event.keys.length == 0
 
     # Load account by API key.
     account = Account.find_by_api_key(api_key)
