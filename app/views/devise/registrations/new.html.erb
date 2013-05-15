@@ -1,18 +1,37 @@
-<h2>Sign up</h2>
+<div class="row" style="padding: 0 32px; margin-top:20px">
+  <div class="span4 offset4">
+    <h2>Sign up</h2>
 
-<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
-  <%= devise_error_messages! %>
+    <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
+      <%= devise_error_messages! %>
 
-  <div><%= f.label :email %><br />
-  <%= f.email_field :email, :autofocus => true %></div>
+      <div class="control-group">
+        <%= f.label :email, nil, :class => 'control-label' %>
+        <div class="controls">
+          <%= f.email_field :email, :autofocus => true, :class => 'span4' %>
+        </div>
+      </div>
 
-  <div><%= f.label :password %><br />
-  <%= f.password_field :password %></div>
+      <div class="control-group">
+        <%= f.label :password, nil, :class => 'control-label' %>
+        <div class="controls">
+          <%= f.password_field :password, :class => 'span4' %><br/>
+        </div>
+      </div>
 
-  <div><%= f.label :password_confirmation %><br />
-  <%= f.password_field :password_confirmation %></div>
+      <div class="control-group">
+        <%= f.label :password_confirmation, 'Confirm Password', :class => 'control-label' %>
+        <div class="controls">
+          <%= f.password_field :password_confirmation, :class => 'span4' %><br/>
+        </div>
+      </div>
 
-  <div><%= f.submit "Sign up" %></div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+      <div class="control-group" style="padding-top:4px">
+        <div class="controls">
+          <%= f.submit('Sign up', :class => 'btn btn-primary btn-embossed') %>
+          <%= link_to "Already a user?", new_session_path(resource_name), :class => 'pull-right' %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

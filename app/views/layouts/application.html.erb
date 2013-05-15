@@ -16,16 +16,23 @@
       <a href="#" class="brand">Landmark</a>
 
       <div class="nav-collapse collapse" id="nav-collapse-01">
-        <ul class="nav">
-          <li class="<%= request.path == '/' ? 'active' : '' %>">
-            <%= link_to('Flow', root_path) %>
-          </li>
-          <li class="<%= request.path.index('/properties') == 0 ? 'active' : '' %>">
-            <%= link_to('Properties', properties_path) %>
-          </li>
-          <li><a href="#">Account</a></li>
-        </ul> <!-- /nav -->
+        <% if user_signed_in? %>
+          <ul class="nav">
+            <li class="<%= request.path == '/' ? 'active' : '' %>">
+              <%= link_to('Flow', root_path) %>
+            </li>
+            <li class="<%= request.path.index('/properties') == 0 ? 'active' : '' %>">
+              <%= link_to('Properties', properties_path) %>
+            </li>
+            <li><a href="#">Account</a></li>
+          </ul>
 
+          <ul class="nav pull-right">
+            <li>
+              <%= link_to('Sign Out', destroy_user_session_path, :method => :delete) %>
+            </li>
+          </ul>
+        <% end %>
 
         <!--
         <form class="navbar-search form-search pull-right" action="">
@@ -42,12 +49,14 @@
   </div>
 </div>
 
+<!--
 <% if !notice.blank? %>
   <p class="notice"><%= notice %></p>
 <% end %>
 <% if !alert.blank? %>
   <p class="alert"><%= alert %></p>
 <% end %>
+-->
 
 <%= yield %>
 

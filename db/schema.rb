@@ -22,8 +22,6 @@ ActiveRecord::Schema.define(:version => 20130514203751) do
 
   create_table "users", :force => true do |t|
     t.integer  "account_id"
-    t.integer  "first_name_id"
-    t.integer  "last_name_id"
     t.string   "email",                  :default => "", :null => false
     t.string   "encrypted_password",     :default => "", :null => false
     t.string   "reset_password_token"
