@@ -36,16 +36,14 @@
           </ul>
         <% end %>
 
-        <!--
-        <form class="navbar-search form-search pull-right" action="">
-          <div class="input-append">
-            <input type="text" class="search-query span3" placeholder="Search">
-            <button type="submit" class="btn btn-large">
-              <i class="fui-search"></i>
-            </button>
-          </div>
-        </form>
-        -->
+        <% if request.path != flows_path %>
+          <form class="navbar-search form-search pull-right" onsubmit="return false;">
+            <div class="input-append">
+              <input type="text" class="search search-query span3" placeholder="Find action">
+              <button type="submit" class="btn btn-large"><span class="fui-search"></span></button>
+            </div>
+          </form>
+        <% end %>
       </div>
     </div>
   </div>

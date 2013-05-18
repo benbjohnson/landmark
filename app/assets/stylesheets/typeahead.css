@@ -1,5 +1,5 @@
-.twitter-typeahead .tt-query,
-.twitter-typeahead .tt-hint {
+.twitter-typeahead .tt-query {
+  background-color: #fff !important;
   margin-bottom: 0;
   font-size: 17px;
 }
