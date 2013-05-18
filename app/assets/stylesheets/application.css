@@ -4,6 +4,7 @@
  *= require bootstrap-responsive
  *= require flat-ui
  *= require font-awesome
+ *= require typeahead
  *= require_self
  */
 

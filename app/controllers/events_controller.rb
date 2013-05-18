@@ -5,8 +5,6 @@ class EventsController < ApplicationController
   # GET /track.gif
   # POST /track
   def track
-    debugger
-    
     # Require API key & event object.
     api_key, id = params['apiKey'], params['id']
     event = params[:event] ? params[:event] : params.clone
