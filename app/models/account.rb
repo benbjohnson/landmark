@@ -1,11 +1,12 @@
 class Account < ActiveRecord::Base
-  has_many :users
+  has_many :users, :dependent => :destroy
   has_many :actions
+  accepts_nested_attributes_for :users
   validates :name, :presence => true  
   before_create :before_create
   after_create :after_create
 
-  attr_accessible :name
+  attr_accessible :name, :users_attributes
 
   ##############################################################################
   #
@@ -21,15 +22,17 @@ class Account < ActiveRecord::Base
   def before_create
     self.generate_api_key
 
-    if !sky_client.ping
-      self.errors.add("Unable to connect to tracking server") unless Rails.env.test?
+    if !Rails.env.test?
+      self.errors.add("Unable to connect to tracking server") if !sky_client.ping
     end
   end
 
   # Creates a tracking table in Sky that is associated with this account.
   def after_create
-    @sky_table = sky_client.create_table(:name => sky_table_name) unless Rails.env.test?
-    @sky_table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
+    if !Rails.env.test?
+      @sky_table = sky_client.create_table(:name => sky_table_name)
+      @sky_table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
+    end
   end
 
 

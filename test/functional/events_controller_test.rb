@@ -9,16 +9,16 @@ class EventsControllerTest < ActionController::TestCase
 
   test "should track events" do
     Timecop.freeze(Time.now) do
-      SkyDB::Table.any_instance.expects(:add_event).with("foo", DateTime.now, {'action' => '/index.html', 'bar' => 'baz'}).twice
-      post :track, {'api_key' => '123', 'id' => 'foo', '_action' => '/index.html', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
-      post :track, {'api_key' => '123', 'id' => 'foo', '_action' => '/index.html', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
+      SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'action' => '/index.html', 'bar' => 'baz'}).twice
+      post :track, {'apiKey' => '123', 'id' => 'foo', '_action' => '/index.html', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
+      post :track, {'apiKey' => '123', 'id' => 'foo', '_action' => '/index.html', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
     end
 
     Timecop.freeze(Time.now + 1.minute) do
-      SkyDB::Table.any_instance.expects(:add_event).with("foo", DateTime.now, {'action' => '/about.html'})
-      SkyDB::Table.any_instance.expects(:add_event).with("bar", DateTime.now, {'bar' => 'bat'})
-      post :track, {'api_key' => '123', 'id' => 'foo', '_action' => '/about.html'}, "CONTENT_TYPE" => "application/json"
-      post :track, {'api_key' => '123', 'id' => 'bar', 'bar' => 'bat'}, "CONTENT_TYPE" => "application/json"
+      SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'action' => '/about.html'})
+      SkyDB::Table.any_instance.expects(:add_event).with("bar", :timestamp => DateTime.now, :data => {'bar' => 'bat'})
+      post :track, {'apiKey' => '123', 'id' => 'foo', '_action' => '/about.html'}, "CONTENT_TYPE" => "application/json"
+      post :track, {'apiKey' => '123', 'id' => 'bar', 'bar' => 'bat'}, "CONTENT_TYPE" => "application/json"
     end
 
     assert_response 201
@@ -32,12 +32,12 @@ class EventsControllerTest < ActionController::TestCase
   end
 
   test "should require identifier for tracking" do
-    post :track, {'api_key' => '123', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
+    post :track, {'apiKey' => '123', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
     assert_response 422
   end
 
   test "should require event data for tracking" do
-    post :track, {'api_key' => '123', 'id' => 'foo'}, "CONTENT_TYPE" => "application/json"
+    post :track, {'apiKey' => '123', 'id' => 'foo'}, "CONTENT_TYPE" => "application/json"
     assert_response 422
   end
 end

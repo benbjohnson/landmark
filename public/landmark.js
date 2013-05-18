@@ -27,26 +27,6 @@
     //--------------------------------------------------------------------------
 
     //----------------------------------
-    // Identification
-    //----------------------------------
-
-    /**
-     * Identifies the current user.
-     *
-     * @param {String} userId  The user identifier.
-     * @param {Object} traits  User-level data.
-     */
-    identify : function(objectId, traits) {
-      this.objectId = objectId;
-      this.traits = traits;
-
-      if(this.initialized && this.traits) {
-        this.send();
-      }
-    },
-
-
-    //----------------------------------
     // Initialization
     //----------------------------------
 
@@ -57,6 +37,27 @@
      */
     initialize : function(apiKey) {
       this.apiKey = apiKey;
+      return true;
+    },
+
+
+    //----------------------------------
+    // Identification
+    //----------------------------------
+
+    /**
+     * Identifies the current user.
+     *
+     * @param {String} userId  The user identifier.
+     * @param {Object} traits  User-level data.
+     */
+    identify : function(userId, traits) {
+      this.userId = userId;
+      this.traits = traits;
+
+      if(this.initialized && this.traits) {
+        this.send();
+      }
     },
 
 
@@ -91,16 +92,21 @@
      * @param {Object} data  The event data to send.
      */
     send : function(data, callback) {
-      if(!this.objectId) {
-        this.log("[landmark] Cannot track without user identifier.");
+      if(!this.apiKey) {
+        self.log("[landmark] API Key required. Please call landmark.initialize() first.");
+        return;
+      }
+      if(!this.userId) {
+        this.log("[landmark] User identifier required. Please call landmark.identify() first.");
         return;
       }
       
-      var event = this.extend({}, traits, data, {id: this.userId});
+      var event = this.extend({}, this.traits, data, {apiKey: this.apiKey, id: this.userId});
       if(event['action']) {
         event['_action'] = event['action'];
         delete event['action'];
       }
+
       return this.post("/track", event, callback);
     },
 
@@ -171,8 +177,9 @@
       if(typeof(obj) != "object") return;
 
       var args = Array.prototype.slice.call(arguments, 1);
-      for(var i=0, source; source = args[i]; i++) {
-        if (typeof(source) == "object") {
+      for(var i=0; i<args.length; i++) {
+        source = args[i];
+        if (typeof(source) == "object" && source != null && source != undefined) {
           for (var property in source) {
             obj[property] = source[property];
           }

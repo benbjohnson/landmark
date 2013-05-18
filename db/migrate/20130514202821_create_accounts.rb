@@ -2,7 +2,7 @@ class CreateAccounts < ActiveRecord::Migration
   def up
     create_table :accounts do |t|
       t.string :name, :null => false
-      t.string :api_key, :null => false
+      t.string :apiKey, :null => false
       t.timestamps
     end
   end
