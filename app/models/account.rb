@@ -73,8 +73,15 @@ class Account < ActiveRecord::Base
 
 
   ######################################
-  # Action Properties
+  # Properties
   ######################################
+
+  # The non-transient properties associated with the account.
+  def traits
+    traits = sky_table.get_properties()
+    traits.select!{|p| !p.transient }
+    return traits
+  end
 
   # The transient properties associated with the account.
   def properties
