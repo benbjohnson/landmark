@@ -70,4 +70,16 @@ class Account < ActiveRecord::Base
   def track(object_id, event)
     return sky_table.add_event(object_id, :timestamp => DateTime.now, :data => event)
   end
+
+
+  ######################################
+  # Action Properties
+  ######################################
+
+  # The transient properties associated with the account.
+  def properties
+    properties = sky_table.get_properties()
+    properties.select!{|p| p.transient && p.name != 'action' }
+    return properties
+  end
 end

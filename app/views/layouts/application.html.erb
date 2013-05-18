@@ -13,7 +13,7 @@
     <div class="container">
       <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#nav-collapse-01">
       </button>
-      <a href="#" class="brand">Landmark</a>
+      <%= link_to('Landmark', root_path, :class => 'brand')%>
 
       <div class="nav-collapse collapse" id="nav-collapse-01">
         <% if user_signed_in? %>

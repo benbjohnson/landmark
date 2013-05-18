@@ -4,7 +4,7 @@ Landmark::Application.routes.draw do
   resources :flows
   resources :actions, :only => [:index]
   resources :traits
-  resources :properties
+  resources :properties, :except => [:edit, :update]
 
   get '/signup' => 'accounts#new'
   post '/signup' => 'accounts#create'

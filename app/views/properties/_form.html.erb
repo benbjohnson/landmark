@@ -1,45 +1,34 @@
-<%= form_tag(properties_path) do %>
+<%= form_tag(@property.id == 0 ? properties_path : property_path(@property.name), :method => @property.id == 0 ? 'POST' : 'PUT') do %>
   <div class="control-group">
     <%= label_tag :name, nil, :class => 'control-label' %>
     <div class="controls">
-      <%= text_field_tag :name %>
+      <%= text_field_tag :name, @property.name %>
     </div>
   </div>
 
-  <div class="control-group">
-    <%= label_tag :type, nil, :class => 'control-label' %>
-    <div class="controls clearfix">
-      <div class="row">
-        <div class="span3">
-          <select name="large" class="select-block mbl">
-            <option value="user">User Property</option>
-            <option value="action">Action Property</option>
-          </select>
+  <% if @property.id == 0 %>
+    <div class="control-group">
+      <%= label_tag :data_type, nil, :class => 'control-label' %>
+      <div class="controls clearfix">
+        <div class="row">
+          <div class="span3">
+            <select name="large" class="select-block mbl">
+              <option value="factor">Categorical</option>
+              <option value="string">String</option>
+              <option value="integer">Integer</option>
+              <option value="float">Decimal</option>
+              <option value="boolean">True/False</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="control-group">
-    <%= label_tag :data_type, nil, :class => 'control-label' %>
-    <div class="controls clearfix">
-      <div class="row">
-        <div class="span3">
-          <select name="large" class="select-block mbl">
-            <option value="factor">Categorical</option>
-            <option value="string">String</option>
-            <option value="integer">Integer</option>
-            <option value="float">Decimal</option>
-            <option value="boolean">Yes/No</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <% end %>
+  
   <div class="control-group">
     <div class="controls">
-      <%= submit_tag('Create Property', :class => 'btn btn-primary btn-embossed') %>
+      <%= submit_tag(@property.id == 0 ? 'Create Property' : 'Update Property', :class => 'btn btn-primary btn-embossed') %>
+      <%= link_to('Back', :back, :class => 'btn btn-inverse btn-embossed') %>
     </div>
   </div>
 <% end %>
