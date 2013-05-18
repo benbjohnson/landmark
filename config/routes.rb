@@ -2,6 +2,7 @@ Landmark::Application.routes.draw do
   devise_for :users
   resources :accounts
   resources :flows
+  resources :actions, :only => [:index]
   resources :traits
   resources :properties
 

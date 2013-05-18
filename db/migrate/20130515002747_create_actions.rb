@@ -4,6 +4,8 @@ class CreateActions < ActiveRecord::Migration
       t.references :account
       t.string :name
     end
+
+    execute "create index on actions using gin(to_tsvector('english', name));"
   end
 
   def down
