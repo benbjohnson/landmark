@@ -8,7 +8,7 @@ describe("QuerySelection", function () {
 
   it("initializes with arguments", function() {
     var f0 = new QuerySelectionField(), f1 = new QuerySelectionField();
-    var selection = new QuerySelection("foo", ["city","state"], [f0, f1]);
+    var selection = new QuerySelection({name:"foo", dimensions:["city","state"], fields:[f0, f1]});
     expect(selection.name).toEqual("foo");
     expect(selection.dimensions).toEqual(["city", "state"]);
     expect(selection.fields).toEqual([f0, f1]);
@@ -34,7 +34,7 @@ describe("QuerySelection", function () {
   });
 
   it("serializes to a hash", function() {
-    var selection = new QuerySelection("foo", ["city","state"], [new QuerySelectionField("bar", "baz == 100")]);
+    var selection = new QuerySelection({name:"foo", dimensions:["city","state"], fields:[new QuerySelectionField({name:"bar", expression:"baz == 100"})]});
     expect(selection.serialize()).toEqual(
       {
         "type":"selection",

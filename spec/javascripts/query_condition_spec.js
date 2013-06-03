@@ -10,7 +10,7 @@ describe("QueryCondition", function () {
 
   it("initializes with arguments", function() {
     var s0 = new QuerySelection();
-    var condition = new QueryCondition("foo == 'bar'", 1, 2, "sessions", [s0]);
+    var condition = new QueryCondition({expression:"foo == 'bar'", withinRangeStart:1, withinRangeEnd:2, withinUnits:"sessions", steps:[s0]});
     expect(condition.expression).toEqual("foo == 'bar'");
     expect(condition.withinRangeStart).toEqual(1);
     expect(condition.withinRangeEnd).toEqual(2);
@@ -19,7 +19,7 @@ describe("QueryCondition", function () {
   });
 
   it("serializes to a hash", function() {
-    var condition = new QueryCondition("foo == 'bar'", 1, 2, "sessions", [new QuerySelection()]);
+    var condition = new QueryCondition({expression:"foo == 'bar'", withinRangeStart:1, withinRangeEnd:2, withinUnits:"sessions", steps:[new QuerySelection()]});
     expect(condition.serialize()).toEqual(
       {
         "expression":"foo == 'bar'",

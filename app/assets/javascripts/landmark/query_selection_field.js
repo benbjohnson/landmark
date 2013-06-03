@@ -4,9 +4,8 @@
 //
 //------------------------------------------------------------------------------
 
-function QuerySelectionField(name, expression) {
-  this.name = name || "";
-  this.expression = expression || "";
+function QuerySelectionField(options) {
+  this.deserialize(options);
 }
 
 //------------------------------------------------------------------------------
@@ -26,6 +25,7 @@ QuerySelectionField.prototype.serialize = function() {
 
 // Deserializes the field from a hash.
 QuerySelectionField.prototype.deserialize = function(obj) {
+  if(!obj) obj = {};
   this.name = obj.name || "";
   this.expression = obj.expression || "";
 }

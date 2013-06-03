@@ -4,15 +4,8 @@
 //
 //------------------------------------------------------------------------------
 
-function QueryCondition(expression, withinRangeStart, withinRangeEnd, withinUnits, steps) {
-  this.expression = expression || "";
-  this.withinRangeStart = withinRangeStart || 0;
-  this.withinRangeEnd = withinRangeEnd || 0;
-  this.withinUnits = withinUnits || "steps";
-  this.steps = [];
-  for(var i=0; i<(steps||[]).length; i++) {
-    this.addStep(steps[i]);
-  }
+function QueryCondition(options) {
+  this.deserialize(options);
 }
 
 //------------------------------------------------------------------------------
@@ -60,9 +53,10 @@ QueryCondition.prototype.serialize = function() {
 
 // Deserializes the condition from a hash.
 QueryCondition.prototype.deserialize = function(obj) {
+  if(!obj) obj = {};
   this.expression = obj.expression || "";
-  this.withinRangeStart = obj.withinRangeStart;
-  this.withinRangeEnd = obj.withinRangeEnd;
+  this.withinRangeStart = obj.withinRangeStart || 0;
+  this.withinRangeEnd = obj.withinRangeEnd || 0;
   this.withinUnits = obj.withinUnits || "steps";
   QuerySteps.deserialize(this, obj.steps);
 }

@@ -4,13 +4,8 @@
 //
 //------------------------------------------------------------------------------
 
-function QuerySelection(name, dimensions, fields) {
-  this.name = name || "";
-  this.dimensions = dimensions || [];
-  this.fields = [];
-  for(var i=0; i<(fields || []).length; i++) {
-    this.addField(fields[i]);
-  }
+function QuerySelection(options) {
+  this.deserialize(options);
 }
 
 //------------------------------------------------------------------------------
@@ -59,12 +54,17 @@ QuerySelection.prototype.serialize = function() {
 
 // Deserializes the selection from a hash.
 QuerySelection.prototype.deserialize = function(obj) {
+  if(!obj) obj = {};
   this.name = obj.name || "";
   this.dimensions = (obj.dimensions || []).slice();
   this.fields = [];
   for(var i=0; i<(obj.fields || []).length; i++) {
-    var field = new QuerySelectionField();
-    field.deserialize(obj.fields[i]);
+    var field;
+    if(obj.fields[i] instanceof QuerySelectionField) {
+      field = obj.fields[i]
+    } else {
+      field = new QuerySelectionField(obj.fields[i]);
+    }
     this.fields.push(field);
   }
 }
