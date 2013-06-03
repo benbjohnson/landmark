@@ -37,6 +37,7 @@ describe("QuerySelection", function () {
     var selection = new QuerySelection("foo", ["city","state"], [new QuerySelectionField("bar", "baz == 100")]);
     expect(selection.serialize()).toEqual(
       {
+        "type":"selection",
         "name":"foo",
         "dimensions":["city", "state"],
         "fields":[{"name":"bar", "expression":"baz == 100"}],
@@ -47,6 +48,7 @@ describe("QuerySelection", function () {
   it("deserializes from a hash", function() {
     var selection = new QuerySelection();
     selection.deserialize({
+      "type":"selection",
       "name":"foo",
       "dimensions":["city", "state"],
       "fields":[{"name":"bar", "expression":"baz == 100"}],

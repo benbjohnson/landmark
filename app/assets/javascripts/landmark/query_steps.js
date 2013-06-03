@@ -4,9 +4,9 @@
 //
 //------------------------------------------------------------------------------
 
-// The Steps class contains several utility functions shared by the Query and
+// The QuerySteps class contains several utility functions shared by the Query and
 // Condition objects.
-function Steps() {
+function QuerySteps() {
 }
 
 //------------------------------------------------------------------------------
@@ -20,16 +20,13 @@ function Steps() {
 //--------------------------------------
 
 // Adds a step to the parent.
-Steps.addStep = function(parent, step) {
-  if(!parent.getQuery()) {
-    throw("cannot add step to unassociated parent")
-  }
+QuerySteps.addStep = function(parent, step) {
   step.parent = parent;
   parent.steps.push(step);
 }
 
 // Removes a step from the parent.
-Steps.removeStep = function(parent, step) {
+QuerySteps.removeStep = function(parent, step) {
   for(var i=0; i<parent.steps.length; i++) {
     if(parent.steps[i] == step) {
       step.parent = null;
@@ -47,10 +44,28 @@ Steps.removeStep = function(parent, step) {
 //--------------------------------------
 
 // Serializes the steps into an array of hashes.
-Steps.serialize = function(steps) {
+QuerySteps.serialize = function(steps) {
   var ret = [];
-  for(var i=0; i<steps.length; i++) {
+  for(var i=0; i<(steps || []).length; i++) {
     ret.push(steps[i].serialize());
   }
   return ret;
+}
+
+// Deserializes an array of hashes into steps.
+QuerySteps.deserialize = function(parent, arr) {
+  var steps = [];
+  for(var i=0; i<(arr || []).length; i++) {
+    var step;
+    if(arr[i].type == "selection") {
+      step = new QuerySelection();
+    } else if(arr[i].type == "condition") {
+      step = new QueryCondition();
+    } else {
+      throw "invalid step type: '" + arr[i].type + "'";
+    }
+    step.deserialize(arr[i]);
+    parent.addStep(step);
+  }
+  return steps;
 }

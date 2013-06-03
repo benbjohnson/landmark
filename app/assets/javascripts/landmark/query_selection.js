@@ -50,6 +50,7 @@ QuerySelection.prototype.serialize = function() {
     fields.push(this.fields[i].serialize());
   }
   return {
+    type:"selection",
     name:this.name,
     dimensions:this.dimensions.slice(),
     fields:fields

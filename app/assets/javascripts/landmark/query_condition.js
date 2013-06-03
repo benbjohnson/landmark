@@ -9,6 +9,7 @@ function QueryCondition(expression, withinRangeStart, withinRangeEnd, withinUnit
   this.withinRangeStart = withinRangeStart || 0;
   this.withinRangeEnd = withinRangeEnd || 0;
   this.withinUnits = withinUnits || "steps";
+  this.steps = [];
   for(var i=0; i<(steps||[]).length; i++) {
     this.addStep(steps[i]);
   }
@@ -21,17 +22,25 @@ function QueryCondition(expression, withinRangeStart, withinRangeEnd, withinUnit
 //------------------------------------------------------------------------------
 
 //--------------------------------------
-// Steps
+// Hierarchy
 //--------------------------------------
+
+// Retrieves the top-level query associated with this condition.
+QueryCondition.prototype.getQuery = function() {
+  if(this.parent) {
+    return this.parent.getQuery();
+  }
+  return null;
+}
 
 // Adds a step to the condition.
 QueryCondition.prototype.addStep = function(step) {
-  Steps.addStep(this, step);
+  QuerySteps.addStep(this, step);
 }
 
 // Removes a step from the condition.
 QueryCondition.prototype.removeStep = function(step) {
-  Steps.removeStep(this, step);
+  QuerySteps.removeStep(this, step);
 }
 
 //--------------------------------------
@@ -45,7 +54,7 @@ QueryCondition.prototype.serialize = function() {
     withinRangeStart:this.withinRangeStart,
     withinRangeEnd:this.withinRangeEnd,
     withinUnits:this.withinUnits,
-    steps:Steps.serialize(this, step)
+    steps:QuerySteps.serialize(this.steps)
   };
 }
 
@@ -55,5 +64,5 @@ QueryCondition.prototype.deserialize = function(obj) {
   this.withinRangeStart = obj.withinRangeStart;
   this.withinRangeEnd = obj.withinRangeEnd;
   this.withinUnits = obj.withinUnits || "steps";
-  this.steps = Steps.deserialize(this, obj.steps);
+  QuerySteps.deserialize(this, obj.steps);
 }
