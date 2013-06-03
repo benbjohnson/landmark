@@ -1,6 +1,14 @@
 //= require jquery
 //= require jquery_ujs
-//= require_tree .
+//= require bootstrap
+//= require bootstrap-select
+//= require bootstrap-switch
+//= require flatui-checkbox
+//= require flatui-radio
+//= require flatui
+//= require typeahead
+//= require landmark
+//= require application
 
 $(document).ready(function() {
   $("select[name='large']").selectpicker({style: 'btn-large', menuStyle: 'dropdown-inverse'});

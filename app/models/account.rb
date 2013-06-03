@@ -30,8 +30,7 @@ class Account < ActiveRecord::Base
   # Creates a tracking table in Sky that is associated with this account.
   def after_create
     if !Rails.env.test?
-      @sky_table = sky_client.create_table(:name => sky_table_name)
-      @sky_table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
+      create_sky_table
     end
   end
 
@@ -64,6 +63,12 @@ class Account < ActiveRecord::Base
   # The name of the associated Sky table.
   def sky_table_name
     return self.new_record? ? nil : "landmark-#{self.id.to_s}"
+  end
+
+  # Creates a table for this account on the Sky database.
+  def create_sky_table
+    @sky_table = sky_client.create_table(:name => sky_table_name)
+    @sky_table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
   end
 
   # Tracks an event for the account.

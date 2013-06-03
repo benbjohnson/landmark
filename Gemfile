@@ -27,5 +27,6 @@ group :development, :test do
   gem 'debugger', '~> 1.5.0'
   gem 'pry', '~> 0.9.12.2'
   gem 'capistrano', '~> 2.15.4'
+  gem 'jasmine', '~> 1.3.2'
 end
 

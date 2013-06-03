@@ -4,6 +4,7 @@
   <title>Landmark</title>
   <%= stylesheet_link_tag    "application", :media => "all" %>
   <%= javascript_include_tag "application" %>
+  <%= yield(:head) %>
   <%= csrf_meta_tags %>
 </head>
 <body>
@@ -34,15 +35,15 @@
             </li>
             <li><%= link_to('Sign Out', destroy_user_session_path, :method => :delete) %></li>
           </ul>
-        <% end %>
 
-        <% if request.path != flows_path %>
-          <form class="navbar-search form-search pull-right" onsubmit="return false;">
-            <div class="input-append">
-              <input type="text" class="search search-query span3" placeholder="Find action">
-              <button type="submit" class="btn btn-large"><span class="fui-search"></span></button>
-            </div>
-          </form>
+          <% if request.path != flows_path %>
+            <form class="navbar-search form-search pull-right" onsubmit="return false;">
+              <div class="input-append">
+                <input type="text" class="search search-query span3" placeholder="Find action">
+                <button type="submit" class="btn btn-large"><span class="fui-search"></span></button>
+              </div>
+            </form>
+          <% end %>
         <% end %>
       </div>
     </div>
