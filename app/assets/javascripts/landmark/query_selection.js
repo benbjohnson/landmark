@@ -7,6 +7,7 @@
 function QuerySelection(name, dimensions, fields) {
   this.name = name || "";
   this.dimensions = dimensions || [];
+  this.fields = [];
   for(var i=0; i<(fields || []).length; i++) {
     this.addField(fields[i]);
   }
