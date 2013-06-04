@@ -76,6 +76,11 @@ class Account < ActiveRecord::Base
     return sky_table.add_event(object_id, :timestamp => DateTime.now, :data => event)
   end
 
+  # Executes a query against the account's events.
+  def query(q)
+    return sky_table.query(q)
+  end
+
 
   ######################################
   # Properties

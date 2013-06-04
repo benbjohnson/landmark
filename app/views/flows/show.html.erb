@@ -6,3 +6,17 @@
 
   </div>
 </div>
+
+<script>
+  $(document).ready(function(){
+    var action = <%= @action.name.to_json.html_safe %>
+
+    landmark.show.load(
+      new Query({sessionIdleTime:7200, steps:[
+        new QueryCondition({expression:"action == '" + action.replace(/'/g, "\\'") + "'", steps:[
+          new QuerySelection({name:"0:0", dimensions:["action"], fields:[new QuerySelectionField({name:"count", expression:"count()"})]})
+        ]})
+      ]})
+    )
+  });
+</script>

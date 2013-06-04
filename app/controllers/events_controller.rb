@@ -1,4 +1,6 @@
 class EventsController < ApplicationController
+  before_filter :authenticate_user!, :except => [:track]
+
   RESERVED = %w(id apiKey action controller)
   
   # GET /track
@@ -22,5 +24,14 @@ class EventsController < ApplicationController
     account.track(id, event)
     
     render :status => :created, :json => {:status => :ok}
+  end
+
+  # POST /query
+  def query
+    q = params[:q]
+    return head 422 if q.nil?
+
+    results = current_account.query(q)
+    render :json => results
   end
 end

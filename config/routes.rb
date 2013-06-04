@@ -10,6 +10,7 @@ Landmark::Application.routes.draw do
   post '/signup' => 'accounts#create'
 
   match '/track' => 'events#track'
+  match '/query' => 'events#query'
 
   root :to => 'home#index'
 end

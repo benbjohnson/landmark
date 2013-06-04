@@ -1,3 +1,5 @@
+landmark.show = {};
+
 (function(){
 //------------------------------------------------------------------------------
 //
@@ -22,16 +24,15 @@ var query = {
 //------------------------------------------------------------------------------
 
 //--------------------------------------
-// Initialize
-//--------------------------------------
-
-
-//--------------------------------------
 // Loading
 //--------------------------------------
 
-function load() {
-  var xhr = $.ajax(url, {method:"POST", data:JSON.stringify(query), contentType:"application/json"})
+landmark.show.load = function(q) {
+  if(!q) {
+    query = q;
+  }
+  
+  var xhr = $.ajax("/query.json", {method:"POST", data:JSON.stringify({q:query}), contentType:"application/json"})
   .success(function(data) {
     nodes = skybox.explore.normalize(query, data, {limit:6});
     links = skybox.explore.links(nodes);
@@ -53,7 +54,4 @@ function load() {
 //
 //------------------------------------------------------------------------------
 
-$(document).ready(function() {
-  init();
-});
 })();

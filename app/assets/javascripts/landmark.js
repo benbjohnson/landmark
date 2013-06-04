@@ -4,3 +4,5 @@
 //= require landmark/query_selection
 //= require landmark/query_selection_field
 //= require landmark/query_steps
+
+var landmark = {};
