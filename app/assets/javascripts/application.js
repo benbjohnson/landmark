@@ -7,6 +7,9 @@
 //= require flatui-radio
 //= require flatui
 //= require typeahead
+//= require humanize
+//= require d3
+//= require d3.flow
 //= require landmark
 //= require application
 
