@@ -2,7 +2,7 @@
 
 <div class="row" style="padding: 0 32px; margin-top:20px">
   <div class="span12">
-    <h3>Exploring: <%= @action.name %></h3>
+    <h4>Exploring: <%= @action.name %></h4>
 
   </div>
 </div>
@@ -14,7 +14,10 @@
     landmark.show.load(
       new Query({sessionIdleTime:7200, steps:[
         new QueryCondition({expression:"action == '" + action.replace(/'/g, "\\'") + "'", steps:[
-          new QuerySelection({name:"0:0", dimensions:["action"], fields:[new QuerySelectionField({name:"count", expression:"count()"})]})
+          new QuerySelection({name:"0.0", dimensions:[], fields:[new QuerySelectionField({name:"count", expression:"count()"})]}),
+          new QueryCondition({expression:"true", within:[1,1], steps:[
+            new QuerySelection({name:"1.0", dimensions:["action"], fields:[new QuerySelectionField({name:"count", expression:"count()"})]}),
+          ]})
         ]})
       ]})
     )

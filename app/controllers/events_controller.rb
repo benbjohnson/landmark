@@ -17,9 +17,6 @@ class EventsController < ApplicationController
     # Load account by API key.
     account = Account.find_by_api_key(api_key)
     
-    # Add action to SQL database if it doesn't exist yet.
-    account.actions.find_or_create_by_name(event['action']) unless event['action'].blank?
-    
     # Track the event in Sky.
     account.track(id, event)
     

@@ -54,7 +54,7 @@ class Account < ActiveRecord::Base
     return SkyDB::Client.new(:host => 'localhost', :port => 8585)
   end
 
-  # Tracks an event for the account.
+  # Retrieves the Sky table associated with the account.
   def sky_table
     return nil if self.new_record?
     @sky_table ||= SkyDB::Table.new(:name => self.sky_table_name, :client => sky_client)
@@ -72,8 +72,15 @@ class Account < ActiveRecord::Base
   end
 
   # Tracks an event for the account.
-  def track(object_id, event)
-    return sky_table.add_event(object_id, :timestamp => DateTime.now, :data => event)
+  def track(object_id, event, options={})
+    options = {:timestamp => DateTime.now}.merge(options)
+
+    # Add action to SQL database if it doesn't exist yet.
+    if !event['action'].blank?
+      actions.find_or_create_by_name(event['action'])
+    end
+
+    return sky_table.add_event(object_id, :timestamp => options[:timestamp], :data => event)
   end
 
   # Executes a query against the account's events.

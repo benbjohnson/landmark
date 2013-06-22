@@ -17,7 +17,7 @@ function QuerySteps(options) {
 //------------------------------------------------------------------------------
 
 //--------------------------------------
-// Utility
+// Steps
 //--------------------------------------
 
 // Adds a step to the parent.
@@ -40,6 +40,25 @@ QuerySteps.removeStep = function(parent, step) {
   }
 }
 
+// Finds a selection by name in the query.
+QuerySteps.getSelection = function(parent, name) {
+  for(var i=0; i<(parent.steps || []).length; i++) {
+    var step = parent.steps[i];
+    if(step instanceof QuerySelection) {
+      if(step.name == name) {
+        return step;
+      }
+    }
+    else if(step instanceof QueryCondition) {
+      var ret = step.getSelection(name);
+      if(ret) {
+        return ret;
+      }
+    }
+  }
+  return null;
+}
+
 //--------------------------------------
 // Serialization
 //--------------------------------------
@@ -58,16 +77,18 @@ QuerySteps.deserialize = function(parent, arr) {
   parent.steps = [];
   for(var i=0; i<(arr || []).length; i++) {
     var step;
-    if(arr[i] instanceof QuerySelection || arr[i] instanceof QuerySelection) {
+    if(arr[i] instanceof QuerySelection || arr[i] instanceof QueryCondition) {
       step = arr[i];
-    } else if(arr[i].type == "selection") {
-      step = new QuerySelection();
-    } else if(arr[i].type == "condition") {
-      step = new QueryCondition();
     } else {
-      throw "invalid step type: '" + arr[i].type + "'";
+      if(arr[i].type == "selection") {
+        step = new QuerySelection();
+      } else if(arr[i].type == "condition") {
+        step = new QueryCondition();
+      } else {
+        throw "invalid step type: '" + arr[i].type + "'";
+      }
+      step.deserialize(arr[i]);
     }
-    step.deserialize(arr[i]);
     parent.addStep(step);
   }
 }

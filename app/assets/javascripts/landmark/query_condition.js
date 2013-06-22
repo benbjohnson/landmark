@@ -36,6 +36,11 @@ QueryCondition.prototype.removeStep = function(step) {
   QuerySteps.removeStep(this, step);
 }
 
+// Finds a selection in the query condition by name.
+QueryCondition.prototype.getSelection = function(name) {
+  return QuerySteps.getSelection(this, name);
+}
+
 //--------------------------------------
 // Serialization
 //--------------------------------------
@@ -43,9 +48,9 @@ QueryCondition.prototype.removeStep = function(step) {
 // Serializes the condition to a hash.
 QueryCondition.prototype.serialize = function() {
   return {
+    type:"condition",
     expression:this.expression,
-    withinRangeStart:this.withinRangeStart,
-    withinRangeEnd:this.withinRangeEnd,
+    within:this.within,
     withinUnits:this.withinUnits,
     steps:QuerySteps.serialize(this.steps)
   };
@@ -55,8 +60,7 @@ QueryCondition.prototype.serialize = function() {
 QueryCondition.prototype.deserialize = function(obj) {
   if(!obj) obj = {};
   this.expression = obj.expression || "";
-  this.withinRangeStart = obj.withinRangeStart || 0;
-  this.withinRangeEnd = obj.withinRangeEnd || 0;
+  this.within = obj.within || null;
   this.withinUnits = obj.withinUnits || "steps";
   QuerySteps.deserialize(this, obj.steps);
 }
