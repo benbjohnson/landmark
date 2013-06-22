@@ -16,9 +16,9 @@ describe("flows/show", function () {
     ]});
 
   var NODES = [
-    {id:'0.0-/index.html', name:'/index.html', value:20, depth:0, subdepth:0, selection:QUERY.steps[0].steps[0]},
-    {id:'1.0-/signup.html', name:'/signup.html', value:10, depth:1, subdepth:0, selection:QUERY.steps[0].steps[1].steps[0]},
-    {id:'1.0-/about-us.html', name:'/about-us.html', value:2, depth:1, subdepth:0, selection:QUERY.steps[0].steps[1].steps[0]},
+    {id:'0.0-/index.html', title:'/index.html', value:20, depth:0, subdepth:0, selection:QUERY.steps[0].steps[0]},
+    {id:'1.0-/signup.html', title:'/signup.html', value:10, depth:1, subdepth:0, selection:QUERY.steps[0].steps[1].steps[0]},
+    {id:'1.0-/about-us.html', title:'/about-us.html', value:2, depth:1, subdepth:0, selection:QUERY.steps[0].steps[1].steps[0]},
   ];
 
   //----------------------------------------------------------------------------
