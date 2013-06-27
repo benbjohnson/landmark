@@ -40,6 +40,14 @@ QuerySteps.removeStep = function(parent, step) {
   }
 }
 
+// Removes all steps from the parent.
+QuerySteps.removeAllSteps = function(parent) {
+  var steps = parent.steps.slice();
+  for(var i=0; i<steps.length; i++) {
+    QuerySteps.removeStep(parent, steps[i]);
+  }
+}
+
 // Finds a selection by name in the query.
 QuerySteps.getSelection = function(parent, name) {
   for(var i=0; i<(parent.steps || []).length; i++) {

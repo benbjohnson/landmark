@@ -33,6 +33,11 @@ Query.prototype.removeStep = function(step) {
   QuerySteps.removeStep(this, step);
 }
 
+// Removes all steps from the query.
+Query.prototype.removeAllSteps = function() {
+  QuerySteps.removeAllSteps(this);
+}
+
 // Finds a selection in the query by name.
 Query.prototype.getSelection = function(name) {
   return QuerySteps.getSelection(this, name);

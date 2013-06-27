@@ -36,6 +36,11 @@ QueryCondition.prototype.removeStep = function(step) {
   QuerySteps.removeStep(this, step);
 }
 
+// Removes all steps from the condition.
+QueryCondition.prototype.removeAllSteps = function() {
+  QuerySteps.removeAllSteps(this);
+}
+
 // Finds a selection in the query condition by name.
 QueryCondition.prototype.getSelection = function(name) {
   return QuerySteps.getSelection(this, name);

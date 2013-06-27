@@ -61,6 +61,7 @@ landmark.show.normalize = function(query, results, options) {
           id: selectionName + "-" + key,
           title: key,
           value: item.count,
+          expressionValue: key,
           depth: parseInt(selectionName.split(".")[0]),
           subdepth: parseInt(selectionName.split(".")[1]),
           selection: selection,
@@ -258,6 +259,17 @@ function nodeDelay(node) {
   return 500 + (node.index*100);
 }
 
+//--------------------------------------
+// Popover
+//--------------------------------------
+
+function removePopover() {
+  popoverNode = null;
+  $("*").popover("hide");
+  $(".popover").remove()
+  $(".tooltip").remove()
+}
+
 
 //------------------------------------------------------------------------------
 //
@@ -308,7 +320,7 @@ function node_onClick(node) {
       template: '<div class="popover node-popover"><div class="popover-content"></div></div>',
       content:
         '<div class="dropdown open">' +
-        '  <ul class="dropdown-menu" id="menu1">' +
+        '  <ul class="dropdown-menu dropdown-inverse" id="menu1">' +
         '    <li class="show-next-actions">' +
         '      <a href="#">Show Next Actions</a>' +
         '    </li>' +
@@ -345,6 +357,34 @@ function node_onMouseOver(node) {
 
 
 //--------------------------------------
+// Popup Menu
+//--------------------------------------
+
+function showNextActions_onClick() {
+  appendToQuery(popoverNode, "action", [1, 1]);
+  removePopover();
+  return false;
+}
+
+function appendToQuery(node, propertyName, within) {
+  if(!node) return;
+
+  var name = (within[0] == 0 && within[1] == 0 ? node.depth.toString() + "." + (node.subdepth+1).toString() : (node.depth+1).toString() + ".0");
+  var selection = node.selection;
+  var condition = selection.parent;
+  condition.expression = selection.dimensions[0] + " == '" + node.expressionValue.replace(/'/g, "\\'") + "'";
+  condition.removeAllSteps();
+  condition.addStep(selection);
+  condition.addStep(
+    new QueryCondition({expression:"true", within:within, steps:[
+      new QuerySelection({name:name, dimensions:[propertyName], fields:[new QuerySelectionField({name:"count", expression:"count()"})]})
+    ]})
+  );
+
+  landmark.show.load()
+}
+
+//--------------------------------------
 // Window
 //--------------------------------------
 
@@ -357,5 +397,6 @@ function window_onResize() {
 
 
 $(window).resize(window_onResize)
+$(document).on("click", ".show-next-actions", showNextActions_onClick);
 
 })();

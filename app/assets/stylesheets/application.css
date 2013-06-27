@@ -36,3 +36,14 @@ label {
   stroke: #ECEEF0;
   stroke-opacity: 1;
 }
+
+.node-popover {
+  border: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.node-popover .popover-content {
+  padding: 0;
+}
+
