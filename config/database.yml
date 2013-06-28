@@ -1,0 +1,25 @@
+development:
+  adapter: postgresql
+  encoding: unicode
+  database: landmark_development
+  pool: 5
+  username: benbjohnson
+  password:
+  min_messages: WARNING
+  
+test:
+  adapter: postgresql
+  encoding: unicode
+  database: landmark_test
+  pool: 5
+  username: benbjohnson
+  password:
+  min_messages: WARNING
+
+production:
+  adapter: postgresql
+  encoding: unicode
+  database: landmark
+  pool: 5
+  username: landmark
+  password:

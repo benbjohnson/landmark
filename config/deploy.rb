@@ -15,6 +15,7 @@ role :web, '144.76.61.239'
 role :app, '144.76.61.239'
 role :db, '144.76.61.239', :primary => true
 
+default_run_options[:pty] = true
 ssh_options[:forward_agent] = true
 ssh_options[:port] = 25000
 
