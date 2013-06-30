@@ -19,7 +19,7 @@
       <div class="nav-collapse collapse" id="nav-collapse-01">
         <% if user_signed_in? %>
           <ul class="nav">
-            <li class="<%= request.path == '/flows' ? 'active' : '' %>">
+            <li class="<%= request.path.index('/flows') == 0 ? 'active' : '' %>">
               <%= link_to('Flow', flows_path) %>
             </li>
             <li class="dropdown">
@@ -32,6 +32,9 @@
                 <li class="divider"></li>
                 <li><a href="#">Account &amp; Users</a></li>
               </ul>
+            </li>
+            <li class="<%= request.path.index('/help') == 0 ? 'active' : '' %>">
+              <%= link_to('Help', page_path("help")) %>
             </li>
             <li><%= link_to('Sign Out', destroy_user_session_path, :method => :delete) %></li>
           </ul>

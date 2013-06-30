@@ -1,5 +1,5 @@
 Landmark::Application.routes.draw do
-  devise_for :users
+  devise_for :users, :controllers => {:registrations => "registrations"}
   resources :accounts
   resources :flows
   resources :actions, :only => [:index]

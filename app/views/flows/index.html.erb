@@ -1,12 +1,34 @@
-<div id="flow" class="row" style="padding: 0 32px; margin-top:60px">
-  <div class="span12" style="text-align:center">
-    <h3>What action do you want to explore?</h3>
+<% if @has_actions %>
+  <div id="flow" class="row" style="padding: 0 32px; margin-top:60px">
+    <div class="span12" style="text-align:center">
+      <h3>What action do you want to explore?</h3>
 
-    <form class="form-search" style="margin-top:20px" onsubmit="return false;">
-      <div class="input-prepend">
-        <button type="submit" class="btn btn-large"><span class="fui-search"></span></button>
-        <input type="text" class="search span8 offset2 large search-query search-query-rounded" placeholder="Search actions">
-      </div>
-    </form>
+      <form class="form-search" style="margin-top:20px" onsubmit="return false;">
+        <div class="input-prepend">
+          <button type="submit" class="btn btn-large"><span class="fui-search"></span></button>
+          <input type="text" class="search span8 offset2 large search-query search-query-rounded" placeholder="Search actions">
+        </div>
+      </form>
+    </div>
   </div>
-</div>
+
+<% else %>
+
+  <div class="row" style="padding: 0 32px; margin-top:20px">
+    <div class="span12">
+      <h3>Getting Started</h3>
+      <p>
+        It doesn't look like you have any data logged with Landmark just yet.
+      </p>
+
+      <p>
+        Don't worry.
+        It's easy to get started.
+      </p>
+      
+      <p>
+        Check out our <%= link_to 'Integrations', page_path("help/integrations") %> page to see how you can start tracking your web site data.
+      </p>
+    </div>
+  </div>
+<% end %>

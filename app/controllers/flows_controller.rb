@@ -3,6 +3,7 @@ class FlowsController < ApplicationController
 
   # GET /flows
   def index
+    @has_actions = current_account.has_actions?
   end
 
   # GET /flows/:id

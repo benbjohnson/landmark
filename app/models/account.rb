@@ -2,7 +2,6 @@ class Account < ActiveRecord::Base
   has_many :users, :dependent => :destroy
   has_many :actions
   accepts_nested_attributes_for :users
-  validates :name, :presence => true  
   before_create :before_create
   after_create :after_create
 
@@ -105,5 +104,15 @@ class Account < ActiveRecord::Base
     properties = sky_table.get_properties()
     properties.select!{|p| p.transient && p.name != 'action' }
     return properties
+  end
+
+
+  ######################################
+  # Actions
+  ######################################
+
+  # Checks if the account has any actions logged to it.
+  def has_actions?
+    return actions.count > 0
   end
 end

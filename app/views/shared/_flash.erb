@@ -1,0 +1,23 @@
+<% if !resource.nil? && resource.errors.count > 0 %>
+  <div class="alert alert-error">
+    <button type="button" class="close fui-cross" data-dismiss="alert"></button>
+    <% resource.errors.full_messages.each do |message| %>
+      <%= message %>.<br/>
+    <% end %>
+  </div>
+<% end %>
+
+<% if !flash[:alert].blank? %>
+  <div class="alert alert-error">
+    <button type="button" class="close fui-cross" data-dismiss="alert"></button>
+    <%= flash[:alert] %>
+  </div>
+<% end %>
+
+<% if !flash[:notice].blank? %>
+  <div class="alert alert-info">
+    <button type="button" class="close fui-cross" data-dismiss="alert"></button>
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
