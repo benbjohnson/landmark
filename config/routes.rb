@@ -6,9 +6,6 @@ Landmark::Application.routes.draw do
   resources :traits
   resources :properties, :except => [:edit, :update]
 
-  get '/signup' => 'accounts#new'
-  post '/signup' => 'accounts#create'
-
   match '/track' => 'events#track'
   match '/query' => 'events#query'
 
