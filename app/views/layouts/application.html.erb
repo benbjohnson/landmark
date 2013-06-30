@@ -30,7 +30,8 @@
                 <li><%= link_to('User Traits', traits_path) %></li>
                 <li><%= link_to('Action Properties', properties_path) %></li>
                 <li class="divider"></li>
-                <li><a href="#">Account &amp; Users</a></li>
+                <li><%= link_to('Account', account_path) %></li>
+                <li><a href="#">Users</a></li>
               </ul>
             </li>
             <li class="<%= request.path.index('/help') == 0 ? 'active' : '' %>">

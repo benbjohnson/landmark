@@ -1,20 +1,19 @@
 class AccountsController < ApplicationController
-  # GET /signup
-  def new
-    @account = Account.new
-    @account.users.build
+  # GET /account
+  def show
+    redirect_to edit_account_path
   end
 
-  # POST /signup
-  def create
-    @account = Account.new(params[:account])
-    @account.users.first.account = @account
-    
-    if @account.save
-      flash[:success] = "Account created"
-      redirect_to new_user_session_path
-    else
-      render 'new'
-    end
+  # GET /account/edit
+  def edit
+    @account = current_account
+  end
+
+  # PATCH /account
+  def update
+    @account = current_account
+    params[:account].delete(:api_key)
+    @account.update_attributes(params[:account])
+    render 'edit'
   end
 end

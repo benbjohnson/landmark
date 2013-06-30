@@ -1,0 +1,22 @@
+<%= form_for @account do |f| %>
+  <div class="control-group">
+    <%= f.label :name, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :name, :class => "input-xlarge" %>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <%= f.label :api_key, 'API Key', :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :api_key, :readonly => true, :class => "input-xlarge" %>
+    </div>
+  </div>
+  
+  <div class="control-group">
+    <div class="controls">
+      <%= f.submit(:class => 'btn btn-primary btn-embossed') %>
+      <%= link_to('Back', :back, :class => 'btn btn-inverse btn-embossed') %>
+    </div>
+  </div>
+<% end %>
