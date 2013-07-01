@@ -6,8 +6,8 @@ Landmark::Application.routes.draw do
   resources :traits
   resources :properties, :except => [:edit, :update]
 
-  match '/track' => 'events#track'
-  match '/query' => 'events#query'
+  get '/track', :to => 'events#track'
+  post '/query', :to => 'events#query'
 
   root :to => 'home#index'
 end

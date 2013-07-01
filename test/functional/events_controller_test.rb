@@ -10,15 +10,15 @@ class EventsControllerTest < ActionController::TestCase
   test "should track events" do
     Timecop.freeze(Time.now) do
       SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'action' => '/index.html', 'bar' => 'baz'}).twice
-      post :track, {'apiKey' => '123', 'id' => 'foo', '_action' => '/index.html', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
-      post :track, {'apiKey' => '123', 'id' => 'foo', '_action' => '/index.html', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
+      get :track, {'apiKey' => '123', 'id' => 'foo', 'data' => {'action' => '/index.html', 'bar' => 'baz'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'foo', 'data' => {'action' => '/index.html', 'bar' => 'baz'}.to_json}
     end
 
     Timecop.freeze(Time.now + 1.minute) do
       SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'action' => '/about.html'})
       SkyDB::Table.any_instance.expects(:add_event).with("bar", :timestamp => DateTime.now, :data => {'bar' => 'bat'})
-      post :track, {'apiKey' => '123', 'id' => 'foo', '_action' => '/about.html'}, "CONTENT_TYPE" => "application/json"
-      post :track, {'apiKey' => '123', 'id' => 'bar', 'bar' => 'bat'}, "CONTENT_TYPE" => "application/json"
+      get :track, {'apiKey' => '123', 'id' => 'foo', 'data' => {'action' => '/about.html'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'bar', 'data' => {'bar' => 'bat'}.to_json}
     end
 
     assert_response 201
@@ -27,17 +27,17 @@ class EventsControllerTest < ActionController::TestCase
   end
 
   test "should require API key for tracking" do
-    post :track, {'id' => 'foo', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
+    get :track, {'id' => 'foo', 'data' => {'bar' => 'baz'}.to_json}
     assert_response 422
   end
 
   test "should require identifier for tracking" do
-    post :track, {'apiKey' => '123', 'bar' => 'baz'}, "CONTENT_TYPE" => "application/json"
+    get :track, {'apiKey' => '123', 'data' => {'bar' => 'baz'}.to_json}
     assert_response 422
   end
 
   test "should require event data for tracking" do
-    post :track, {'apiKey' => '123', 'id' => 'foo'}, "CONTENT_TYPE" => "application/json"
+    get :track, {'apiKey' => '123', 'id' => 'foo'}
     assert_response 422
   end
 end
