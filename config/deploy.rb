@@ -11,9 +11,9 @@ set :branch, 'master'
 set :use_sudo, false
 set :rvm_install_with_sudo, false
 
-role :web, '144.76.61.239'
-role :app, '144.76.61.239'
-role :db, '144.76.61.239', :primary => true
+role :web, 'landmark.io'
+role :app, 'landmark.io'
+role :db, 'landmark.io', :primary => true
 
 default_run_options[:pty] = true
 ssh_options[:forward_agent] = true
