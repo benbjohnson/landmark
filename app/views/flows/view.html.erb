@@ -1,4 +1,4 @@
-<% javascript 'flows/show.js' %>
+<% javascript 'flows/view.js' %>
 
 <div class="row" style="padding: 0 32px; margin-top:20px">
   <div class="span12">
@@ -18,7 +18,7 @@
     var action = <%= @action.name.to_json.html_safe %>
     landmark.properties(<%= @properties.to_json.html_safe %>);
 
-    landmark.show.load(
+    landmark.view.load(
       new Query({sessionIdleTime:7200, steps:[
         new QueryCondition({expression:"action == '" + action.replace(/'/g, "\\'") + "'", steps:[
           new QuerySelection({name:"0.0", dimensions:["action"], fields:[new QuerySelectionField({name:"count", expression:"count()"})]}),

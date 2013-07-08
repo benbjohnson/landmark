@@ -1,4 +1,4 @@
-describe("flows/show", function () {
+describe("flows/view", function () {
   //----------------------------------------------------------------------------
   //
   // Fixtures
@@ -28,7 +28,7 @@ describe("flows/show", function () {
   //----------------------------------------------------------------------------
 
   it("normalizes query results into nodes", function() {
-    var nodes = landmark.show.normalize(QUERY, {
+    var nodes = landmark.view.normalize(QUERY, {
       "0.0": {
         "action": {
           "/index.html": {
@@ -55,7 +55,7 @@ describe("flows/show", function () {
   });
 
   it("normalizes nodes into links", function() {
-    var links = landmark.show.links(NODES);
+    var links = landmark.view.links(NODES);
     expect(links.length).toEqual(2);
     expect(links[0]).toEqual({source:NODES[0], target:NODES[1], value:10});
     expect(links[1]).toEqual({source:NODES[0], target:NODES[2], value:2});

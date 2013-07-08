@@ -1,4 +1,4 @@
-landmark.show = {};
+landmark.view = {};
 
 (function(){
 //------------------------------------------------------------------------------
@@ -25,13 +25,13 @@ var popoverNode = null;
 // Data
 //--------------------------------------
 
-landmark.show.load = function(q) {
+landmark.view.load = function(q) {
   if(q) query = q;
   var xhr = $.ajax("/query.json", {method:"POST", data:JSON.stringify({q:query.serialize()}), contentType:"application/json"})
   .success(function(data) {
-    nodes = landmark.show.normalize(query, data, {limit:6});
-    links = landmark.show.links(nodes);
-    landmark.show.update();
+    nodes = landmark.view.normalize(query, data, {limit:6});
+    links = landmark.view.links(nodes);
+    landmark.view.update();
   })
   // Notify the user if the query fails for some reason.
   .fail(function() {
@@ -45,7 +45,7 @@ landmark.show.load = function(q) {
 /**
  * Normalizes the results into a data format that we can display in D3.
  */
-landmark.show.normalize = function(query, results, options) {
+landmark.view.normalize = function(query, results, options) {
   if(!options) options = {};
   var nodes = [];
 
@@ -76,7 +76,7 @@ landmark.show.normalize = function(query, results, options) {
 
   // Limit nodes.
   if(options.limit > 0) {
-    nodes = landmark.show.limit(nodes, options.limit);
+    nodes = landmark.view.limit(nodes, options.limit);
   }
 
   return nodes;
@@ -85,7 +85,7 @@ landmark.show.normalize = function(query, results, options) {
 /**
  * Generates a list of links between nodes.
  */
-landmark.show.links = function(nodes) {
+landmark.view.links = function(nodes) {
   var lnodes = {};
   for(var i=0; i<nodes.length; i++) {
     if(!lnodes[nodes[i].depth]) lnodes[nodes[i].depth] = {}
@@ -115,7 +115,7 @@ landmark.show.links = function(nodes) {
 /**
  * Limits the number of nodes in each level.
  */
-landmark.show.limit = function(nodes, count) {
+landmark.view.limit = function(nodes, count) {
   // Split up by depth.
   var dnodes = {};
   for(var i=0; i<nodes.length; i++) {
@@ -154,7 +154,7 @@ landmark.show.limit = function(nodes, count) {
   return nodes;
 }
 
-landmark.show.query = function(q) {
+landmark.view.query = function(q) {
   if(arguments.length == 0) return query;
   query = q;
 }
@@ -167,7 +167,7 @@ landmark.show.query = function(q) {
 /**
  * Refreshes the view.
  */
-landmark.show.update = function(options) {
+landmark.view.update = function(options) {
   // Update the dimensions of the visualization.
   var chart = $("#chart")[0];
   flow.maxNodeWidth(200);
@@ -381,7 +381,7 @@ function appendToQuery(node, propertyName, within) {
     ]})
   );
 
-  landmark.show.load()
+  landmark.view.load()
 }
 
 //--------------------------------------
@@ -392,7 +392,7 @@ function appendToQuery(node, propertyName, within) {
  * Updates the view whenever the window is resized.
  */
 function window_onResize() {
-  landmark.show.update();
+  landmark.view.update();
 }
 
 

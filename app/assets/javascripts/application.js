@@ -23,6 +23,6 @@ $(document).ready(function() {
     remote: "/actions?q=%QUERY"
   }])
   .on("typeahead:selected", function(event, datum) {
-    window.location = "/flows/" + encodeURIComponent(datum.name)
+    window.location = "/flows/view?id=" + encodeURIComponent(datum.name)
   });
 });
