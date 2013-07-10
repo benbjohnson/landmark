@@ -6,7 +6,9 @@ class EventsController < ApplicationController
   # POST /track
   def track
     api_key, id = params['apiKey'], params['id']
-    data = JSON.parse(params['data']) rescue nil
+    traits = JSON.parse(params['traits']) rescue nil
+    properties = JSON.parse(params['properties']) rescue nil
+    data = {}.merge(properties || {}).merge(traits || {})
     return head 422 if api_key.blank? || id.blank? || !data.is_a?(Hash) || data.keys.length == 0
 
     # Load account by API key.

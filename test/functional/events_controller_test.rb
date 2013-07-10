@@ -10,15 +10,15 @@ class EventsControllerTest < ActionController::TestCase
   test "should track events" do
     Timecop.freeze(Time.now) do
       SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'action' => '/index.html', 'bar' => 'baz'}).twice
-      get :track, {'apiKey' => '123', 'id' => 'foo', 'data' => {'action' => '/index.html', 'bar' => 'baz'}.to_json}
-      get :track, {'apiKey' => '123', 'id' => 'foo', 'data' => {'action' => '/index.html', 'bar' => 'baz'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'foo', 'properties' => {'action' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'foo', 'properties' => {'action' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}
     end
 
     Timecop.freeze(Time.now + 1.minute) do
       SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'action' => '/about.html'})
       SkyDB::Table.any_instance.expects(:add_event).with("bar", :timestamp => DateTime.now, :data => {'bar' => 'bat'})
-      get :track, {'apiKey' => '123', 'id' => 'foo', 'data' => {'action' => '/about.html'}.to_json}
-      get :track, {'apiKey' => '123', 'id' => 'bar', 'data' => {'bar' => 'bat'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'foo', 'properties' => {'action' => '/about.html'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'bar', 'traits' => {'bar' => 'bat'}.to_json}
     end
 
     assert_response 201
@@ -27,12 +27,12 @@ class EventsControllerTest < ActionController::TestCase
   end
 
   test "should require API key for tracking" do
-    get :track, {'id' => 'foo', 'data' => {'bar' => 'baz'}.to_json}
+    get :track, {'id' => 'foo', 'traits' => {'bar' => 'baz'}.to_json}
     assert_response 422
   end
 
   test "should require identifier for tracking" do
-    get :track, {'apiKey' => '123', 'data' => {'bar' => 'baz'}.to_json}
+    get :track, {'apiKey' => '123', 'traits' => {'bar' => 'baz'}.to_json}
     assert_response 422
   end
 
