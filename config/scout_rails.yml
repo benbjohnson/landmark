@@ -1,0 +1,7 @@
+common: &defaults
+  name: Landmark
+  key: eYo3NMMJl4
+  monitor: true
+
+production:
+  <<: *defaults

@@ -14,6 +14,7 @@ gem 'skydb', :git => 'git@github.com:skydb/sky.rb.git', :ref => 'd8d306fe9a'
 
 gem 'rvm-capistrano', '~> 1.3.4'
 gem 'librato-rails', '~> 0.8.2'
+gem 'scout_rails'
 
 group :assets do
   gem 'sass-rails', '~> 3.2.3'
