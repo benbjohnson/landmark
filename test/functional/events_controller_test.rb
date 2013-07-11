@@ -3,8 +3,9 @@ require 'test_helper'
 class EventsControllerTest < ActionController::TestCase
   setup do
     @account = Account.create!(:name => 'Test Account')
-    @account.api_key = '123'
-    @account.save!
+    @project = @account.projects.first
+    @project.api_key = '123'
+    @project.save!
   end
 
   test "should track events" do
@@ -23,7 +24,7 @@ class EventsControllerTest < ActionController::TestCase
 
     assert_response 201
     assert_equal({"status"=>"ok"}, JSON.parse(@response.body))
-    assert_equal ['/index.html', '/about.html'], @account.actions.map{|a| a.name}
+    assert_equal ['/index.html', '/about.html'], @project.actions.map{|a| a.name}
   end
 
   test "should require API key for tracking" do

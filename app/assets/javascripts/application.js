@@ -20,9 +20,9 @@ $(document).ready(function() {
   $('.search').typeahead([{
     name: "search",
     valueKey: "name",
-    remote: "/actions?q=%QUERY"
+    remote: "/projects/" + landmark.projectId + "/actions?q=%QUERY"
   }])
   .on("typeahead:selected", function(event, datum) {
-    window.location = "/flows/view?id=" + encodeURIComponent(datum.name)
+    window.location = "/projects/" + landmark.projectId + "/flows/view?id=" + encodeURIComponent(datum.name)
   });
 });

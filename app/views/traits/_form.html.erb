@@ -1,4 +1,4 @@
-<%= form_tag(@trait.id == 0 ? traits_path : trait_path(@trait.name), :method => @trait.id == 0 ? 'POST' : 'PUT') do %>
+<%= form_tag(@trait.id == 0 ? project_traits_path(@project) : project_trait_path(@project, @trait.name), :method => @trait.id == 0 ? 'POST' : 'PUT') do %>
   <div class="control-group">
     <%= label_tag :name, nil, :class => 'control-label' %>
     <div class="controls">

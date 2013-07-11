@@ -1,7 +1,7 @@
 class CreateActions < ActiveRecord::Migration
   def up
     create_table(:actions) do |t|
-      t.references :account
+      t.references :project
       t.string :name
     end
 
