@@ -12,6 +12,7 @@ class EventsController < ApplicationController
 
     # Load project by API key.
     project = Project.find_by_api_key(api_key)
+    return head 404 if project.nil?
     
     # Track the event in Sky.
     project.track(id, data)
