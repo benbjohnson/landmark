@@ -1,7 +1,4 @@
 class ApplicationController < ActionController::Base
+  include ApplicationHelper
   protect_from_forgery
-
-  def current_account
-    return current_user ? current_user.account : nil
-  end
 end

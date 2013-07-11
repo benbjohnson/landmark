@@ -1,20 +1,29 @@
 class FlowsController < ApplicationController
   before_filter :authenticate_user!
+  before_filter :find_project
 
-  # GET /flows
+  # GET /projects/:id/flows
   def index
-    @has_actions = current_account.has_actions?
+    @has_actions = @project.has_actions?
   end
 
-  # GET /flows/view
+  # GET /projects/:id/flows/view
   def view
-    return redirect_to flows_path if params[:id].nil?
+    return redirect_to project_flows_path(@project) if params[:id].nil?
 
     name = params[:id] + (params[:format].blank? ? "" : ".#{params[:format]}")
-    @action = current_account.actions.find_by_name(name)
-    @properties = current_account.sky_table.get_properties()
+    @action = @project.actions.find_by_name(name)
+    @properties = @project.sky_table.get_properties()
     
     # Redirect to home page if the action isn't found.
-    return redirect_to flows_path if @action.nil?
+    return redirect_to project_flows_path(@project) if @action.nil?
+  end
+
+
+  private
+  
+  def find_project
+    @project = current_account.projects.find(params[:project_id])
+    set_current_project(@project)
   end
 end

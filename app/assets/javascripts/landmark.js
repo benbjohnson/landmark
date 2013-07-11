@@ -7,5 +7,4 @@
 //= require landmark/query_selection_field
 //= require landmark/query_steps
 
-var landmark = {};
-
+var landmark = {projectId:0};
