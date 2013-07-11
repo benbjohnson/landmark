@@ -49,7 +49,6 @@ SET default_with_oids = false;
 CREATE TABLE accounts (
     id integer NOT NULL,
     name character varying(255) DEFAULT ''::character varying NOT NULL,
-    api_key character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -80,7 +79,7 @@ ALTER SEQUENCE accounts_id_seq OWNED BY accounts.id;
 
 CREATE TABLE actions (
     id integer NOT NULL,
-    account_id integer,
+    project_id integer,
     name character varying(255)
 );
 
@@ -102,6 +101,39 @@ CREATE SEQUENCE actions_id_seq
 --
 
 ALTER SEQUENCE actions_id_seq OWNED BY actions.id;
+
+
+--
+-- Name: projects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE projects (
+    id integer NOT NULL,
+    account_id integer,
+    name character varying(255) DEFAULT ''::character varying NOT NULL,
+    api_key character varying(255) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE projects_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE projects_id_seq OWNED BY projects.id;
 
 
 --
@@ -172,6 +204,13 @@ ALTER TABLE ONLY actions ALTER COLUMN id SET DEFAULT nextval('actions_id_seq'::r
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY projects ALTER COLUMN id SET DEFAULT nextval('projects_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
@@ -189,6 +228,14 @@ ALTER TABLE ONLY accounts
 
 ALTER TABLE ONLY actions
     ADD CONSTRAINT actions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY projects
+    ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
 
 
 --
@@ -236,3 +283,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130514202821');
 INSERT INTO schema_migrations (version) VALUES ('20130514203751');
 
 INSERT INTO schema_migrations (version) VALUES ('20130515002747');
+
+INSERT INTO schema_migrations (version) VALUES ('20130711172250');

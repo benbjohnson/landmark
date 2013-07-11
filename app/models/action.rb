@@ -1,5 +1,5 @@
 class Action < ActiveRecord::Base
-  belongs_to :account
+  belongs_to :project
   validates :name, :presence => true  
   attr_accessible :name
 end

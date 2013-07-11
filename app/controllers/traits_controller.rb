@@ -1,35 +1,44 @@
 class TraitsController < ApplicationController
   before_filter :authenticate_user!
+  before_filter :find_project
 
-  # GET /traits
+  # GET /projects/:project_id/traits
   def index
-    @traits = current_account.traits
+    @traits = @project.traits
   end
 
-  # GET /traits/:name
+  # GET /projects/:project_id/traits/:name
   def show
   end
 
-  # GET /traits/new
+  # GET /projects/:project_id/traits/new
   def new
     @trait = SkyDB::Property.new
   end
 
-  # POST /traits
+  # POST /projects/:project_id/traits
   def create
-    @trait = current_account.sky_table.create_property(
+    @trait = @project.sky_table.create_property(
       :name => params[:name],
       :transient => false,
       :data_type => params[:data_type]
     )
-    redirect_to traits_path
+    redirect_to project_traits_path(@project)
   end
 
-  # DELETE /traits/:id
+  # DELETE /projects/:project_id/traits/:id
   def destroy
-    table = current_account.sky_table
+    table = @project.sky_table
     @trait = table.get_property(params[:id])
     table.delete_property(@trait)
-    redirect_to traits_path
+    redirect_to project_traits_path(@project)
+  end
+
+
+  private
+  
+  def find_project
+    @project = current_account.projects.find(params[:project_id])
+    set_current_project(@project)
   end
 end

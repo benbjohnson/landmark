@@ -27,7 +27,7 @@ var popoverNode = null;
 
 landmark.view.load = function(q) {
   if(q) query = q;
-  var xhr = $.ajax("/query.json", {method:"POST", data:JSON.stringify({q:query.serialize()}), contentType:"application/json"})
+  var xhr = $.ajax("/projects/" + landmark.projectId + "/query.json", {method:"POST", data:JSON.stringify({q:query.serialize()}), contentType:"application/json"})
   .success(function(data) {
     nodes = landmark.view.normalize(query, data, {limit:6});
     links = landmark.view.links(nodes);
@@ -157,6 +157,11 @@ landmark.view.limit = function(nodes, count) {
 landmark.view.query = function(q) {
   if(arguments.length == 0) return query;
   query = q;
+}
+
+landmark.view.projectId = function(value) {
+  if(arguments.length == 0) return projectId;
+  projectId = value;
 }
 
 
