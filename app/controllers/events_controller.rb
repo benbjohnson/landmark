@@ -8,7 +8,8 @@ class EventsController < ApplicationController
     api_key, id = params['apiKey'], params['id']
     traits = JSON.parse(params['traits']) rescue nil
     properties = JSON.parse(params['properties']) rescue nil
-    data = {}.merge(properties || {}).merge(traits || {})
+    data = {}.merge(traits || {}).merge(properties || {})
+    log({api_key:api_key, id:id, timestamp:DateTime.now.iso8601, traits:traits, properties:properties})
     return head 422 if api_key.blank? || id.blank? || !data.is_a?(Hash) || data.keys.length == 0
 
     # Load account by API key.
@@ -27,5 +28,11 @@ class EventsController < ApplicationController
 
     results = current_account.query(q)
     render :json => results
+  end
+  
+  private
+  
+  def log(obj)
+    Logger.new('log/events.log').info obj.to_json
   end
 end
