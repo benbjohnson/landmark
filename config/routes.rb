@@ -20,5 +20,6 @@ Landmark::Application.routes.draw do
 
   get '/track', :to => 'events#track'
 
+  get "/signup" => "home#signup"
   root :to => 'home#index'
 end
