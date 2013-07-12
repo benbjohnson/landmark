@@ -1,7 +1,11 @@
 class HomeController < ApplicationController
-  before_filter :authenticate_user!
+  layout "public", :only => [:index]
 
+  # GET /
   def index
-    redirect_to project_flows_path(current_project)
+  end
+
+  # GET /signup
+  def signup
   end
 end
