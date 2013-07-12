@@ -4,7 +4,7 @@ html {
 body {
 	position: relative;
 	padding-top: 69px;
-	background: #DDDCE2 url(../img/content_bg.jpg) repeat left top;
+	background: #DDDCE2 url(/img/content_bg.jpg) repeat left top;
 	-webkit-font-smoothing: antialiased;
 	font-size: 14px;
 	font-family: 'Lato', sans-serif !important;
@@ -141,7 +141,7 @@ input[type="color"]:focus,
     filter: none;
     padding: 7px 0 8px 0;
     /*background: none repeat scroll 0 0 #242b35;*/
-    background: url("../img/nav_bg.jpg") 0 0 repeat;
+    background: url("/img/nav_bg.jpg") 0 0 repeat;
 }
 .navbar .brand {
     font-size: 26px;
@@ -358,14 +358,14 @@ input[type="color"]:focus,
 	position: relative;	
 }
 #pricing .price_wrapper.regular .header {
-	background: url('../img/chart1.png') 0 0 no-repeat;
+	background: url('/img/chart1.png') 0 0 no-repeat;
 }
 #pricing .price_wrapper.pro {
 	width: 331px;
 	margin: 0 auto;
 }
 #pricing .price_wrapper.pro .header {
-	background: url('../img/chart2.png') 0 0 no-repeat;
+	background: url('/img/chart2.png') 0 0 no-repeat;
 }
 #pricing .price_wrapper section .btn {
 	left: 35%;
@@ -463,7 +463,7 @@ input[type="color"]:focus,
 
 /* footer section */
 #footer {
-	background: url("../img/footer_bg.jpg") 0 0 repeat;
+	background: url("/img/footer_bg.jpg") 0 0 repeat;
 	min-height: 40px;
 	margin-top: 40px;
 	color: #fff;
@@ -731,10 +731,10 @@ input[type="color"]:focus,
 		top: -10px;
 	}
 	#pricing .price_wrapper.regular .header {
-		background: url('../img/chart1_small.png') 0 0 no-repeat;
+		background: url('/img/chart1_small.png') 0 0 no-repeat;
 	}
 	#pricing .price_wrapper.pro .header {
-		background: url('../img/chart2_small.png') 0 0 no-repeat;
+		background: url('/img/chart2_small.png') 0 0 no-repeat;
 	}
 	#testimonials .phrases_wrapper {
 		padding-left: 0px;
@@ -850,7 +850,7 @@ input[type="color"]:focus,
 .i_shuffle, 
 .i_twitter, 
 .i_youtube{
-	background: url('../img/icons.png') no-repeat;
+	background: url('/img/icons.png') no-repeat;
 	display: inline-block;
 }
 .i_bars{
@@ -907,7 +907,7 @@ input[type="color"]:focus,
 /* Social icons
 -------------------------------------------------- */
 i.social {
-	background: url('../img/social_icons.png') no-repeat 0 0;
+	background: url('/img/social_icons.png') no-repeat 0 0;
 	width: 33px;
 	height: 33px;
 	display: inline-block;
