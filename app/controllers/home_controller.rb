@@ -1,5 +1,6 @@
 class HomeController < ApplicationController
   layout "public", :only => [:index]
+  before_filter :check_signed_in
 
   # GET /
   def index
@@ -7,5 +8,14 @@ class HomeController < ApplicationController
 
   # GET /signup
   def signup
+  end
+
+
+  private
+  
+  def check_signed_in
+    if user_signed_in?
+      redirect_to(project_path(current_project))
+    end
   end
 end
