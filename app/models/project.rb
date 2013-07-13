@@ -70,16 +70,48 @@ class Project < ActiveRecord::Base
     @sky_table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
   end
 
+  # Automatically creates properties based on the data type of incoming event fields.
+  def auto_create_sky_properties(properties, transient, obj)
+    return unless obj.is_a?(Hash)
+
+    # Loop over each non-blank key.
+    obj.each_pair do |k, v|
+      next if k.blank?
+      
+      # Check if the property exists.
+      if properties.find_index{|p| p.name == k}.nil?
+        # Determine the data type of the incoming data.
+        data_type = case
+        when v.is_a?(String) then "factor"
+        when v.is_a?(Fixnum) || v.is_a?(Float) then "float"
+        when v == true || v == false then "boolean"
+        else nil
+        end
+
+        # If we can determine an appropriate type then create the property.
+        if !data_type.nil?
+          sky_table.create_property(:name => k, :transient => transient, :data_type => data_type)
+        end
+      end
+    end
+  end
+
   # Tracks an event for the project.
-  def track(object_id, event, options={})
+  def track(object_id, traits, properties, options={})
     options = {:timestamp => DateTime.now}.merge(options)
+    data = {}.merge(traits || {}).merge(properties || {})
 
     # Add action to SQL database if it doesn't exist yet.
-    if !event['action'].blank?
-      actions.find_or_create_by_name(event['action'])
+    if !data['action'].blank?
+      actions.find_or_create_by_name(data['action'])
     end
 
-    return sky_table.add_event(object_id, :timestamp => options[:timestamp], :data => event)
+    # Automatically create any missing properties.
+    props = sky_table.get_properties
+    auto_create_sky_properties(props, false, traits)
+    auto_create_sky_properties(props, true, properties)
+
+    return sky_table.add_event(object_id, :timestamp => options[:timestamp], :data => data)
   end
 
   # Executes a query against the project's events.
