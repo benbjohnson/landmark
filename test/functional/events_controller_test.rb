@@ -9,6 +9,9 @@ class EventsControllerTest < ActionController::TestCase
   end
 
   test "should track events" do
+    SkyDB::Table.any_instance.stubs(:get_properties)
+    Project.any_instance.stubs(:auto_create_sky_properties)
+    
     Timecop.freeze(Time.now) do
       SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'action' => '/index.html', 'bar' => 'baz'}).twice
       get :track, {'apiKey' => '123', 'id' => 'foo', 'properties' => {'action' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}

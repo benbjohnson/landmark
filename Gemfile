@@ -26,6 +26,7 @@ end
 
 group :test do
   gem 'mocha', '~> 0.13.2', :require => false
+  gem 'webmock', '~> 1.13.0'
   gem "timecop", "~> 0.6.1"
 end
 
