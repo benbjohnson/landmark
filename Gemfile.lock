@@ -1,7 +1,7 @@
 GIT
   remote: git@github.com:skydb/sky.rb.git
-  revision: d8d306fe9a8343bf10a0cc500d71d7d807db0f20
-  ref: d8d306fe9a
+  revision: ce6dea9af8ff909dcc5230fa5dcc5670e2f3f970
+  ref: ce6dea9
   specs:
     skydb (0.3.0)
 
