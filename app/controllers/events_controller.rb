@@ -19,6 +19,8 @@ class EventsController < ApplicationController
       properties:properties,
     })
 
+    internal_tracking_id = (tracking_id.blank? ? nil : "~#{tracking_id}")
+    
     # This is an invalid request if we do not have an API key, some kind of id or any properties.
     return head 422 if api_key.blank? || (id.blank? && tracking_id.blank?) || (properties.empty? && traits.empty?)
 
@@ -27,11 +29,16 @@ class EventsController < ApplicationController
     return head 404 if project.nil?
 
     # Mark the action as anonymous if we do not have a source system id.
-    properties['anonymous'] = id.blank?
+    anonymous = id.blank?
+    properties['anonymous'] = anonymous
 
     # Use the tracking id if we don not have a source system id.
-    if id.blank?
-      id = "~#{tracking_id}"
+    if anonymous
+      id = internal_tracking_id
+    
+    # If we have a source system id then make sure it merges any previous anonymous tracking.
+    elsif !tracking_id.blank?
+      project.sky_table.merge_objects(id, internal_tracking_id)
     end
     
     # Track the event in Sky.
