@@ -24,10 +24,20 @@
       <p>
         Don't worry.
         It's easy to get started.
+        Just copy and paste this JavaScript on to your web page:
       </p>
-      
+
+<pre>
+&lt;script&gt;window.landmark=[];&lt;/script&gt;
+&lt;script src="https://landmark.io/landmark.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+landmark.push("initialize", "<%= @project.api_key %>");
+landmark.push("track_page", {});
+&lt;/script&gt;
+</pre>
+
       <p>
-        Check out our <%= link_to 'Integrations', page_path("help/integrations") %> page to see how you can start tracking your web site data.
+        See our <%= link_to('documentation page', page_path("help")) %> for help on user identification, user traits and action properties.
       </p>
     </div>
   </div>
