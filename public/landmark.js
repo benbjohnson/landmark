@@ -122,10 +122,11 @@
         this.log("[landmark] API Key required. Please call landmark.initialize() first.");
         return;
       }
-      // Temporary: Notify the console if the user is not identified.
-      if(!this.userId) {
-        this.log("[landmark] User is not identified.");
-        return;
+
+      // Retrieve the tracking identifier for this browser.
+      var t = getCookie(cookieId())
+      if(!t) {
+        setCookie(cookieId(), (t = this.uuid()));
       }
 
       // Throw away the traits after we save them once.
@@ -138,7 +139,10 @@
       // Send event data to "GET /track".
       var path = "/track";
       path += "?apiKey=" + encodeURIComponent(this.apiKey);
-      path += "&id=" + encodeURIComponent(this.userId);
+      path += "&t=" + encodeURIComponent(t);
+      if(this.userId && (typeof(this.userId) == "number" || typeof(this.userId) == "string")) {
+        path += "&id=" + encodeURIComponent(this.userId);
+      }
       if(!isEmpty(traits)) {
         path += "&traits=" + encodeURIComponent(JSON.stringify(traits));
       }
@@ -179,6 +183,18 @@
           console.log(arguments);
         }
       }
+    },
+
+    /**
+     * Generates an RFC4122 version 4 UUID.
+     *
+     * http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+     */
+    uuid : function() {
+      return "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+          var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+          return v.toString(16);
+      });
     },
 
     /**
@@ -261,6 +277,56 @@
     }
     return obj;
   }
+
+  /**
+   * Sets a root domain, first-party cookie. Setting a null value will delete
+   * cookie.
+   *
+   * @param {String} name   The name of the key to set.
+   * @param {String} vlaue  The value of the key to set.
+   */
+  function setCookie(name,value) {
+    var regex = /.+\.((?:[^.]+)\.(?:com|net|org|edu|co.uk|io))$/;
+
+    var domain = "";
+    if(location.hostname.search(regex) != -1) {
+      "; domain=." + location.hostname.replace(regex, "$1");
+    }
+
+    var expires = "; expires=" + (value != null ? (new Date(2000000000000)).toGMTString() : "-1");
+
+    if(value == null) value = "";
+    document.cookie = name + "=" + value + expires + domain + "; path=/";
+  }
+
+  /**
+   * Retrieves a cookie.
+   *
+   * @param {String} name   The name of the cookie to retrieve.
+   */
+  function getCookie(name) {
+    var arr = document.cookie.split(';');
+    for(var i=0; i<arr.length;i++) {
+      var c = arr[i];
+      while(c.charAt(0)==' ') {
+        c = c.substring(1,c.length);
+      }
+      if(c.indexOf(name + "=") == 0) {
+        return c.substring(name.length+1,c.length);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Retrieves the name of the id cookie.
+   */
+  function cookieId() {
+    return "__ldmkid";
+  }
+
+  landmark.__test__ = {setCookie: setCookie, getCookie: getCookie};
+
 
   //--------------------------------------------------------------------------
   //
