@@ -5,6 +5,7 @@ class Account < ActiveRecord::Base
   attr_accessible :name, :users_attributes
 
   after_create :after_create
+  after_commit :after_commit_create, :on => :create
 
   ##############################################################################
   #
@@ -20,5 +21,9 @@ class Account < ActiveRecord::Base
   # already created.
   def after_create
     projects.create!(:name => 'Default') if projects.count == 0
+  end
+
+  def after_commit_create
+    AccountMailer.sign_up(self).deliver
   end
 end
