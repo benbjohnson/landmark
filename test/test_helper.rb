@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 ENV["RAILS_ENV"] = "test"
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
@@ -16,5 +18,14 @@ class ActiveSupport::TestCase
   # -- they do not yet inherit this setting
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+  def assert_mail(exp, act)
+    exp = exp.encoded.gsub(/Message-ID: <.+>/, '').gsub(/Date: .+/, '')
+    act = act.encoded.gsub(/Message-ID: <.+>/, '').gsub(/Date: .+/, '')
+    if exp == act
+      assert true
+    else
+      print diff(exp, act)
+      fail("Mail does not match")
+    end
+  end
 end

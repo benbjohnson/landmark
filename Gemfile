@@ -28,6 +28,7 @@ group :test do
   gem 'mocha', '~> 0.13.2', :require => false
   gem 'webmock', '~> 1.13.0'
   gem "timecop", "~> 0.6.1"
+  gem 'test_after_commit', '~> 0.2.0'
 end
 
 group :development, :test do

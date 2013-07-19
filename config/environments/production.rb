@@ -66,4 +66,14 @@ Landmark::Application.configure do
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
   config.action_mailer.default_url_options = { :host => 'landmark.io' }
+
+  ActionMailer::Base.smtp_settings = {
+    :user_name => 'landmark',
+    :password => 'mtDvf8oQ9wprBq',
+    :domain => 'landmark.io',
+    :address => 'smtp.sendgrid.net',
+    :port => 587,
+    :authentication => :plain,
+    :enable_starttls_auto => true
+  }
 end
