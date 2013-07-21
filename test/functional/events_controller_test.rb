@@ -34,8 +34,10 @@ class EventsControllerTest < ActionController::TestCase
     assert_equal(2, resources.count)
     assert_equal('web', resources[0].channel)
     assert_equal('/index.html', resources[0].uri)
+    assert_equal(2, resources[0].hit_count_within(1.day))
     assert_equal('web', resources[1].channel)
     assert_equal('/about.html', resources[1].uri)
+    assert_equal(1, resources[1].hit_count_within(1.day))
   end
 
   test "should track anonymous events" do

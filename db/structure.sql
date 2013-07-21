@@ -107,6 +107,37 @@ ALTER SEQUENCE projects_id_seq OWNED BY projects.id;
 
 
 --
+-- Name: resource_hits; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE resource_hits (
+    id integer NOT NULL,
+    resource_id integer NOT NULL,
+    hit_date date NOT NULL,
+    count integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: resource_hits_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE resource_hits_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: resource_hits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE resource_hits_id_seq OWNED BY resource_hits.id;
+
+
+--
 -- Name: resources; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -207,6 +238,13 @@ ALTER TABLE ONLY projects ALTER COLUMN id SET DEFAULT nextval('projects_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY resource_hits ALTER COLUMN id SET DEFAULT nextval('resource_hits_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY resources ALTER COLUMN id SET DEFAULT nextval('resources_id_seq'::regclass);
 
 
@@ -234,6 +272,14 @@ ALTER TABLE ONLY projects
 
 
 --
+-- Name: resource_hits_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY resource_hits
+    ADD CONSTRAINT resource_hits_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: resources_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -247,6 +293,13 @@ ALTER TABLE ONLY resources
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_resource_hits_on_resource_id_and_hit_date; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_resource_hits_on_resource_id_and_hit_date ON resource_hits USING btree (resource_id, hit_date);
 
 
 --
@@ -292,3 +345,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130711172250');
 INSERT INTO schema_migrations (version) VALUES ('20130721035852');
 
 INSERT INTO schema_migrations (version) VALUES ('20130721040322');
+
+INSERT INTO schema_migrations (version) VALUES ('20130721204833');
