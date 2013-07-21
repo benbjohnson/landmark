@@ -30,7 +30,7 @@ class EventsController < ApplicationController
 
     # Mark the action as anonymous if we do not have a source system id.
     anonymous = id.blank?
-    properties['anonymous'] = anonymous
+    properties['__anonymous__'] = anonymous
 
     # Use the tracking id if we don not have a source system id.
     if anonymous
