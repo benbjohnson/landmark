@@ -1,6 +1,6 @@
 class Project < ActiveRecord::Base
   belongs_to :account
-  has_many :actions
+  has_many :resources
   before_create :before_create
   after_create :after_create
 
@@ -67,7 +67,10 @@ class Project < ActiveRecord::Base
   # Creates a table for this project on the Sky database.
   def create_sky_table
     @sky_table = sky_client.create_table(:name => sky_table_name)
-    @sky_table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => '__channel__', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => '__uri__', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => '__anonymous__', :transient => true, :data_type => 'boolean')
+    @sky_table.create_property(:name => '__path__', :transient => true, :data_type => 'factor')
   end
 
   # Automatically creates properties based on the data type of incoming event fields.
@@ -101,9 +104,9 @@ class Project < ActiveRecord::Base
     options = {:timestamp => DateTime.now}.merge(options)
     data = {}.merge(traits || {}).merge(properties || {})
 
-    # Add action to SQL database if it doesn't exist yet.
-    if !data['action'].blank?
-      actions.find_or_create_by_name(data['action'])
+    # Add resource to SQL database if it doesn't exist yet.
+    if !data['__uri__'].blank?
+      resources.find_or_create_by_channel_and_uri!(data['__channel__'], data['__uri__'])
     end
 
     # Automatically create any missing properties.
@@ -134,17 +137,17 @@ class Project < ActiveRecord::Base
   # The transient properties associated with the project.
   def properties
     properties = sky_table.get_properties()
-    properties.select!{|p| p.transient && p.name != 'action' }
+    properties.select!{|p| p.transient && p.name.to_s.index(/^__\w+__$/).nil? }
     return properties
   end
 
 
   ######################################
-  # Actions
+  # Resources
   ######################################
 
-  # Checks if the project has any actions logged to it.
-  def has_actions?
-    return actions.count > 0
+  # Checks if the project has any resources logged to it.
+  def has_resources?
+    return resources.count > 0
   end
 end
