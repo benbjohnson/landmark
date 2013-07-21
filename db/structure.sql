@@ -74,36 +74,6 @@ ALTER SEQUENCE accounts_id_seq OWNED BY accounts.id;
 
 
 --
--- Name: actions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE actions (
-    id integer NOT NULL,
-    project_id integer,
-    name character varying(255)
-);
-
-
---
--- Name: actions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE actions_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: actions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE actions_id_seq OWNED BY actions.id;
-
-
---
 -- Name: projects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -134,6 +104,39 @@ CREATE SEQUENCE projects_id_seq
 --
 
 ALTER SEQUENCE projects_id_seq OWNED BY projects.id;
+
+
+--
+-- Name: resources; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE resources (
+    id integer NOT NULL,
+    project_id integer,
+    channel character varying(255),
+    name character varying(255),
+    slug character varying(255),
+    uri character varying(255)
+);
+
+
+--
+-- Name: resources_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE resources_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: resources_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE resources_id_seq OWNED BY resources.id;
 
 
 --
@@ -197,14 +200,14 @@ ALTER TABLE ONLY accounts ALTER COLUMN id SET DEFAULT nextval('accounts_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY actions ALTER COLUMN id SET DEFAULT nextval('actions_id_seq'::regclass);
+ALTER TABLE ONLY projects ALTER COLUMN id SET DEFAULT nextval('projects_id_seq'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY projects ALTER COLUMN id SET DEFAULT nextval('projects_id_seq'::regclass);
+ALTER TABLE ONLY resources ALTER COLUMN id SET DEFAULT nextval('resources_id_seq'::regclass);
 
 
 --
@@ -223,19 +226,19 @@ ALTER TABLE ONLY accounts
 
 
 --
--- Name: actions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY actions
-    ADD CONSTRAINT actions_pkey PRIMARY KEY (id);
-
-
---
 -- Name: projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
 ALTER TABLE ONLY projects
     ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: resources_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY resources
+    ADD CONSTRAINT resources_pkey PRIMARY KEY (id);
 
 
 --
@@ -247,10 +250,10 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: actions_to_tsvector_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_resources_on_project_id_and_slug; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX actions_to_tsvector_idx ON actions USING gin (to_tsvector('english'::regconfig, (name)::text));
+CREATE INDEX index_resources_on_project_id_and_slug ON resources USING btree (project_id, slug);
 
 
 --
@@ -285,3 +288,7 @@ INSERT INTO schema_migrations (version) VALUES ('20130514203751');
 INSERT INTO schema_migrations (version) VALUES ('20130515002747');
 
 INSERT INTO schema_migrations (version) VALUES ('20130711172250');
+
+INSERT INTO schema_migrations (version) VALUES ('20130721035852');
+
+INSERT INTO schema_migrations (version) VALUES ('20130721040322');

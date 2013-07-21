@@ -9,7 +9,6 @@ Landmark::Application.routes.draw do
       end
     end
 
-    resources :actions, :only => [:index]
     resources :traits
     resources :properties, :except => [:edit, :update]
     

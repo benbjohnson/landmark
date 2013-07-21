@@ -4,7 +4,7 @@ class FlowsController < ApplicationController
 
   # GET /projects/:id/flows
   def index
-    @has_actions = @project.has_actions?
+    @has_resources = @project.has_resources?
   end
 
   # GET /projects/:id/flows/view
@@ -12,7 +12,7 @@ class FlowsController < ApplicationController
     return redirect_to project_flows_path(@project) if params[:id].nil?
 
     name = params[:id] + (params[:format].blank? ? "" : ".#{params[:format]}")
-    @action = @project.actions.find_by_name(name)
+    @action = @project.resources.find_by_name(name)
     @properties = @project.sky_table.get_properties()
     
     # Redirect to home page if the action isn't found.
