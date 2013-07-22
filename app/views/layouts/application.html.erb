@@ -47,18 +47,20 @@
             <li><%= link_to('Sign Out', destroy_user_session_path, :method => :delete) %></li>
           </ul>
 
-          <div class="btn-group pull-right" style="margin-right:20px; padding-top:15px">
-              <i class="dropdown-toggle dropdown-toggle-inverse"></i>
-              <button class="btn btn-warning btn-small"><%= current_project.name %></button>
-              <button class="btn btn-warning btn-small dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu dropdown-inverse">
-                <% current_account.projects.order(:name).each do |project| %>
-                  <li><%= link_to(project.name, project_path(project))%></li>
-                <% end %>
-              </ul>
-            </div>
+          <% if current_account.projects.count > 1 %>
+            <div class="btn-group pull-right" style="margin-right:20px; padding-top:15px">
+                <i class="dropdown-toggle dropdown-toggle-inverse"></i>
+                <button class="btn btn-warning btn-small"><%= current_project.public_name %></button>
+                <button class="btn btn-warning btn-small dropdown-toggle" data-toggle="dropdown">
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-inverse">
+                  <% current_account.projects.order(:name).each do |project| %>
+                    <li><%= link_to(project.public_name, project_path(project))%></li>
+                  <% end %>
+                </ul>
+              </div>
+            <% end %>
         <% end %>
       </div>
     </div>

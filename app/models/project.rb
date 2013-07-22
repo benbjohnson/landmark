@@ -6,12 +6,6 @@ class Project < ActiveRecord::Base
 
   attr_accessible :name
 
-  ##############################################################################
-  #
-  # Methods
-  #
-  ##############################################################################
-
   ######################################
   # Callbacks
   ######################################
@@ -30,6 +24,15 @@ class Project < ActiveRecord::Base
     if !Rails.env.test?
       create_sky_table
     end
+  end
+
+
+  ######################################
+  # General
+  ######################################
+
+  def public_name
+    return name.blank? ? "(Default)" : name
   end
 
 

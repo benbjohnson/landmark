@@ -11,21 +11,6 @@ class PropertiesController < ApplicationController
   def show
   end
 
-  # GET /projects/:project_id/properties/new
-  def new
-    @property = SkyDB::Property.new
-  end
-
-  # POST /projects/:project_id/properties
-  def create
-    @property = @project.sky_table.create_property(
-      :name => params[:name],
-      :transient => true,
-      :data_type => params[:data_type]
-    )
-    redirect_to project_properties_path(@project)
-  end
-
   # DELETE /projects/:project_id/properties/:id
   def destroy
     table = @project.sky_table

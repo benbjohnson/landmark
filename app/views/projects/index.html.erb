@@ -21,7 +21,7 @@
         <tbody>
           <% @projects.each do |project| %>
             <tr>
-              <td><%= link_to(project.name, edit_project_path(project)) %></td>
+              <td><%= link_to(project.public_name, edit_project_path(project)) %></td>
               <td><%= project.api_key %></td>
             </tr>
           <% end %>

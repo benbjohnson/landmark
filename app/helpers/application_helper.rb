@@ -43,11 +43,11 @@ module ApplicationHelper
 
   def data_type_label(data_type)
     case data_type
-    when 'factor' then 'Categorical'
+    when 'factor' then 'String'
     when 'string' then 'String'
-    when 'integer' then 'Integer'
-    when 'float' then 'Decimal'
-    when 'boolean' then 'True/False'
+    when 'integer' then 'Numeric'
+    when 'float' then 'Numeric'
+    when 'boolean' then 'Yes/No'
     else ''
     end
   end

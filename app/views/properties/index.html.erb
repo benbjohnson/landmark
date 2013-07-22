@@ -1,16 +1,10 @@
 <div class="row" style="padding: 0 32px; margin-top:20px">
   <div class="span12">
-    <% if @properties.length > 0 %>
-      <%= link_to('Add Property', new_project_property_path(@project), :class => 'btn btn-small btn-primary btn-embossed mlm pull-right', :style => 'margin-top:10px')%>
-    <% end %>
-
     <h3>Action Properties</h3>
 
     <% if @properties.length == 0 %>
       <p>It doesn't look like you're tracking any properties about your user's actions yet.</p>
-      <p>These properties are great for tracking things like the purchase price of a checkout.</p>
 
-      <%= link_to('Add Property', new_project_property_path(@project), :class => 'btn btn-large btn-primary btn-embossed mlm', :style => 'margin-top:10px')%>
     <% else %>
       <p>Track data about the actions your users perform.</p>
 

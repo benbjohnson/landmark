@@ -80,7 +80,7 @@ ALTER SEQUENCE accounts_id_seq OWNED BY accounts.id;
 CREATE TABLE projects (
     id integer NOT NULL,
     account_id integer,
-    name character varying(255) DEFAULT ''::character varying NOT NULL,
+    name character varying(255) DEFAULT ''::character varying,
     api_key character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -347,3 +347,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130721035852');
 INSERT INTO schema_migrations (version) VALUES ('20130721040322');
 
 INSERT INTO schema_migrations (version) VALUES ('20130721204833');
+
+INSERT INTO schema_migrations (version) VALUES ('20130722212649');

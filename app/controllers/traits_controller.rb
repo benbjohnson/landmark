@@ -11,21 +11,6 @@ class TraitsController < ApplicationController
   def show
   end
 
-  # GET /projects/:project_id/traits/new
-  def new
-    @trait = SkyDB::Property.new
-  end
-
-  # POST /projects/:project_id/traits
-  def create
-    @trait = @project.sky_table.create_property(
-      :name => params[:name],
-      :transient => false,
-      :data_type => params[:data_type]
-    )
-    redirect_to project_traits_path(@project)
-  end
-
   # DELETE /projects/:project_id/traits/:id
   def destroy
     table = @project.sky_table
