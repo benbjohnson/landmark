@@ -28,7 +28,12 @@ class Resource < ActiveRecord::Base
 
   # Increments the hit count for the resource for the current day.
   def increment_hit_count()
-    hit = hits.find_or_create_by_hit_date(Time.now.to_date)
+    hit = nil
+    begin
+      hit = hits.find_or_create_by_hit_date!(Time.now.to_date)
+    rescue ActiveRecord::RecordInvalid
+      hit = hits.find_by_hit_date(Time.now.to_date)
+    end
     hit.count += 1
     hit.save!
   end
