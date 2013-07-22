@@ -9,7 +9,6 @@ class ProjectsController < ApplicationController
 
   # GET /projects/:id
   def show
-    redirect_to project_flows_path(@project)
   end
 
   # GET /projects/new
@@ -19,7 +18,6 @@ class ProjectsController < ApplicationController
 
   # GET /projects/:id/edit
   def edit
-    @project = Project.find(params[:id])
   end
 
   # POST /projects
@@ -35,20 +33,9 @@ class ProjectsController < ApplicationController
 
   # PATCH /projects/:id
   def update
-    @account = Project.find(params[:id])
     params[:project].delete(:api_key)
     @project.update_attributes(params[:project])
     render 'edit'
-  end
-
-  # POST /projects/:id/query
-  def query
-    project = Project.find(params[:id])
-    q = params[:q]
-    return head 422 if q.nil?
-
-    results = project.query(q)
-    render :json => results
   end
 
 

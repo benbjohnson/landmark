@@ -5,7 +5,6 @@ class Project < ActiveRecord::Base
   after_create :after_create
 
   attr_accessible :name
-  validates :name, presence: true
 
   ##############################################################################
   #
@@ -61,7 +60,7 @@ class Project < ActiveRecord::Base
 
   # The name of the associated Sky table.
   def sky_table_name
-    return self.new_record? ? nil : "landmark-#{self.id.to_s}"
+    return self.new_record? ? nil : "landmark-#{Rails.env.test? ? 'test-' : ''}#{self.id.to_s}"
   end
 
   # Creates a table for this project on the Sky database.

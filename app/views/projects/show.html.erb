@@ -1,0 +1,30 @@
+<div class="row" style="padding: 0 32px;">
+  <div class="span12">
+    <% if @project.has_resources? %>
+      <h3>Dashboard</h3>
+      TODO: SHOW DASHBOARD
+    <% else %>
+      <h3>Getting Started</h3>
+      <p>
+        It doesn't look like you have any data logged with your project just yet.
+        Don't worry.
+        It's easy to get started.
+        Just copy and paste this JavaScript on to your web page:
+      </p>
+
+<pre>
+&lt;script src="//landmark.io/landmark.js"
+  data-api-key="<%= @project.api_key %>"&gt;
+&lt;/script&gt;
+</pre>
+
+      <p>
+        After adding that, just reload your web page and you should see your data available in Landmark immediately.
+      </p>
+
+      <p>
+        See our <%= link_to('documentation page', page_path("help")) %> for help on user identification, user traits and action properties.
+      </p>
+    <% end %>
+  </div>
+</div>

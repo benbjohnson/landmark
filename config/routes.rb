@@ -3,18 +3,8 @@ Landmark::Application.routes.draw do
   resource :account
 
   resources :projects do
-    resources :flows, :only => [:index] do
-      collection do
-        get :view
-      end
-    end
-
-    resources :traits
-    resources :properties, :except => [:edit, :update]
-    
-    member do
-      post :query
-    end
+    resources :traits, :only => [:index, :destroy]
+    resources :properties, :only => [:index, :destroy]
   end
 
   get '/track', :to => 'events#track'

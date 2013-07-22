@@ -20,7 +20,7 @@ class Account < ActiveRecord::Base
   # Creates a default project after an account is created unless a project was
   # already created.
   def after_create
-    projects.create!(:name => 'Default') if projects.count == 0
+    projects.create!() if projects.count == 0
   end
 
   def after_commit_create
