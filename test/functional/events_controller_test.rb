@@ -1,76 +1,95 @@
 require 'test_helper'
 
 class EventsControllerTest < ActionController::TestCase
-  setup do
-    SkyDB::Table.any_instance.stubs(:get_properties)
-    Project.any_instance.stubs(:auto_create_sky_properties)
+  include SkyTestHelper
 
+  setup do
+    sky_delete_test_tables()
     @account = Account.create!(:name => 'Test Account')
     @project = @account.projects.first
     @project.api_key = '123'
     @project.save!
   end
 
-  test "should track events" do
-    SkyDB::Table.any_instance.stubs(:merge_objects)
+  teardown do
+    sky_delete_test_tables()
+  end
 
-    Timecop.freeze(Time.now) do
-      SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'__channel__' => 'web', '__uri__' => '/index.html', 'bar' => 'baz', '__anonymous__' => false}).twice
+  test "track_events" do
+    Timecop.freeze(DateTime.iso8601('2000-01-01T00:00:00Z')) do
       get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}
       get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}
     end
 
-    Timecop.freeze(Time.now + 1.minute) do
-      SkyDB::Table.any_instance.expects(:add_event).with("foo", :timestamp => DateTime.now, :data => {'__channel__' => 'web', '__uri__' => '/about.html', '__anonymous__' => false})
-      SkyDB::Table.any_instance.expects(:add_event).with("bar", :timestamp => DateTime.now, :data => {'bar' => 'bat', '__anonymous__' => false})
+    Timecop.freeze(DateTime.iso8601('2000-01-01T00:01:00Z')) do
       get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/about.html'}.to_json}
       get :track, {'apiKey' => '123', 'id' => 'bar', 't' => 'xxxx', 'traits' => {'bar' => 'bat'}.to_json}
     end
 
-    assert_response 201
-    assert_equal({"status"=>"ok"}, JSON.parse(@response.body))
+    assert_equal(
+      [{
+        "timestamp"=>"2000-01-01T00:00:00.000000Z",
+        "data"=>{
+          "__anonymous__"=>false,
+          "__channel__"=>"web",
+          "__uri__"=>"/index.html",
+          "bar"=>"baz"}
+       },
+       {"timestamp"=>"2000-01-01T00:01:00.000000Z",
+        "data"=>{
+          "__anonymous__"=>false,
+          "__channel__"=>"web",
+          "__uri__"=>"/about.html"}
+       }
+      ], @project.sky_table.get_events("foo").map{|e| e.to_hash})
 
-    resources = @project.resources.order(:id)
-    assert_equal(2, resources.count)
-    assert_equal('web', resources[0].channel)
-    assert_equal('/index.html', resources[0].uri)
-    assert_equal(2, resources[0].hit_count_within(1.day))
-    assert_equal('web', resources[1].channel)
-    assert_equal('/about.html', resources[1].uri)
-    assert_equal(1, resources[1].hit_count_within(1.day))
+    assert_equal(
+      [{"timestamp"=>"2000-01-01T00:01:00.000000Z",
+        "data"=>{
+          "__anonymous__"=>false,
+          "bar"=>"bat"}
+       }
+      ], @project.sky_table.get_events("bar").map{|e| e.to_hash})
+
+    Timecop.freeze(DateTime.iso8601('2000-01-02T00:00:00Z')) do
+      resources = @project.resources.order(:id)
+      assert_equal(2, resources.count)
+      assert_equal('web', resources[0].channel)
+      assert_equal('/index.html', resources[0].uri)
+      assert_equal(2, resources[0].hit_count_within(1.day))
+      assert_equal('web', resources[1].channel)
+      assert_equal('/about.html', resources[1].uri)
+      assert_equal(1, resources[1].hit_count_within(1.day))
+    end
   end
 
-  test "should track anonymous events" do
-    Timecop.freeze(Time.now) do
-      SkyDB::Table.any_instance.expects(:add_event).with("~xxxx", :timestamp => DateTime.now, :data => {'__channel__' => 'web', '__uri__' => '/index.html', '__anonymous__' => true})
+  test "track_anonymous_events" do
+    Timecop.freeze(DateTime.iso8601('2000-01-01T00:00:00Z')) do
       get :track, {'apiKey' => '123', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/index.html'}.to_json}
     end
   end
 
-  test "should merge anonymous events with known user" do
-    Timecop.freeze(Time.now) do
-      SkyDB::Table.any_instance.expects(:add_event).with("~xxxx", :timestamp => DateTime.now, :data => {'__channel__' => 'web', '__uri__' => '/index.html', '__anonymous__' => true})
+  test "merge_anonymous_events_with_known_user" do
+    Timecop.freeze(DateTime.iso8601('2000-01-01T00:00:00Z')) do
       get :track, {'apiKey' => '123', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/index.html'}.to_json}
     end
 
-    Timecop.freeze(Time.now) do
-      SkyDB::Table.any_instance.expects(:merge_objects).with("bob", "~xxxx")
-      SkyDB::Table.any_instance.expects(:add_event).with("bob", :timestamp => DateTime.now, :data => {'__channel__' => 'web', '__uri__' => '/about-us.html', '__anonymous__' => false})
+    Timecop.freeze(DateTime.iso8601('2000-01-01T00:01:00Z')) do
       get :track, {'apiKey' => '123', 'id' => 'bob', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/about-us.html'}.to_json}
     end
   end
   
-  test "should require API key for tracking" do
+  test "require_api_key" do
     get :track, {'id' => 'foo', 'traits' => {'bar' => 'baz'}.to_json}
     assert_response 422
   end
 
-  test "should require identifier or tracking id for tracking" do
+  test "require_identifier_or_tracking_id" do
     get :track, {'apiKey' => '123', 'traits' => {'bar' => 'baz'}.to_json}
     assert_response 422
   end
 
-  test "should require event data for tracking" do
+  test "require_event_data" do
     get :track, {'apiKey' => '123', 'id' => 'foo'}
     assert_response 422
   end
