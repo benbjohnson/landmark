@@ -36,5 +36,6 @@ group :development, :test do
   gem 'pry', '~> 0.9.12.2'
   gem 'capistrano', '~> 2.15.4'
   gem 'jasmine', '~> 1.3.2'
+  gem 'simplecov', '~> 0.7.1', :require => false
 end
 
