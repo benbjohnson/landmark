@@ -47,3 +47,6 @@ label {
   padding: 0;
 }
 
+pre {
+  display: inline-block;
+}
