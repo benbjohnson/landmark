@@ -15,7 +15,7 @@
 <% else %>
 
   <div class="row" style="padding: 0 32px; margin-top:20px">
-    <div class="span8">
+    <div class="span12">
       <h3>Getting Started</h3>
       <h4>Basic integration</h4>
       <p>
@@ -26,10 +26,14 @@
       </p>
 
 <pre>
-&lt;script src="https://landmark.io/landmark.js"
+&lt;script src="//landmark.io/landmark.js"
   data-api-key="<%= @project.api_key %>"&gt;
 &lt;/script&gt;
 </pre>
+
+      <p>
+        After adding that, just reload your web page and you should see your data available in Landmark immediately.
+      </p>
 
       <p>
         See our <%= link_to('documentation page', page_path("help")) %> for help on user identification, user traits and action properties.
