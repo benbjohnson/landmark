@@ -2,7 +2,25 @@
   <div class="span12">
     <% if @project.has_resources? %>
       <h3>Dashboard</h3>
-      TODO: SHOW DASHBOARD
+
+      <div class="row">
+        <div class="span4">
+          <h4>Top Pages</h4>      
+          <table class="table table-striped table-hover">
+            <tbody>
+                <% @top_page_views.each do |page_view| %>
+                  <tr>
+                    <td><%= page_view[:uri] %></td>
+                    <td><%= page_view[:count] %></td>
+                  </tr>
+                <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+
     <% else %>
       <h3>Getting Started</h3>
       <p>
