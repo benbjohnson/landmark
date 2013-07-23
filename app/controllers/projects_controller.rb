@@ -9,6 +9,7 @@ class ProjectsController < ApplicationController
 
   # GET /projects/:id
   def show
+    @top_page_views = top_page_views(@project)
   end
 
   # GET /projects/new
@@ -44,5 +45,24 @@ class ProjectsController < ApplicationController
   def find_project
     @project = current_account.projects.find(params[:id])
     set_current_project(@project)
+  end
+
+  def top_page_views(project)
+    results = project.query({sessionIdleTime:7200, steps:[
+      {:type => 'condition', :expression => '__action__ == "__page_view__"', :steps => [
+        {:type => 'selection', :dimensions => ['__uri__'], :fields => [:name => 'count', :expression => 'count()']}
+      ]}
+    ]})
+    return [] if results['__uri__'].nil?
+
+    results = results['__uri__'].each_pair.to_a
+    results = results.map{|i| {uri:i.first, count:i.last['count']}}
+    results = results.sort{|a,b| a[:count] <=> b[:count] }.reverse[0..9]
+    
+    results.each do |i|
+      i[:resource] = Resource.find_by_uri(i[:uri])
+    end
+    
+    return results
   end
 end
