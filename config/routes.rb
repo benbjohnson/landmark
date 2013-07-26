@@ -3,6 +3,7 @@ Landmark::Application.routes.draw do
   resource :account
 
   resources :projects do
+    resources :resources, :only => [:show]
     resources :traits, :only => [:index, :destroy]
     resources :properties, :only => [:index, :destroy]
   end

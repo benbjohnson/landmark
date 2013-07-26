@@ -9,7 +9,7 @@ class ProjectsController < ApplicationController
 
   # GET /projects/:id
   def show
-    @top_page_views = top_page_views(@project)
+    @top_page_views = top_page_views(@project, 7.days)
   end
 
   # GET /projects/new
@@ -47,10 +47,12 @@ class ProjectsController < ApplicationController
     set_current_project(@project)
   end
 
-  def top_page_views(project)
+  def top_page_views(project, duration)
     results = project.query({sessionIdleTime:7200, steps:[
-      {:type => 'condition', :expression => '__action__ == "__page_view__"', :steps => [
-        {:type => 'selection', :dimensions => ['__uri__'], :fields => [:name => 'count', :expression => 'count()']}
+      {:type => 'condition', :expression => "timestamp >= #{(Time.now - duration).to_i}", :steps => [
+        {:type => 'condition', :expression => '__action__ == "__page_view__"', :steps => [
+          {:type => 'selection', :dimensions => ['__uri__'], :fields => [:name => 'count', :expression => 'count()']}
+        ]}
       ]}
     ]})
     return [] if results['__uri__'].nil?
