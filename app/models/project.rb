@@ -66,6 +66,7 @@ class Project < ActiveRecord::Base
     @sky_table = sky_client.create_table(:name => sky_table_name)
     @sky_table.create_property(:name => '__channel__', :transient => true, :data_type => 'factor')
     @sky_table.create_property(:name => '__uri__', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => '__action__', :transient => true, :data_type => 'factor')
     @sky_table.create_property(:name => '__anonymous__', :transient => true, :data_type => 'boolean')
     @sky_table.create_property(:name => '__path__', :transient => true, :data_type => 'factor')
   end

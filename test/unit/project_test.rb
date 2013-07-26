@@ -1,12 +1,12 @@
 require 'test_helper'
 
 class ProjectTest < ActiveSupport::TestCase
-  test "should autogenerate API key on project creation" do
+  def test_autogenerate_api_key
     SecureRandom.expects(:hex).returns("0000000000000000")
     assert "0000000000000000", Project.create!(:name => 'Foo').api_key
   end
 
-  test "should automatically create properties that don't exist" do
+  def test_initialize_properties do
     project = Project.create!(:name => 'Foo')
     project.sky_table.expects(:create_property).with(:name => 'state', :transient => true, :data_type => 'factor')
     project.sky_table.expects(:create_property).with(:name => 'age', :transient => true, :data_type => 'float')
