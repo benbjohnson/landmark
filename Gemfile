@@ -30,6 +30,8 @@ group :test do
   gem 'webmock', '~> 1.13.0'
   gem "timecop", "~> 0.6.1"
   gem 'test_after_commit', '~> 0.2.0'
+  gem 'capybara', '~> 2.1.0'
+  gem 'poltergeist', '~> 1.3.0'
 end
 
 group :development, :test do
