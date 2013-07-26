@@ -1,13 +1,18 @@
 require 'test_helper'
 
 class ResourceTest < ActiveSupport::TestCase
-  test "generate same slug on different projects" do
+  def test_generate_base_slug
+    r0 = projects(:proj0).resources.create!(:uri => '/')
+    assert_equal('home', r0.slug)
+  end
+
+  def test_generate_same_slug_on_different_projects
     r0 = projects(:proj0).resources.create!(:uri => '/index.html')
     r1 = projects(:proj1).resources.create!(:uri => '/index.html')
     assert_equal(r0.slug, r1.slug)
   end
 
-  test "generate autoincrementing slugs" do
+  def test_generate_autoincrementing_slugs
     projects(:proj0).resources.create!(:uri => '/users-test')
     r0 = projects(:proj1).resources.create!(:uri => '/users-test')
     r1 = projects(:proj1).resources.create!(:uri => '/users/test')
@@ -17,7 +22,7 @@ class ResourceTest < ActiveSupport::TestCase
     assert_equal('users-test-2', r2.slug)
   end
 
-  test "incrementing and aggregating hit counts" do
+  def test_incrementing_and_aggregating_hit_counts
     h0 = projects(:proj0).resources.create!(:uri => 'X')
     h1 = projects(:proj0).resources.create!(:uri => 'Y')
     Timecop.freeze((Time.now.to_date - 8.days).to_time) do

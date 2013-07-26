@@ -11,6 +11,7 @@ class Resource < ActiveRecord::Base
   # Generate a URL friendly slug for the resource before saving.
   def generate_slug
     slug = uri.to_s.gsub(/:id/, '').gsub(/[^a-zA-Z0-9]+/, '-').gsub(/^-|-$/, '')
+    slug = 'home' if slug.blank?
     
     # If there is a duplicate slug then loop over existing slugs to 
     # find the next highest numbered slug.

@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_project, :except => [:index, :new, :create]
+  before_filter lambda{ find_project(params[:id]); true  }, :except => [:index, :new, :create]
   
   # GET /projects
   def index
@@ -41,11 +41,6 @@ class ProjectsController < ApplicationController
 
 
   private
-
-  def find_project
-    @project = current_account.projects.find(params[:id])
-    set_current_project(@project)
-  end
 
   def top_page_views(project, duration)
     results = project.query({sessionIdleTime:7200, steps:[

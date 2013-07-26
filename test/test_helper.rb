@@ -8,18 +8,11 @@ SimpleCov.start 'rails'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 
-require 'capybara/rails'
-require 'capybara/poltergeist'
-
 require 'webmock/test_unit'
 WebMock.disable_net_connect!(:allow_localhost => true)
 
 class ActionController::TestCase
   include Devise::TestHelpers
-end
-
-class ActionDispatch::IntegrationTest
-  include Capybara::DSL
 end
 
 class ActiveSupport::TestCase

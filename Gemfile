@@ -32,6 +32,7 @@ group :test do
   gem 'test_after_commit', '~> 0.2.0'
   gem 'capybara', '~> 2.1.0'
   gem 'poltergeist', '~> 1.3.0'
+  gem 'launchy', '~> 2.3.0'
 end
 
 group :development, :test do

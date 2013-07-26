@@ -1,6 +1,6 @@
 class PropertiesController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_project
+  before_filter { find_project(params[:project_id]) }
 
   # GET /projects/:project_id/properties
   def index
@@ -17,13 +17,5 @@ class PropertiesController < ApplicationController
     @property = table.get_property(params[:id])
     table.delete_property(@property)
     redirect_to project_properties_path(@project)
-  end
-
-
-  private
-  
-  def find_project
-    @project = current_account.projects.find(params[:project_id])
-    set_current_project(@project)
   end
 end

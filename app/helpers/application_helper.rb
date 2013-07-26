@@ -22,7 +22,7 @@ module ApplicationHelper
   def current_project
     if user_signed_in?
       project = nil
-      project = current_account.projects.find(session[:current_project_id]) unless session[:current_project_id].blank?
+      project = current_account.projects.where(:id => session[:current_project_id]).first unless session[:current_project_id].blank?
       project ||= current_account.projects.first
       set_current_project(project)
       return project

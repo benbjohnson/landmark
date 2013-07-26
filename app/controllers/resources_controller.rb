@@ -1,6 +1,6 @@
-class ProjectsController < ApplicationController
+class ResourcesController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :find_project
+  before_filter { find_project(params[:project_id]) }
   
   # GET /projects/:id/resources/:id
   def show
@@ -10,11 +10,6 @@ class ProjectsController < ApplicationController
 
 
   private
-
-  def find_project
-    @project = current_account.projects.find(params[:project_id])
-    set_current_project(@project)
-  end
 
   def next_pages(uri, duration)
     results = project.query({sessionIdleTime:7200, steps:[

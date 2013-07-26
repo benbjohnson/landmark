@@ -1,12 +1,18 @@
 require 'test_helper'
 
 class ProjectTest < ActiveSupport::TestCase
+  include SkyTestHelper
+  
+  setup do
+    sky_delete_test_tables()
+  end
+
   def test_autogenerate_api_key
     SecureRandom.expects(:hex).returns("0000000000000000")
     assert "0000000000000000", Project.create!(:name => 'Foo').api_key
   end
 
-  def test_initialize_properties do
+  def test_initialize_properties
     project = Project.create!(:name => 'Foo')
     project.sky_table.expects(:create_property).with(:name => 'state', :transient => true, :data_type => 'factor')
     project.sky_table.expects(:create_property).with(:name => 'age', :transient => true, :data_type => 'float')
