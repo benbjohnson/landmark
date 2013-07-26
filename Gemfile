@@ -33,6 +33,7 @@ group :test do
   gem 'capybara', '~> 2.1.0'
   gem 'poltergeist', '~> 1.3.0'
   gem 'launchy', '~> 2.3.0'
+  gem 'unindentable', '~> 0.1.0'
 end
 
 group :development, :test do

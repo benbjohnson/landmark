@@ -5,6 +5,7 @@ require 'capybara/poltergeist'
 
 class ActionDispatch::IntegrationTest
   include Capybara::DSL
+  include SkyTestHelper
 
   def setup_account()
     @account = Account.create!()
@@ -42,5 +43,24 @@ class ActionDispatch::IntegrationTest
       '__channel__' => 'web',
       })
     track(project, id, t, traits, properties)
+  end
+
+  def table_text(table)
+    output = table.all("tr").map {|tr| tr.all("td,th").map {|td| td.text.to_s}}
+
+    column_widths = []
+    output.each do |row|
+      row.each_with_index do |cell, col|
+        column_widths[col] = [cell.length, column_widths[col].to_i].max
+      end
+    end
+
+    output.each do |row|
+      row.each_with_index do |cell, col|
+        row[col] = "%-#{column_widths[col]}s" % [cell]
+      end
+    end
+
+    return output.map{|row| row.join(" | ")}.join("\n") + "\n"
   end
 end

@@ -1,12 +1,7 @@
 Landmark::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => "registrations"}
   resource :account
-
-  resources :projects do
-    resources :resources, :only => [:show]
-    resources :traits, :only => [:index, :destroy]
-    resources :properties, :only => [:index, :destroy]
-  end
+  resources :projects
 
   get '/track', :to => 'events#track'
 

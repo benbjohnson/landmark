@@ -31,6 +31,6 @@ class ResourcesController < ApplicationController
       i[:resource] = Resource.find_by_uri(i[:uri])
     end
     
-    return results
+    return :json => results
   end
 end

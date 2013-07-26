@@ -16,21 +16,16 @@ class ActionController::TestCase
 end
 
 class ActiveSupport::TestCase
-  # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
-  #
-  # Note: You'll currently still have to declare fixtures explicitly in integration tests
-  # -- they do not yet inherit this setting
   fixtures :all
 
-  def assert_mail(exp, act)
+  def assert_mail(exp, act, failure_message=nil)
     exp = exp.encoded.gsub(/Message-ID: <.+>/, '').gsub(/Date: .+/, '')
     act = act.encoded.gsub(/Message-ID: <.+>/, '').gsub(/Date: .+/, '')
-    if exp == act
-      assert true
-    else
-      print diff(exp, act)
-      fail("Mail does not match")
-    end
+    assert_string(exp, act, failure_message)
+  end
+
+  def assert_string(exp, act, failure_message=nil)
+    assert(exp == act, message(failure_message) { diff(exp, act) unless exp == act })
   end
 end
 
