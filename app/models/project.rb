@@ -65,7 +65,7 @@ class Project < ActiveRecord::Base
   def create_sky_table
     @sky_table = sky_client.create_table(:name => sky_table_name)
     @sky_table.create_property(:name => '__channel__', :transient => true, :data_type => 'factor')
-    @sky_table.create_property(:name => '__uri__', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => '__resource__', :transient => true, :data_type => 'factor')
     @sky_table.create_property(:name => '__action__', :transient => true, :data_type => 'factor')
     @sky_table.create_property(:name => '__anonymous__', :transient => true, :data_type => 'boolean')
     @sky_table.create_property(:name => '__path__', :transient => true, :data_type => 'factor')
@@ -103,8 +103,8 @@ class Project < ActiveRecord::Base
     data = {}.merge(traits || {}).merge(properties || {})
 
     # Add resource to SQL database if it doesn't exist yet.
-    if !data['__uri__'].blank?
-      resource = resources.find_or_create_by_channel_and_uri!(data['__channel__'], data['__uri__'])
+    if !data['__resource__'].blank?
+      resource = resources.find_or_create_by_channel_and_uri!(data['__channel__'], data['__resource__'])
       resource.increment_hit_count
     end
 

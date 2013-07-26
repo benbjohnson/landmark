@@ -17,12 +17,12 @@ class EventsControllerTest < ActionController::TestCase
 
   test "track_events" do
     Timecop.freeze(DateTime.iso8601('2000-01-01T00:00:00Z')) do
-      get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}
-      get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__resource__' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__resource__' => '/index.html'}.to_json, 'traits' => {'bar' => 'baz'}.to_json}
     end
 
     Timecop.freeze(DateTime.iso8601('2000-01-01T00:01:00Z')) do
-      get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/about.html'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'foo', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__resource__' => '/about.html'}.to_json}
       get :track, {'apiKey' => '123', 'id' => 'bar', 't' => 'xxxx', 'traits' => {'bar' => 'bat'}.to_json}
     end
 
@@ -32,14 +32,14 @@ class EventsControllerTest < ActionController::TestCase
         "data"=>{
           "__anonymous__"=>false,
           "__channel__"=>"web",
-          "__uri__"=>"/index.html",
+          "__resource__"=>"/index.html",
           "bar"=>"baz"}
        },
        {"timestamp"=>"2000-01-01T00:01:00.000000Z",
         "data"=>{
           "__anonymous__"=>false,
           "__channel__"=>"web",
-          "__uri__"=>"/about.html"}
+          "__resource__"=>"/about.html"}
        }
       ], @project.sky_table.get_events("foo").map{|e| e.to_hash})
 
@@ -65,17 +65,17 @@ class EventsControllerTest < ActionController::TestCase
 
   test "track_anonymous_events" do
     Timecop.freeze(DateTime.iso8601('2000-01-01T00:00:00Z')) do
-      get :track, {'apiKey' => '123', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/index.html'}.to_json}
+      get :track, {'apiKey' => '123', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__resource__' => '/index.html'}.to_json}
     end
   end
 
   test "merge_anonymous_events_with_known_user" do
     Timecop.freeze(DateTime.iso8601('2000-01-01T00:00:00Z')) do
-      get :track, {'apiKey' => '123', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/index.html'}.to_json}
+      get :track, {'apiKey' => '123', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__resource__' => '/index.html'}.to_json}
     end
 
     Timecop.freeze(DateTime.iso8601('2000-01-01T00:01:00Z')) do
-      get :track, {'apiKey' => '123', 'id' => 'bob', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__uri__' => '/about-us.html'}.to_json}
+      get :track, {'apiKey' => '123', 'id' => 'bob', 't' => 'xxxx', 'properties' => {'__channel__' => 'web', '__resource__' => '/about-us.html'}.to_json}
     end
   end
   

@@ -46,13 +46,13 @@ class ProjectsController < ApplicationController
     results = project.query({sessionIdleTime:7200, steps:[
       {:type => 'condition', :expression => "timestamp >= #{(Time.now - duration).to_i}", :steps => [
         {:type => 'condition', :expression => '__action__ == "__page_view__"', :steps => [
-          {:type => 'selection', :dimensions => ['__uri__'], :fields => [:name => 'count', :expression => 'count()']}
+          {:type => 'selection', :dimensions => ['__resource__'], :fields => [:name => 'count', :expression => 'count()']}
         ]}
       ]}
     ]})
-    return [] if results['__uri__'].nil?
+    return [] if results['__resource__'].nil?
 
-    results = results['__uri__'].each_pair.to_a
+    results = results['__resource__'].each_pair.to_a
     results = results.map{|i| {uri:i.first, count:i.last['count']}}
     results = results.sort{|a,b| a[:count] <=> b[:count] }.reverse[0..9]
     

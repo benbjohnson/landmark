@@ -38,7 +38,7 @@ class ActionDispatch::IntegrationTest
     uri = path.to_s.gsub(/\/(\d+|\d+-[^\/#]+)(?=\/|#|$)/, "/:id")
     properties = properties.merge({
       '__channel__' => 'web',
-      '__uri__' => uri,
+      '__resource__' => uri,
       '__path__' => path,
       '__channel__' => 'web',
       })
