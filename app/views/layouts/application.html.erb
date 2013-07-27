@@ -26,7 +26,7 @@
         <% if user_signed_in? %>
           <ul class="nav">
             <li class="<%= request.path.index(/\/projects\/\d+$/) == 0 ? 'active' : '' %>">
-              <%= link_to('Dashboard', project_path(current_project)) %>
+              <%= link_to('Home', project_path(current_project)) %>
             </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
