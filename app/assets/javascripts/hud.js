@@ -27,10 +27,9 @@ initialize : function() {
   this.go.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud")
     .style("position", "fixed")
-    .style("z-index", 10000)
-    .style("top", 0)
-    .style("left", 0);
+    .style("z-index", 10000);
   this.go.g = this.go.svg.append("g")
+    .attr("transform", "translate(5, 5)")
     .style("cursor", "hand")
     .on("click", function(d) {
       $this.go.opened = !$this.go.opened;
@@ -57,13 +56,7 @@ initialize : function() {
  * Redraws the HUD display.
  */
 update : function() {
-  this.updateRoot();
   this.updateGoButton();
-},
-
-updateRoot : function() {
-  var width = window.innerWidth || document.documentElement.clientWidth;
-  var height = window.innerHeight || document.documentElement.clientHeight;
 },
 
 updateGoButton : function() {
@@ -72,15 +65,20 @@ updateGoButton : function() {
   var menuWidth = opened ? 200 : 40;
   var menuHeight = opened ? 200 : 40;
 
+  this.go.svg
+    .transition()
+    .style("top", height-menuHeight-20)
+    .style("left", 15);
+
   this.go.icon
     .transition()
-    .attr("x", 35)
-    .attr("y", (height - 53));
+    .attr("x", 5)
+    .attr("y", menuHeight-34);
 
   this.go.rect
     .transition()
-    .attr("x", 30)
-    .attr("y", (height - 20 - menuWidth))
+    .attr("x", 0)
+    .attr("y", 0)
     .attr("width", menuWidth)
     .attr("height", menuHeight)
     .attr("rx", opened ? 0 : 20)
