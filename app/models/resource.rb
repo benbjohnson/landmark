@@ -1,6 +1,6 @@
 class Resource < ActiveRecord::Base
   belongs_to :project
-  has_many :hits, :class_name => 'ResourceHit'
+  has_many :hits, :class_name => 'ResourceHit', :dependent => :destroy
 
   validates :slug, :name, presence: true  
   validates :slug, :name, uniqueness: {scope: :project_id}
