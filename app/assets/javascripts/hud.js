@@ -24,21 +24,22 @@ go : {opened:false},
 initialize : function() {
   var $this = this;
   
-  this.root = d3.select("body").append("div")
+  this.go.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud")
     .style("position", "fixed")
     .style("z-index", 10000)
     .style("top", 0)
     .style("left", 0);
-  this.svg = this.root.append("svg");
-
-  this.go.g = this.svg.append("g")
+  this.go.g = this.go.svg.append("g")
     .style("cursor", "hand")
     .on("click", function(d) {
       $this.go.opened = !$this.go.opened;
       $this.update();
     });
-  this.go.rect = this.go.g.append("rect");
+  this.go.rect = this.go.g.append("rect")
+    .style("stroke", "#0b7359")
+    .style("stroke-width", "2px")
+    .style("fill", "white");
   this.go.icon = this.go.g.append("svg:image")
     .attr("xlink:href", "/assets/icon-30x30.png")
     .attr("width", 30)
@@ -63,9 +64,6 @@ update : function() {
 updateRoot : function() {
   var width = window.innerWidth || document.documentElement.clientWidth;
   var height = window.innerHeight || document.documentElement.clientHeight;
-  this.root
-    .style("width", width + "px")
-    .style("height", height + "px");
 },
 
 updateGoButton : function() {
@@ -75,6 +73,7 @@ updateGoButton : function() {
   var menuHeight = opened ? 200 : 40;
 
   this.go.icon
+    .transition()
     .attr("x", 35)
     .attr("y", (height - 53));
 
@@ -85,10 +84,7 @@ updateGoButton : function() {
     .attr("width", menuWidth)
     .attr("height", menuHeight)
     .attr("rx", opened ? 0 : 20)
-    .attr("ry", opened ? 0 : 20)
-    .style("stroke", "#0b7359")
-    .style("stroke-width", "2px")
-    .style("fill", "white");
+    .attr("ry", opened ? 0 : 20);
 },
 
 
