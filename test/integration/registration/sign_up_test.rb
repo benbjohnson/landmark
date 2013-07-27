@@ -6,19 +6,24 @@ class SignUpTest < ActionDispatch::IntegrationTest
   end
 
   def test_sign_up
-    visit('/users/sign_up')
-    within("#new_user") do
-      fill_in('Email', :with => 'ben@skylandlabs.com')
-      fill_in('Password', :with => 'password')
-      fill_in('Confirm Password', :with => 'password')
-    end
-    click_button('Sign up')
+    assert_difference 'ActionMailer::Base.deliveries.size', +1 do
+      visit('/users/sign_up')
+      within("#new_user") do
+        fill_in('Email', :with => 'ben@skylandlabs.com')
+        fill_in('Password', :with => 'password')
+        fill_in('Confirm Password', :with => 'password')
+      end
+      click_button('Sign up')
 
-    user = User.last
-    assert_equal('ben@skylandlabs.com', user.email)
-    refute_nil(user.account)
-    assert_equal(1, user.account.projects.count)
-    assert_equal("/projects/#{user.account.projects.first.id}", current_path)
+      user = User.last
+      assert_equal('ben@skylandlabs.com', user.email)
+      refute_nil(user.account)
+      assert_equal(1, user.account.projects.count)
+      assert_equal("/projects/#{user.account.projects.first.id}", current_path)
+    end
+
+    sign_up_email = ActionMailer::Base.deliveries.last
+    assert_equal '[signup] ben@skylandlabs.com', sign_up_email.subject
   end
 
   def test_sign_up_with_duplicate_email

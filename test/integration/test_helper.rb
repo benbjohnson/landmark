@@ -35,10 +35,10 @@ class ActionDispatch::IntegrationTest
   end
 
   def track_page_view(project, id, t, path, traits={}, properties={})
-    uri = path.to_s.gsub(/\/(\d+|\d+-[^\/#]+)(?=\/|#|$)/, "/:id")
+    resource = path.to_s.gsub(/\/(\d+|\d+-[^\/#]+)(?=\/|#|$)/, "/:id")
     properties = properties.merge({
       '__channel__' => 'web',
-      '__resource__' => uri,
+      '__resource__' => resource,
       '__path__' => path,
       '__channel__' => 'web',
       })

@@ -147,7 +147,7 @@ CREATE TABLE resources (
     channel character varying(255),
     name character varying(255),
     slug character varying(255),
-    uri character varying(255)
+    label character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -349,3 +349,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130721040322');
 INSERT INTO schema_migrations (version) VALUES ('20130721204833');
 
 INSERT INTO schema_migrations (version) VALUES ('20130722212649');
+
+INSERT INTO schema_migrations (version) VALUES ('20130726223211');

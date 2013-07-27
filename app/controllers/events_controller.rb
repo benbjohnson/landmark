@@ -32,7 +32,7 @@ class EventsController < ApplicationController
     anonymous = id.blank?
     properties['__anonymous__'] = anonymous
 
-    # Use the tracking id if we don not have a source system id.
+    # Use the tracking id if we do not have a source system id.
     if anonymous
       id = internal_tracking_id
     

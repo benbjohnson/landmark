@@ -1,36 +1,41 @@
 class ResourcesController < ApplicationController
   before_filter :authenticate_user!
-  before_filter { find_project(params[:project_id]) }
+  before_filter :find_resource
   
   # GET /projects/:id/resources/:id
-  def show
-    @resource = Resource.find_by_slug(params[:id])
-    @next_pages = next_pages(@resource.uri, 7.days)
+  def next_page_views
+    results = []
+    if !@resource.nil?
+      results = @project.query({sessionIdleTime:7200, steps:[
+        {:type => 'condition', :expression => "__resource__ == '#{encode_lua_string(@resource.name)}' && __action__ == '__page_view__'", :steps => [
+          {:type => 'condition', :expression => "__action__ == '__page_view__'", :within => [1,99999], :steps => [
+            {:type => 'selection', :dimensions => ['__resource__'], :fields => [:name => 'count', :expression => 'count()']}
+          ]}
+        ]}
+      ]})
+      return [] if results['__resource__'].nil?
+
+      results = results['__resource__'].each_pair.to_a
+      results = results.map{|i| {name:i.first, count:i.last['count']}}
+      results = results.sort{|a,b| a[:count] <=> b[:count] }.reverse[0..9]
+    end
+    
+    render :json => results
   end
 
 
   private
 
-  def next_pages(uri, duration)
-    results = project.query({sessionIdleTime:7200, steps:[
-      {:type => 'condition', :expression => "timestamp >= #{(Time.now - duration).to_i}", :steps => [
-        {:type => 'condition', :expression => "__resource__ = '#{encode_lua_string(uri)}' && __action__ == '__page_view__'", :steps => [
-          {:type => 'condition', :expression => "__action__ == '__page_view__'", :within => [1,99999], :steps => [
-            {:type => 'selection', :dimensions => ['__resource__'], :fields => [:name => 'count', :expression => 'count()']}
-          ]}
-        ]}
-      ]}
-    ]})
-    return [] if results['__resource__'].nil?
-
-    results = results['__resource__'].each_pair.to_a
-    results = results.map{|i| {uri:i.first, count:i.last['count']}}
-    results = results.sort{|a,b| a[:count] <=> b[:count] }.reverse[0..9]
-    
-    results.each do |i|
-      i[:resource] = Resource.find_by_uri(i[:uri])
+  def authenticate_user!
+    if !user_signed_in?
+      head 401
     end
+  end
+
+  def find_resource
+    @project = current_user.account.projects.find_by_api_key(params[:apiKey])
+    return head 404 if @project.nil?
     
-    return :json => results
+    @resource = @project.resources.find_by_name(params[:name])
   end
 end

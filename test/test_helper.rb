@@ -11,10 +11,6 @@ require 'rails/test_help'
 require 'webmock/test_unit'
 WebMock.disable_net_connect!(:allow_localhost => true)
 
-class ActionController::TestCase
-  include Devise::TestHelpers
-end
-
 class ActiveSupport::TestCase
   fixtures :all
 

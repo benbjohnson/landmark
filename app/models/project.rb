@@ -104,7 +104,7 @@ class Project < ActiveRecord::Base
 
     # Add resource to SQL database if it doesn't exist yet.
     if !data['__resource__'].blank?
-      resource = resources.find_or_create_by_channel_and_uri!(data['__channel__'], data['__resource__'])
+      resource = resources.find_or_create_by_channel_and_name!(data['__channel__'], data['__resource__'])
       resource.increment_hit_count
     end
 

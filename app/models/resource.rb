@@ -2,15 +2,15 @@ class Resource < ActiveRecord::Base
   belongs_to :project
   has_many :hits, :class_name => 'ResourceHit'
 
-  validates :slug, :uri, presence: true  
-  validates :slug, :uri, uniqueness: {scope: :project_id}
-  attr_accessible :name, :uri
+  validates :slug, :name, presence: true  
+  validates :slug, :name, uniqueness: {scope: :project_id}
+  attr_accessible :label, :name
 
   before_validation :generate_slug
 
   # Generate a URL friendly slug for the resource before saving.
   def generate_slug
-    slug = uri.to_s.gsub(/:id/, '').gsub(/[^a-zA-Z0-9]+/, '-').gsub(/^-|-$/, '')
+    slug = name.to_s.gsub(/:id/, '').gsub(/[^a-zA-Z0-9]+/, '-').gsub(/^-|-$/, '')
     slug = 'home' if slug.blank?
     
     # If there is a duplicate slug then loop over existing slugs to 

@@ -2,29 +2,29 @@ require 'test_helper'
 
 class ResourceTest < ActiveSupport::TestCase
   def test_generate_base_slug
-    r0 = projects(:proj0).resources.create!(:uri => '/')
+    r0 = projects(:proj0).resources.create!(:name => '/')
     assert_equal('home', r0.slug)
   end
 
   def test_generate_same_slug_on_different_projects
-    r0 = projects(:proj0).resources.create!(:uri => '/index.html')
-    r1 = projects(:proj1).resources.create!(:uri => '/index.html')
+    r0 = projects(:proj0).resources.create!(:name => '/index.html')
+    r1 = projects(:proj1).resources.create!(:name => '/index.html')
     assert_equal(r0.slug, r1.slug)
   end
 
   def test_generate_autoincrementing_slugs
-    projects(:proj0).resources.create!(:uri => '/users-test')
-    r0 = projects(:proj1).resources.create!(:uri => '/users-test')
-    r1 = projects(:proj1).resources.create!(:uri => '/users/test')
-    r2 = projects(:proj1).resources.create!(:uri => 'users_test')
+    projects(:proj0).resources.create!(:name => '/users-test')
+    r0 = projects(:proj1).resources.create!(:name => '/users-test')
+    r1 = projects(:proj1).resources.create!(:name => '/users/test')
+    r2 = projects(:proj1).resources.create!(:name => 'users_test')
     assert_equal('users-test', r0.slug)
     assert_equal('users-test-1', r1.slug)
     assert_equal('users-test-2', r2.slug)
   end
 
   def test_incrementing_and_aggregating_hit_counts
-    h0 = projects(:proj0).resources.create!(:uri => 'X')
-    h1 = projects(:proj0).resources.create!(:uri => 'Y')
+    h0 = projects(:proj0).resources.create!(:name => 'X')
+    h1 = projects(:proj0).resources.create!(:name => 'Y')
     Timecop.freeze((Time.now.to_date - 8.days).to_time) do
       h0.increment_hit_count
     end
