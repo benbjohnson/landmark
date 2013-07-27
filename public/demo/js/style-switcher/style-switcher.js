@@ -15,7 +15,7 @@ jQuery(document).ready(function() {
 		sideBarWidth: 'maxi' 		/* 'maxi', 'mini'  */
 	}
 	
-	enable_style_switcher = true;  /* enable or disable style switcher */
+	enable_style_switcher = false;  /* enable or disable style switcher */
 	
 	/* end styler config */
 	
