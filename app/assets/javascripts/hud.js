@@ -8,7 +8,16 @@ var hud = {
 //
 //------------------------------------------------------------------------------
 
-go : {opened:false},
+menu : {
+  opened:false,
+  items:[
+    {id:"page_actions", label:"View Page Actions"},
+    {id:"hide", label:"Hide"}
+  ],
+  itemHeight:30,
+  gap:1,
+  borderThickness:2
+},
 
 
 //------------------------------------------------------------------------------
@@ -24,22 +33,22 @@ go : {opened:false},
 initialize : function() {
   var $this = this;
   
-  this.go.svg = d3.select("body").append("svg")
-    .attr("class", "landmark-hud")
+  this.menu.svg = d3.select("body").append("svg")
+    .attr("class", "landmark-hud-menu")
     .style("position", "fixed")
     .style("z-index", 10000);
-  this.go.g = this.go.svg.append("g")
+  this.menu.g = this.menu.svg.append("g")
     .attr("transform", "translate(5, 5)")
     .style("cursor", "hand")
     .on("click", function(d) {
-      $this.go.opened = !$this.go.opened;
+      $this.menu.opened = !$this.menu.opened;
       $this.update();
     });
-  this.go.rect = this.go.g.append("rect")
+  this.menu.rect = this.menu.g.append("rect")
     .style("stroke", "#0b7359")
-    .style("stroke-width", "2px")
+    .style("stroke-width", this.menu.borderThickness + "px")
     .style("fill", "white");
-  this.go.icon = this.go.g.append("svg:image")
+  this.menu.icon = this.menu.g.append("svg:image")
     .attr("xlink:href", "/assets/icon-30x30.png")
     .attr("width", 30)
     .attr("height", 30);
@@ -56,26 +65,28 @@ initialize : function() {
  * Redraws the HUD display.
  */
 update : function() {
-  this.updateGoButton();
+  var w = window.innerWidth || document.documentElement.clientWidth;
+  var h = window.innerHeight || document.documentElement.clientHeight;
+  this.updateMenu(w, h);
 },
 
-updateGoButton : function() {
-  var height = window.innerHeight || document.documentElement.clientHeight;
-  var opened = this.go.opened;
+updateMenu : function(w, h) {
+  var opened = this.menu.opened;
   var menuWidth = opened ? 200 : 40;
   var menuHeight = opened ? 200 : 40;
 
-  this.go.svg
+  // Update button.
+  this.menu.svg
     .transition()
-    .style("top", height-menuHeight-20)
+    .style("top", h-menuHeight-20)
     .style("left", 15);
 
-  this.go.icon
+  this.menu.icon
     .transition()
     .attr("x", 5)
     .attr("y", menuHeight-34);
 
-  this.go.rect
+  this.menu.rect
     .transition()
     .attr("x", 0)
     .attr("y", 0)
@@ -83,8 +94,40 @@ updateGoButton : function() {
     .attr("height", menuHeight)
     .attr("rx", opened ? 0 : 20)
     .attr("ry", opened ? 0 : 20);
+
+  // Update menu items.
+  this.updateMenuItems(w, h, menuWidth, menuHeight);
 },
 
+updateMenuItems : function(w, h, menuWidth, menuHeight) {
+  var $this = this;
+  var opened = this.menu.opened;
+  var items = opened ? this.menu.items : [];
+
+  this.menu.svg.selectAll(".landmark-hud-menu-item")
+    .data(items, function(d) { return d.id; })
+    .call(function(selection) {
+      var enter = selection.enter(), exit = selection.exit();
+      enter.append("g")
+        .attr("class", "landmark-hud-menu-item")
+        .attr("transform", "translate(5, 5)")
+        .attr("opacity", 0)
+        .call(function() {
+          this.transition().delay(function(d, i) { return 250 + (i*100); })
+            .attr("opacity", 1)
+        })
+      .append("rect")
+        .style("fill", "#0b7359");
+      
+      selection.select("rect")
+        .attr("x", $this.menu.borderThickness)
+        .attr("y", function(d, i) { return $this.menu.borderThickness + (i*($this.menu.itemHeight + $this.menu.gap)); })
+        .attr("width", menuWidth - ($this.menu.borderThickness * 2))
+        .attr("height", $this.menu.itemHeight)
+
+      exit.remove();
+    })
+},
 
 //--------------------------------------
 // Event handlers
