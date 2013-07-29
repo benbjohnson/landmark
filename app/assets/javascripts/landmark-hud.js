@@ -240,12 +240,24 @@ menuItem_onClick : function(d) {
 if(!landmark) window.landmark = {};
 window.landmark.hud = hud;
 
-hud.initialize();
-
 var onresize = window.onresize;
 window.onresize = function() {
   hud.onresize();
   if(typeof(onresize) == "function") onresize();
 }
 
+// Load D3 if it's not already on the page.
+if(!d3) {
+  var src = "";
+  if(landmark.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + landmark.host() + (landmark.port() > 0 ? ":" + landmark.port() : "");
+  src += "/assets/d3.js";
+
+  var script = document.createElement('script');
+  script.type = "text/javascript";
+  script.src = src;
+  script.onload = function() {
+    hud.initialize();
+  };
+  landmark.scriptTag.parentNode.insertBefore(script);
+}
 })();

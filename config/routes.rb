@@ -2,6 +2,9 @@ Landmark::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => "registrations"}
   resource :account
   resources :projects do
+    collection do
+      get :auth
+    end
   end
 
   resources :resources do

@@ -27,12 +27,12 @@ class ResourcesController < ApplicationController
   private
 
   def authenticate_user!
-    head 401 if !user_signed_in? && params[:apiKey] != "DEMO"
+    head 401 if !user_signed_in? && params[:apiKey] != "demo"
   end
 
   def find_resource
-    if params[:apiKey] == 'DEMO'
-      Project.find_by_api_key('DEMO')
+    if params[:apiKey] == 'demo'
+      Project.find_by_api_key('demo')
     else
       @project = current_user.account.projects.find_by_api_key(params[:apiKey])
     end
