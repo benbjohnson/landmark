@@ -247,7 +247,7 @@ window.onresize = function() {
 }
 
 // Load D3 if it's not already on the page.
-if(!d3) {
+if(!window.d3) {
   var src = "";
   if(landmark.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + landmark.host() + (landmark.port() > 0 ? ":" + landmark.port() : "");
   src += "/assets/d3.js";
