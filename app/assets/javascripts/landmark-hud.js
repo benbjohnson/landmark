@@ -24,6 +24,22 @@ menu : {
   borderThickness: 2
 },
 
+actions : {
+  data:[]
+},
+
+links : {},
+
+MOCK_ACTION_DATA : {
+    "__href__":{
+      "tel:555-555-5555":3,
+      "http://localhost:3000/demo/index.html#menu":10,
+      "http://localhost:3000/demo/index.html#menu2":20,
+      "http://localhost:3000/demo/erp.html":15,
+      "http://localhost:3000/demo/contact_us.html":30,
+      "http://localhost:3000/demo/data.html":5
+    }
+  },
 
 //------------------------------------------------------------------------------
 //
@@ -45,10 +61,20 @@ initialize : function() {
   this.overlay.g = this.overlay.svg.append("g");
   this.overlay.rect = this.overlay.g.append("rect");
 
+  this.actions.svg = d3.select("body").append("svg")
+    .attr("class", "landmark-hud-actions")
+    .style("position", "absolute")
+    .style("left", 0)
+    .style("top", 0)
+    .style("width", 0)
+    .style("height", 0)
+    .style("z-index", 10001);
+  this.actions.g = this.actions.svg.append("g");
+
   this.menu.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-menu")
     .style("position", "fixed")
-    .style("z-index", 10001);
+    .style("z-index", 10002);
   this.menu.g = this.menu.svg.append("g")
     .attr("transform", "translate(5, 5)")
     .style("cursor", "hand")
@@ -76,8 +102,23 @@ initialize : function() {
 update : function() {
   var w = window.innerWidth || document.documentElement.clientWidth;
   var h = window.innerHeight || document.documentElement.clientHeight;
+  this.updateLinks();
   this.updateOverlay(w, h);
   this.updateMenu(w, h);
+  this.updatePageActions(w, h);
+},
+
+updateLinks : function() {
+  var $this = this;
+  this.links = {};
+
+  // Only generate a lookup of links if we need them.
+  if(this.actions.data.length > 0) {
+    Array.prototype.slice.call(document.getElementsByTagName("a")).forEach(function(link) {
+      if(!$this.links[link.href]) $this.links[link.href] = [];
+      $this.links[link.href].push(link);
+    });
+  }
 },
 
 updateOverlay : function(w, h) {
@@ -173,6 +214,59 @@ updateMenuItems : function(w, h, menuWidth, menuHeight) {
     })
 },
 
+updatePageActions : function(w, h) {
+  var $this = this;
+  var visible = (this.actions.data.length > 0);
+
+  // Update link positions.
+  this.actions.data.forEach(function(item) {
+    var link = ($this.links[item.href] ? $this.links[item.href][0] : null);
+    item.link = link;
+    item.pos = $this.offset(link);
+  });
+
+  // Resize the SVG container.
+  this.actions.svg
+    .style("width", (visible ? null : 0))
+    .style("height", (visible ? null : 0))
+  ;
+
+  // Create the link rects.
+  this.actions.g.selectAll(".landmark-hud-action-item")
+    .data(this.actions.data, function(d) { return d.id; })
+    .call(function(selection) {
+      var enter = selection.enter(), exit = selection.exit();
+      selection
+        .attr("width", function(d) { return (d.link ? d.link.offsetWidth : 0); })
+        .attr("height", function(d) { return (d.link ? d.link.offsetHeight : 0); })
+      ;
+      enter.append("rect")
+        .attr("class", "landmark-hud-action-item")
+        .attr("width", 0)
+        .attr("height", 2)
+        .style("fill", "#ffffff")
+        .style("fill-opacity", 0.2)
+        .style("stroke", "#ffffff")
+        .style("stroke-width", 2)
+        .style("stroke-opacity", 1)
+        .style("shape-rendering", "crispEdges")
+        .style("cursor", "hand")
+        .on("click", function(d) { $this.actionItem_onClick(d) } )
+        .call(function() {
+          this.transition().delay(function(d, i) { return Math.random()*250; })
+            .attr("width", function(d) { return (d.link ? d.link.offsetWidth : 0); })
+            .transition().delay(500)
+              .attr("height", function(d) { return (d.link ? d.link.offsetHeight : 0); })
+        })
+      ;
+      selection
+        .attr("x", function(d) { return d.pos.left; })
+        .attr("y", function(d) { return d.pos.top; })
+      ;
+      exit.remove();
+    });
+},
+
 //--------------------------------------
 // Menu
 //--------------------------------------
@@ -194,21 +288,51 @@ setMenuItemVisible : function(id, value) {
 // Page Actions
 //--------------------------------------
 
-showPageActions : function() {
-  // TODO: Load page actions.
-  this.overlay.enabled = true;
+setPageActionsVisible : function(enabled) {
+  this.actions.data = (enabled ? this.normalizeActionData(this.MOCK_ACTION_DATA) : []);
+
+  this.overlay.enabled = enabled;
   this.menu.opened = false;
-  this.setMenuItemVisible("show_page_actions", false);
-  this.setMenuItemVisible("hide_page_actions", true);
+  this.setMenuItemVisible("show_page_actions", !enabled);
+  this.setMenuItemVisible("hide_page_actions", enabled);
   this.update();
 },
 
-hidePageActions : function() {
-  this.overlay.enabled = false;
-  this.menu.opened = false;
-  this.setMenuItemVisible("show_page_actions", true);
-  this.setMenuItemVisible("hide_page_actions", false);
-  this.update();
+normalizeActionData : function(data) {
+  var $this = this;
+  if(!data.__href__) return [];
+
+  // Sum the total.
+  var total = 0;
+  Object.keys(data.__href__).forEach(function(href) {
+    total += data.__href__[href];
+  });
+
+  // Normalize action data.
+  return Object.keys(data.__href__).map(function(href) {
+    return {
+      id: href,
+      href: href,
+      count: data.__href__[href],
+      total: total,
+    }
+  });
+},
+
+
+//--------------------------------------
+// Utilities
+//--------------------------------------
+
+offset : function(obj) {
+  var pos = {left:0, top:0};
+  if(obj && obj.offsetParent) {
+    do {
+        pos.left += obj.offsetLeft;
+        pos.top += obj.offsetTop;
+    } while (obj = obj.offsetParent);
+  }
+  return pos;
 },
 
 
@@ -222,11 +346,15 @@ onresize : function() {
 
 menuItem_onClick : function(d) {
   switch(d.id) {
-    case "show_page_actions": this.showPageActions(); break;
-    case "hide_page_actions": this.hidePageActions(); break;
+    case "show_page_actions": this.setPageActionsVisible(true); break;
+    case "hide_page_actions": this.setPageActionsVisible(false); break;
     case "hide": hide(); break;
   }
-}
+},
+
+actionItem_onClick : function(d) {
+  alert("ACTION CLICK");
+},
 
 }
 
