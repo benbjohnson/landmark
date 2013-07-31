@@ -10,12 +10,6 @@ class HomeController < ApplicationController
   def signup
   end
 
-  # GET /pause
-  def pause
-    sleep(1)
-    head 200
-  end
-
 
   private
   

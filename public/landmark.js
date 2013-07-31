@@ -154,18 +154,12 @@
       if(typeof(properties) != "object") properties = {};
       if(typeof(options) != "object") options = {};
 
-      // Create path with optional hash.
-      var path = this.pathname();
-      if(options.includeHash) {
-        path += window.location.hash
-      }
-
       // Construct the base parameters to track.
       var base = {
         __channel__: "web",
         __action__: action,
-        __resource__: this.normalize(path),
-        __path__: path,
+        __resource__: this.resource(),
+        __url__: this.url(),
       };
 
       // Send event to server.
@@ -286,6 +280,37 @@
       }
     },
 
+    //----------------------------------
+    // Resource
+    //----------------------------------
+
+    /**
+     * Retrieves the normalized version of the URL.
+     */
+    resource : function() {
+      return this.normalize(this.url())
+        .replace(/^https?:\/\/(?:www\.)?/, "http://");
+    },
+
+    /**
+     * Retrieves the URL as is to be used for tracking.
+     */
+    url : function() {
+      var url = this.href();
+      if(!config.trackHashChange) {
+        url = url.replace(/#.*$/, "");
+      }
+      url = url.replace(/#$/, "");
+      return url;
+    },
+
+    /**
+     * Retrieves the full URL of the current page.
+     */
+    href : function() {
+      return window.location.href;
+    },
+    
 
     //----------------------------------
     // Remote
@@ -303,6 +328,14 @@
     port : function() {
       var m = this.src().match(/https?:\/\/(?:[^:\/]+):(\d+)/);
       return (m ? parseInt(m.pop()) : null);
+    },
+
+    baseUrl : function() {
+      if(landmark.host() != null) {
+        return ('https:' === document.location.protocol ? 'https://' : 'http://') + landmark.host() + (landmark.port() > 0 ? ":" + landmark.port() : "");
+      } else {
+        return "";
+      }
     },
 
     //----------------------------------
@@ -334,13 +367,6 @@
       });
     },
 
-    /**
-     * Retrieves the path name of the current page.
-     */
-    pathname : function() {
-      return window.location.pathname;
-    },
-    
     /**
      * Generalizes a path by replacing numeric directories with a zero. This
      * function also replaces directories starting with a number and a dash.
@@ -390,6 +416,7 @@
      * @param {XMLHttpRequest} xhr   The XHR to send.
      */
     sendXMLHttpRequest : function(method, path, loadHandler, errorHandler) {
+      var $this = this;
       xhrs.push({
         method:method,
         path:path,
@@ -397,7 +424,9 @@
         errorHandler:errorHandler,
       });
       if(xhrTimeoutId) clearTimeout(xhrTimeoutId);
-      xhrTimeoutId = setTimeout(this.deliverXMLHttpRequests, xhrDelay);
+      xhrTimeoutId = setTimeout(function() {
+        $this.deliverPendingXMLHttpRequests(true)
+      }, xhrDelay);
     },
 
     /**
@@ -419,6 +448,8 @@
           xhr.send();
         }
       });
+      xhrs = [];
+      clearTimeout(xhrTimeoutId);
     },
   };
 
@@ -622,7 +653,7 @@
   var onhashchange = window.onhashchange;
   window.onhashchange = function() {
     if(config.trackHashChange) {
-      landmark.trackPageView({}, {includeHash:true});
+      landmark.trackPageView({});
     }
     if(typeof(onhashchange) == "function") onhashchange();
   }

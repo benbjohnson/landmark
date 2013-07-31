@@ -23,7 +23,7 @@ class ActionController::TestCase
     properties = properties.merge({
       '__channel__' => 'web',
       '__resource__' => resource,
-      '__path__' => path,
+      '__url__' => path,
       '__channel__' => 'web',
       })
     track(project, id, t, traits, properties)

@@ -9,13 +9,12 @@ Landmark::Application.routes.draw do
 
   resources :resources do
     collection do
-      get :next_page_views
+      get :next_page_actions
     end
   end
 
   get '/track', :to => 'events#track'
 
   get "/signup" => "home#signup"
-  get "/pause" => "home#pause"
   root :to => 'home#index'
 end

@@ -289,7 +289,16 @@ setMenuItemVisible : function(id, value) {
 //--------------------------------------
 
 setPageActionsVisible : function(enabled) {
-  this.actions.data = (enabled ? this.normalizeActionData(this.MOCK_ACTION_DATA) : []);
+  var $this = this;
+  if(enabled) {
+    d3.json(landmark.baseUrl() + "/resources/next_page_actions?apiKey=" + encodeURIComponent(landmark.apiKey) + "&name=" + encodeURIComponent(landmark.resource()), function(error, json) {
+      if(error) return landmark.log(error);
+      $this.actions.data = $this.normalizeActionData(json);
+      $this.update();
+    });
+  } else {
+    this.actions.data = [];
+  }
 
   this.overlay.enabled = enabled;
   this.menu.opened = false;
@@ -376,13 +385,9 @@ window.onresize = function() {
 
 // Load D3 if it's not already on the page.
 if(!window.d3) {
-  var src = "";
-  if(landmark.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + landmark.host() + (landmark.port() > 0 ? ":" + landmark.port() : "");
-  src += "/assets/d3.js";
-
   var script = document.createElement('script');
   script.type = "text/javascript";
-  script.src = src;
+  script.src = landmark.baseUrl() + "/assets/d3.js";
   script.onload = function() {
     hud.initialize();
   };
