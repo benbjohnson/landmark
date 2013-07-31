@@ -1,5 +1,8 @@
 (function() {
   var config = {};
+  var xhrs = [];
+  var xhrDelay = 20, xhrSyncTimeout = 50;
+  var xhrTimeoutId = 0;
 
   var landmark = {
     //--------------------------------------------------------------------------
@@ -181,6 +184,17 @@
     },
 
     /**
+     * Tracks a click to a given url.
+     *
+     * @param {Object} properties  The action properties.
+     * @param {Object} options
+     */
+    trackClick : function(href, properties, options) {
+      properties = extend({__href__: href}, properties);
+      return this.track('__click__', properties, options);
+    },
+
+    /**
      * Sends an event with the current identity, data and action.
      *
      * @param {Object} properties  The event properties to send.
@@ -233,7 +247,7 @@
       }
 
       var self = this;
-      var xhr = this.createXMLHttpRequest("GET", path,
+      this.sendXMLHttpRequest("GET", path, true,
         function() {},
         function() {
           var response = {};
@@ -241,11 +255,6 @@
           self.log("[landmark] GET " + path, response, traits, properties);
         }
       );
-      if(xhr == null) return null;
-      
-      // Send request.
-      xhr.send();
-      return xhr;
     },
 
 
@@ -258,7 +267,7 @@
      */
     hud : function() {
       var $this = this;
-      var xhr = this.createXMLHttpRequest("GET", "/projects/auth?apiKey=" + this.apiKey,
+      var xhr = this.createXMLHttpRequest("GET", "/projects/auth?apiKey=" + this.apiKey, true,
         function() {
           var src = "";
           if($this.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + $this.host() + ($this.port() > 0 ? ":" + $this.port() : "");
@@ -345,19 +354,20 @@
     /**
      * Creates a new XHR object, if possible.
      * 
-     * @param {String} path   The path to send to.
-     * @param {Object} data  The object to convert to JSON and send.
+     * @param {String} method   The HTTP method to use.
+     * @param {String} path     The path to send to.
+     * @param {String} async    A flag stating if the request is asynchronous.
      *
      * @return {XMLHTTPRequest}  The XHR that was created.
      */
-    createXMLHttpRequest : function(method, path, loadHandler, errorHandler) {
+    createXMLHttpRequest : function(method, path, async, loadHandler, errorHandler) {
       var url = "";
       if(this.host() != null) url += ('https:' === document.location.protocol ? 'https://' : 'http://') + this.host() + (this.port() > 0 ? ":" + this.port() : "");
       url += path;
 
       var xhr = new XMLHttpRequest();
       if("withCredentials" in xhr) {
-        xhr.open(method, url, true);
+        xhr.open(method, url, async);
         xhr.setRequestHeader("Content-type", "application/json");
         xhr.setRequestHeader("Cache-Control", "no-cache");
       } else if (typeof XDomainRequest != "undefined") {
@@ -372,6 +382,43 @@
       xhr.onerror = errorHandler;
 
       return xhr;
+    },
+
+    /**
+     * Queues an XHR to be sent.
+     * 
+     * @param {XMLHttpRequest} xhr   The XHR to send.
+     */
+    sendXMLHttpRequest : function(method, path, loadHandler, errorHandler) {
+      xhrs.push({
+        method:method,
+        path:path,
+        loadHandler:loadHandler,
+        errorHandler:errorHandler,
+      });
+      if(xhrTimeoutId) clearTimeout(xhrTimeoutId);
+      xhrTimeoutId = setTimeout(this.deliverXMLHttpRequests, xhrDelay);
+    },
+
+    /**
+     * Delivers all pending XHR requests.
+     * 
+     * @param {Boolean} async  A flag stating if the requests should be sent asynchronously.
+     */
+    deliverPendingXMLHttpRequests : function(async) {
+      var $this = this;
+      if(arguments.length == 0) async = true;
+      xhrs.forEach(function(xhr) {
+        xhr = $this.createXMLHttpRequest(xhr.method, xhr.path, async, xhr.loadHandler, xhr.errorHandler);
+        if(xhr) {
+          if(!async) {
+            try {
+              xhr.timeout = xhrSyncTimeout;
+            } catch(e) {}
+          }
+          xhr.send();
+        }
+      });
     },
   };
 
@@ -481,6 +528,18 @@
     return "__ldmkid";
   }
 
+  /**
+   * Finds a parent node or self with the given node name.
+   */
+  function getParentByNodeName(obj, nodeName) {
+    nodeName = nodeName.toLowerCase();
+    while(obj != null) {
+      if(obj.nodeName.toLowerCase() == nodeName) break;
+      obj = obj.parentNode;
+    }
+    return obj;
+  };
+
   //----------------------------------
   // Process invocation
   //----------------------------------
@@ -536,6 +595,27 @@
   window.onload = function() {
     landmark.__initialize__();
     if(typeof(onload) == "function") onload();
+  }
+
+  // Wrap existing onbeforeunload.
+  var onbeforeunload = window.onbeforeunload;
+  window.onbeforeunload = function() {
+    landmark.deliverPendingXMLHttpRequests(false);
+    if(typeof(onbeforeunload) == "function") onbeforeunload();
+  }
+
+  // Wrap existing onclick.
+  var onclick = document.onclick;
+  document.onclick = function(event) {
+    if (!event) var event = window.event;
+    var target = (event.target ? event.target : event.srcElement);
+    if(target.nodeType == 3) target = target.parentNode;
+    var a = getParentByNodeName(target, "a");
+    if(a) {
+      landmark.trackClick(landmark.normalize(a.href));
+    }
+
+    if(typeof(onclick) == "function") onclick();
   }
 
   // Wrap existing onhashchange.

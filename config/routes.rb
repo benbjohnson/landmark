@@ -16,5 +16,6 @@ Landmark::Application.routes.draw do
   get '/track', :to => 'events#track'
 
   get "/signup" => "home#signup"
+  get "/pause" => "home#pause"
   root :to => 'home#index'
 end
