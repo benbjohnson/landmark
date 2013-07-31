@@ -8,6 +8,7 @@ class ResourcesController < ApplicationController
     if !@resource.nil?
       q = {sessionIdleTime:7200, steps:[
         {:type => 'condition', :expression => "__resource__ == '#{encode_lua_string(@resource.name)}' && __action__ == '__page_view__'", :steps => [
+          {:type => 'selection', :dimensions => [], :fields => [:name => 'count', :expression => 'count()']},
           {:type => 'condition', :expression => "__resource__ == '#{encode_lua_string(@resource.name)}' && __action__ != '__page_view__'", :within => [1,1], :steps => [
             {:type => 'selection', :dimensions => ['__href__'], :fields => [:name => 'count', :expression => 'count()']}
           ]}

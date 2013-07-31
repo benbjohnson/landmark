@@ -55,37 +55,26 @@ initialize : function() {
   var $this = this;
   
   this.overlay.svg = d3.select("body").append("svg")
-    .attr("class", "landmark-hud-overlay")
-    .style("position", "fixed")
-    .style("z-index", 10000);
+    .attr("class", "landmark-hud-overlay");
   this.overlay.g = this.overlay.svg.append("g");
   this.overlay.rect = this.overlay.g.append("rect");
 
   this.actions.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-actions")
-    .style("position", "absolute")
-    .style("left", 0)
-    .style("top", 0)
     .style("width", 0)
     .style("height", 0)
-    .style("z-index", 10001);
-  this.actions.g = this.actions.svg.append("g");
+  ;
 
   this.menu.svg = d3.select("body").append("svg")
-    .attr("class", "landmark-hud-menu")
-    .style("position", "fixed")
-    .style("z-index", 10002);
+    .attr("class", "landmark-hud-menu");
   this.menu.g = this.menu.svg.append("g")
+    .attr("class", "landmark-hud-menu-button")
     .attr("transform", "translate(5, 5)")
-    .style("cursor", "hand")
     .on("click", function(d) {
       $this.menu.opened = !$this.menu.opened;
       $this.update();
     });
-  this.menu.rect = this.menu.g.append("rect")
-    .style("stroke", "#0b7359")
-    .style("stroke-width", this.menu.borderThickness + "px")
-    .style("fill", "white");
+  this.menu.rect = this.menu.g.append("rect");
   this.menu.icon = this.menu.g.append("svg:image")
     .attr("xlink:href", "/assets/icon-30x30.png")
     .attr("width", 30)
@@ -181,23 +170,16 @@ updateMenuItems : function(w, h, menuWidth, menuHeight) {
         .attr("class", "landmark-hud-menu-item")
         .attr("transform", "translate(5, 5)")
         .attr("opacity", 0)
-        .style("shape-rendering", "crispEdges")
-        .style("cursor", "hand")
         .on("click", function(d) { $this.menuItem_onClick(d) } )
         .call(function() {
           this.transition().delay(function(d, i) { return 250 + (i*100); })
             .attr("opacity", 1)
           ;
-          this.append("rect")
-            .style("fill", "#0b7359")
-          ;
+          this.append("rect");
           this.append("text")
             .attr("dy", "1em")
             .attr("x", $this.menu.borderThickness + 7)
             .attr("y", function(d, i) { return ($this.menu.borderThickness/2) + (i*($this.menu.itemHeight + $this.menu.gap) + 6); })
-            .attr("font-family", "Helvetica, Arial, sans-serif")
-            .attr("font-size", "16px")
-            .style("fill", "#ffffff")
             .text(function(d) { return d.label; })
           ;
         })
@@ -225,46 +207,70 @@ updatePageActions : function(w, h) {
     item.pos = $this.offset(link);
   });
 
-  // Resize the SVG container.
-  this.actions.svg
-    .style("width", (visible ? null : 0))
-    .style("height", (visible ? null : 0))
-  ;
-
   // Create the link rects.
-  this.actions.g.selectAll(".landmark-hud-action-item")
-    .data(this.actions.data, function(d) { return d.id; })
+  var data = this.actions.data.filter(function(d) { return d.link && d.link.offsetWidth > 0; });
+  this.actions.svg.selectAll(".landmark-hud-action-item")
+    .data(data, function(d) { return d.id; })
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
-      selection
+      selection.select(".landmark-hud-action-item-highlight")
         .attr("width", function(d) { return (d.link ? d.link.offsetWidth : 0); })
         .attr("height", function(d) { return (d.link ? d.link.offsetHeight : 0); })
       ;
-      enter.append("rect")
+      enter.append("g")
         .attr("class", "landmark-hud-action-item")
-        .attr("width", 0)
-        .attr("height", 2)
-        .style("fill", "#ffffff")
-        .style("fill-opacity", 0.2)
-        .style("stroke", "#ffffff")
-        .style("stroke-width", 2)
-        .style("stroke-opacity", 1)
-        .style("shape-rendering", "crispEdges")
-        .style("cursor", "hand")
-        .on("click", function(d) { $this.actionItem_onClick(d) } )
         .call(function() {
-          this.transition().delay(function(d, i) { return Math.random()*250; })
-            .attr("width", function(d) { return (d.link ? d.link.offsetWidth : 0); })
-            .transition().delay(500)
-              .attr("height", function(d) { return (d.link ? d.link.offsetHeight : 0); })
+          this.append("rect")
+            .attr("class", "landmark-hud-action-item-highlight")
+            .attr("width", 0)
+            .attr("height", 2)
+            .on("click", function(d) { $this.actionItem_onClick(d) } )
+            .call(function() {
+              this.transition().delay(function(d, i) { return Math.random()*250; })
+                .attr("width", function(d) { return (d.link ? d.link.offsetWidth : 0); })
+                .transition().delay(500)
+                  .attr("height", function(d) { return (d.link ? d.link.offsetHeight : 0); })
+            })
+        })
+        .call(function() {
+          this.append("rect")
+            .attr("class", "landmark-hud-action-item-stats")
+            .attr("y", 0)
+            .attr("width", 0)
+            .attr("height", 2)
+            .on("click", function(d) { $this.actionItem_onClick(d) } )
+            .call(function() {
+              this.transition().delay(250)
+                .attr("width", function(d) { return 40; })
+                .transition().delay(500)
+                  .attr("y", -20)
+                  .attr("height", 20)
+            })
+        })
+        .call(function() {
+          this.append("text")
+            .attr("class", "landmark-hud-action-item-stats")
+            .attr("dy", "1em")
+            .attr("x", 5)
+            .attr("y", -18)
+            .attr("opacity", 0)
+            .text(function(d) { return Math.round((d.count/$this.actions.total)*100) + "%"; })
+            .transition().delay(750)
+              .attr("opacity", 1)
         })
       ;
       selection
-        .attr("x", function(d) { return d.pos.left; })
-        .attr("y", function(d) { return d.pos.top; })
+        .attr("transform", function(d) { return "translate(" + d.pos.left + ", " + d.pos.top + ")"; })
       ;
       exit.remove();
     });
+
+  // Resize the SVG container.
+  var documentHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
+  this.actions.svg
+    .style("width", (visible ? null : 0))
+    .style("height", (visible ? documentHeight - 20 : 0))
+  ;
 },
 
 //--------------------------------------
@@ -293,6 +299,7 @@ setPageActionsVisible : function(enabled) {
   if(enabled) {
     d3.json(landmark.baseUrl() + "/resources/next_page_actions?apiKey=" + encodeURIComponent(landmark.apiKey) + "&name=" + encodeURIComponent(landmark.resource()), function(error, json) {
       if(error) return landmark.log(error);
+      $this.actions.total = json.count;
       $this.actions.data = $this.normalizeActionData(json);
       $this.update();
     });
@@ -311,19 +318,12 @@ normalizeActionData : function(data) {
   var $this = this;
   if(!data.__href__) return [];
 
-  // Sum the total.
-  var total = 0;
-  Object.keys(data.__href__).forEach(function(href) {
-    total += data.__href__[href];
-  });
-
   // Normalize action data.
   return Object.keys(data.__href__).map(function(href) {
     return {
       id: href,
       href: href,
-      count: data.__href__[href],
-      total: total,
+      count: data.__href__[href].count,
     }
   });
 },
@@ -382,6 +382,12 @@ window.onresize = function() {
   hud.onresize();
   if(typeof(onresize) == "function") onresize();
 }
+
+// Load stylesheet.
+var linkTag = document.createElement('link');
+linkTag.rel = "stylesheet";
+linkTag.href = landmark.baseUrl() + "/assets/landmark-hud.css";
+landmark.scriptTag.parentNode.insertBefore(linkTag);
 
 // Load D3 if it's not already on the page.
 if(!window.d3) {
