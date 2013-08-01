@@ -18,7 +18,7 @@ class ActionController::TestCase
     project.track(id, traits, properties)
   end
 
-  def track_page_view(project, id, t, path, traits={}, properties={})
+  def track_web(project, id, t, path, traits={}, properties={})
     resource = path.to_s.gsub(/\/(\d+|\d+-[^\/#]+)(?=\/|#|$)/, "/:id")
     properties = properties.merge({
       '__channel__' => 'web',
@@ -27,5 +27,13 @@ class ActionController::TestCase
       '__channel__' => 'web',
       })
     track(project, id, t, traits, properties)
+  end
+
+  def track_page_view(project, id, t, path, traits={}, properties={})
+    track_web(project, id, t, path, traits, properties.merge('__action__' => '__page_view__'))
+  end
+
+  def track_click(project, id, t, path, href, traits={}, properties={})
+    track_web(project, id, t, path, traits, properties.merge('__action__' => '__click__', '__href__' => href))
   end
 end
