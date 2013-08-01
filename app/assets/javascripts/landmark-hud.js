@@ -15,6 +15,8 @@ overlay : {
 menu : {
   opened: false,
   items:[
+    {id:"record_goal", label:"Record Goal", visible:true},
+    {id:"stop_goal", label:"Stop Recording", visible:false},
     {id:"show_page_actions", label:"Show Page Actions", visible:true},
     {id:"hide_page_actions", label:"Hide Page Actions", visible:false},
     {id:"hide", label:"Hide", visible:true}
@@ -22,6 +24,16 @@ menu : {
   itemHeight: 30,
   gap: 2,
   borderThickness: 2
+},
+
+goal : {
+  recording: true, // false,
+  // steps: [],
+  steps: [
+    {__resource__:"/demo/index.html", index:0},
+    {__resource__:"/demo/signup.html", index:1},
+    {__resource__:"/demo/welcome.html", index:2},
+  ],
 },
 
 actions : {
@@ -54,6 +66,9 @@ initialize : function() {
     .style("height", 0)
   ;
 
+  this.goal.svg = d3.select("body").append("svg")
+    .attr("class", "landmark-hud-goal");
+
   this.menu.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-menu");
   this.menu.g = this.menu.svg.append("g")
@@ -84,6 +99,7 @@ update : function() {
   this.updateOverlay(w, h);
   this.updateMenu(w, h);
   this.updatePageActions(w, h);
+  this.updateGoal(w, h);
 },
 
 updateLinks : function() {
@@ -262,6 +278,51 @@ updatePageActions : function(w, h) {
   ;
 },
 
+updateGoal : function(w, h) {
+  var visible = this.goal.recording && !this.menu.opened;
+  var steps = (visible ? this.goal.steps : []);
+
+  var zIndex = 10010;
+  var padding = 15;
+  var maxStepWidth = 300;
+  var stepWidth = Math.round(Math.min(maxStepWidth, (w - (padding*2)) / steps.length));
+  var stepHeight = 40;
+
+  this.goal.svg
+    .transition()
+    .style("left", padding)
+    .style("top", h-60);
+
+  // Create the step rects
+  this.goal.svg.selectAll(".landmark-hud-goal-step")
+    .data(steps.reverse(), function(d) { return d.index; })
+    .call(function(selection) {
+      var enter = selection.enter(), exit = selection.exit();
+      var transform = function(d, i) { return "translate(" + ((d.index*stepWidth)-(d.index*40)+5) + ",5)"};
+      selection.attr("transform", transform);
+      selection.select("rect")
+        .attr("width", stepWidth)
+      ;
+      enter.append("g")
+        .attr("class", "landmark-hud-goal-step")
+        .attr("transform", "translate(5,5)")
+        .call(function() {
+          this.transition()
+            .attr("transform", transform);
+          this.append("rect")
+            .attr("width", 40)
+            .attr("height", stepHeight)
+            .attr("rx", 20)
+            .attr("ry", 20)
+            .on("click", function(d) { $this.actionItem_onClick(d) } )
+            .call(function() {
+              this.transition().attr("width", stepWidth)
+            })
+        })
+      exit.remove();
+    })
+},
+
 //--------------------------------------
 // Menu
 //--------------------------------------
@@ -277,6 +338,19 @@ setMenuItemVisible : function(id, value) {
       item.visible = value;
     }
   }
+},
+
+//--------------------------------------
+// Goal Recording
+//--------------------------------------
+
+setGoalRecordingState : function(recording) {
+  this.goal.recording = recording;
+
+  this.menu.opened = false;
+  this.setMenuItemVisible("record_goal", !recording);
+  this.setMenuItemVisible("stop_goal", recording);
+  this.update();
 },
 
 //--------------------------------------
@@ -344,6 +418,8 @@ onresize : function() {
 
 menuItem_onClick : function(d) {
   switch(d.id) {
+    case "record_goal": this.setGoalRecordingState(true); break;
+    case "stop_goal": this.setGoalRecordingState(false); break;
     case "show_page_actions": this.setPageActionsVisible(true); break;
     case "hide_page_actions": this.setPageActionsVisible(false); break;
     case "hide": hide(); break;
