@@ -1,6 +1,6 @@
 class ProjectsController < ApplicationController
-  before_filter :authenticate_user!
-  before_filter lambda{ find_project(params[:id]); true  }, :except => [:index, :new, :create]
+  before_filter :authenticate_user!, :except => [:auth]
+  before_filter lambda{ find_project(params[:id]); true  }, :except => [:index, :new, :create, :auth]
   
   # GET /projects
   def index
@@ -36,5 +36,16 @@ class ProjectsController < ApplicationController
     params[:project].delete(:api_key)
     @project.update_attributes(params[:project])
     render 'edit'
+  end
+
+  # GET /projects/auth
+  def auth
+    api_key = params[:apiKey]
+    
+    if api_key == 'demo' || (current_account && current_account.projects.where(:api_key => api_key).count > 0)
+      render :json => {:status => 'ok'}
+    else
+      head 404
+    end
   end
 end

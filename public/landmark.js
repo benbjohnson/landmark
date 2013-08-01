@@ -1,5 +1,8 @@
 (function() {
   var config = {};
+  var xhrs = [];
+  var xhrDelay = 20, xhrSyncTimeout = 50;
+  var xhrTimeoutId = 0;
 
   var landmark = {
     //--------------------------------------------------------------------------
@@ -8,9 +11,8 @@
     //
     //--------------------------------------------------------------------------
 
-    // The host/port where landmark is hosted.
-    host : "landmark.io",
-    port : null,
+    // A reference to the script tag this script was loaded from.
+    scriptTag : null,
 
     // The user identifier & data.
     userId : null,
@@ -43,6 +45,7 @@
      */
     initialize : function(apiKey) {
       this.apiKey = apiKey;
+      this.hud();
       return true;
     },
 
@@ -151,18 +154,12 @@
       if(typeof(properties) != "object") properties = {};
       if(typeof(options) != "object") options = {};
 
-      // Create path with optional hash.
-      var path = this.pathname();
-      if(options.includeHash) {
-        path += window.location.hash
-      }
-
       // Construct the base parameters to track.
       var base = {
         __channel__: "web",
         __action__: action,
-        __resource__: this.normalize(path),
-        __path__: path,
+        __resource__: this.resource(),
+        __url__: this.url(),
       };
 
       // Send event to server.
@@ -178,6 +175,17 @@
      */
     trackPageView : function(properties, options) {
       return this.track('__page_view__', properties, options);
+    },
+
+    /**
+     * Tracks a click to a given url.
+     *
+     * @param {Object} properties  The action properties.
+     * @param {Object} options
+     */
+    trackClick : function(href, properties, options) {
+      properties = extend({__href__: href}, properties);
+      return this.track('__click__', properties, options);
     },
 
     /**
@@ -233,7 +241,7 @@
       }
 
       var self = this;
-      var xhr = this.createXMLHttpRequest("GET", path,
+      this.sendXMLHttpRequest("GET", path, true,
         function() {},
         function() {
           var response = {};
@@ -241,13 +249,94 @@
           self.log("[landmark] GET " + path, response, traits, properties);
         }
       );
-      if(xhr == null) return null;
-      
-      // Send request.
-      xhr.send();
-      return xhr;
     },
 
+
+    //----------------------------------
+    // HUD
+    //----------------------------------
+
+    /**
+     * Initializes the HUD display by loading the hud.js dependency.
+     */
+    hud : function() {
+      var $this = this;
+      var xhr = this.createXMLHttpRequest("GET", "/projects/auth?apiKey=" + this.apiKey, true,
+        function() {
+          var src = "";
+          if($this.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + $this.host() + ($this.port() > 0 ? ":" + $this.port() : "");
+          src += "/assets/landmark-hud.js";
+
+          var script = document.createElement('script');
+          script.type = "text/javascript";
+          script.async = true;
+          script.src = src;
+          $this.scriptTag.parentNode.insertBefore(script);
+        },
+        function() {}
+      );
+      if(xhr) {
+        xhr.send();
+      }
+    },
+
+    //----------------------------------
+    // Resource
+    //----------------------------------
+
+    /**
+     * Retrieves the normalized version of the URL.
+     */
+    resource : function() {
+      return this.normalize(this.url())
+        .replace(/^https?:\/\/(?:www\.)?/, "http://");
+    },
+
+    /**
+     * Retrieves the URL as is to be used for tracking.
+     */
+    url : function() {
+      var url = this.href();
+      if(!config.trackHashChange) {
+        url = url.replace(/#.*$/, "");
+      }
+      url = url.replace(/#$/, "");
+      return url;
+    },
+
+    /**
+     * Retrieves the full URL of the current page.
+     */
+    href : function() {
+      return window.location.href;
+    },
+    
+
+    //----------------------------------
+    // Remote
+    //----------------------------------
+
+    src : function() {
+      return (this.scriptTag && this.scriptTag.src ? this.scriptTag.src : "");
+    },
+
+    host : function() {
+      var m = this.src().match(/https?:\/\/([^:\/]+)/);
+      return (m ? m.pop() : null);
+    },
+
+    port : function() {
+      var m = this.src().match(/https?:\/\/(?:[^:\/]+):(\d+)/);
+      return (m ? parseInt(m.pop()) : null);
+    },
+
+    baseUrl : function() {
+      if(landmark.host() != null) {
+        return ('https:' === document.location.protocol ? 'https://' : 'http://') + landmark.host() + (landmark.port() > 0 ? ":" + landmark.port() : "");
+      } else {
+        return "";
+      }
+    },
 
     //----------------------------------
     // Utility
@@ -279,13 +368,6 @@
     },
 
     /**
-     * Retrieves the path name of the current page.
-     */
-    pathname : function() {
-      return window.location.pathname;
-    },
-    
-    /**
      * Generalizes a path by replacing numeric directories with a zero. This
      * function also replaces directories starting with a number and a dash.
      */
@@ -298,16 +380,20 @@
     /**
      * Creates a new XHR object, if possible.
      * 
-     * @param {String} path   The path to send to.
-     * @param {Object} data  The object to convert to JSON and send.
+     * @param {String} method   The HTTP method to use.
+     * @param {String} path     The path to send to.
+     * @param {String} async    A flag stating if the request is asynchronous.
      *
      * @return {XMLHTTPRequest}  The XHR that was created.
      */
-    createXMLHttpRequest : function(method, path, loadHandler, errorHandler) {
-      var url = location.protocol + "//" + this.host + (this.port > 0 ? ":" + this.port : "") + path;
+    createXMLHttpRequest : function(method, path, async, loadHandler, errorHandler) {
+      var url = "";
+      if(this.host() != null) url += ('https:' === document.location.protocol ? 'https://' : 'http://') + this.host() + (this.port() > 0 ? ":" + this.port() : "");
+      url += path;
+
       var xhr = new XMLHttpRequest();
       if("withCredentials" in xhr) {
-        xhr.open(method, url, true);
+        xhr.open(method, url, async);
         xhr.setRequestHeader("Content-type", "application/json");
         xhr.setRequestHeader("Cache-Control", "no-cache");
       } else if (typeof XDomainRequest != "undefined") {
@@ -322,6 +408,48 @@
       xhr.onerror = errorHandler;
 
       return xhr;
+    },
+
+    /**
+     * Queues an XHR to be sent.
+     * 
+     * @param {XMLHttpRequest} xhr   The XHR to send.
+     */
+    sendXMLHttpRequest : function(method, path, loadHandler, errorHandler) {
+      var $this = this;
+      xhrs.push({
+        method:method,
+        path:path,
+        loadHandler:loadHandler,
+        errorHandler:errorHandler,
+      });
+      if(xhrTimeoutId) clearTimeout(xhrTimeoutId);
+      xhrTimeoutId = setTimeout(function() {
+        $this.deliverPendingXMLHttpRequests(true)
+      }, xhrDelay);
+    },
+
+    /**
+     * Delivers all pending XHR requests.
+     * 
+     * @param {Boolean} async  A flag stating if the requests should be sent asynchronously.
+     */
+    deliverPendingXMLHttpRequests : function(async) {
+      var $this = this;
+      if(arguments.length == 0) async = true;
+      xhrs.forEach(function(xhr) {
+        xhr = $this.createXMLHttpRequest(xhr.method, xhr.path, async, xhr.loadHandler, xhr.errorHandler);
+        if(xhr) {
+          if(!async) {
+            try {
+              xhr.timeout = xhrSyncTimeout;
+            } catch(e) {}
+          }
+          xhr.send();
+        }
+      });
+      xhrs = [];
+      clearTimeout(xhrTimeoutId);
     },
   };
 
@@ -431,6 +559,18 @@
     return "__ldmkid";
   }
 
+  /**
+   * Finds a parent node or self with the given node name.
+   */
+  function getParentByNodeName(obj, nodeName) {
+    nodeName = nodeName.toLowerCase();
+    while(obj != null) {
+      if(obj.nodeName.toLowerCase() == nodeName) break;
+      obj = obj.parentNode;
+    }
+    return obj;
+  };
+
   //----------------------------------
   // Process invocation
   //----------------------------------
@@ -488,11 +628,32 @@
     if(typeof(onload) == "function") onload();
   }
 
+  // Wrap existing onbeforeunload.
+  var onbeforeunload = window.onbeforeunload;
+  window.onbeforeunload = function() {
+    landmark.deliverPendingXMLHttpRequests(false);
+    if(typeof(onbeforeunload) == "function") onbeforeunload();
+  }
+
+  // Wrap existing onclick.
+  var onclick = document.onclick;
+  document.onclick = function(event) {
+    if (!event) var event = window.event;
+    var target = (event.target ? event.target : event.srcElement);
+    if(target.nodeType == 3) target = target.parentNode;
+    var a = getParentByNodeName(target, "a");
+    if(a) {
+      landmark.trackClick(landmark.normalize(a.href));
+    }
+
+    if(typeof(onclick) == "function") onclick();
+  }
+
   // Wrap existing onhashchange.
   var onhashchange = window.onhashchange;
   window.onhashchange = function() {
     if(config.trackHashChange) {
-      landmark.trackPageView({}, {includeHash:true});
+      landmark.trackPageView({});
     }
     if(typeof(onhashchange) == "function") onhashchange();
   }
@@ -502,13 +663,19 @@
   window.landmark = landmark;
 
   // Retrieve data fields set on the script tag itself.
-  var script = document.getElementsByTagName("script");
-  script = script[script.length - 1];
-  if(script.hasAttribute('data-api-key')) {
-    landmark.initialize(script.getAttribute('data-api-key'))
+  var scriptTags = document.getElementsByTagName("script");
+  for(var i=0; i<scriptTags.length; i++) {
+    var scriptTag = scriptTags[i];
+    if(scriptTag.src && scriptTag.src.search(/landmark\.js$/) != -1) {
+      landmark.scriptTag = scriptTag;
+      break;
+    }
   }
-  if(script.hasAttribute('data-user-id')) {
-    landmark.identify(script.getAttribute('data-user-id'))
+  if(landmark.scriptTag.hasAttribute('data-api-key')) {
+    landmark.initialize(landmark.scriptTag.getAttribute('data-api-key'))
+  }
+  if(landmark.scriptTag.hasAttribute('data-user-id')) {
+    landmark.identify(landmark.scriptTag.getAttribute('data-user-id'))
   }
 
   // Process early invocations.

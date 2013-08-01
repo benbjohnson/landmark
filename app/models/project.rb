@@ -67,8 +67,9 @@ class Project < ActiveRecord::Base
     @sky_table.create_property(:name => '__channel__', :transient => true, :data_type => 'factor')
     @sky_table.create_property(:name => '__resource__', :transient => true, :data_type => 'factor')
     @sky_table.create_property(:name => '__action__', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => '__href__', :transient => true, :data_type => 'factor')
     @sky_table.create_property(:name => '__anonymous__', :transient => true, :data_type => 'boolean')
-    @sky_table.create_property(:name => '__path__', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => '__url__', :transient => true, :data_type => 'factor')
   end
 
   # Automatically creates properties based on the data type of incoming event fields.
