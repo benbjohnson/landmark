@@ -1,7 +1,7 @@
 (function() {
   var config = {};
   var xhrs = [];
-  var xhrDelay = 20, xhrSyncTimeout = 50;
+  var xhrDelay = 20, xhrSyncTimeout = 20;
   var xhrTimeoutId = 0;
 
   var landmark = {
