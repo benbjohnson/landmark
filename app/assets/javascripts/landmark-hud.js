@@ -30,17 +30,6 @@ actions : {
 
 links : {},
 
-MOCK_ACTION_DATA : {
-    "__href__":{
-      "tel:555-555-5555":3,
-      "http://localhost:3000/demo/index.html#menu":10,
-      "http://localhost:3000/demo/index.html#menu2":20,
-      "http://localhost:3000/demo/erp.html":15,
-      "http://localhost:3000/demo/contact_us.html":30,
-      "http://localhost:3000/demo/data.html":5
-    }
-  },
-
 //------------------------------------------------------------------------------
 //
 // Public Methods
