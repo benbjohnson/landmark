@@ -27,13 +27,15 @@ menu : {
 },
 
 goal : {
-  recording: true, // false,
-  // steps: [],
+  recording: false,
+  steps: [],
+  /*
   steps: [
     {__resource__:"/demo/index.html", index:0},
     {__resource__:"/demo/signup.html", index:1},
     {__resource__:"/demo/welcome.html", index:2},
   ],
+  */
 },
 
 actions : {
@@ -142,7 +144,9 @@ updateMenu : function(w, h) {
   this.menu.svg
     .transition()
     .style("top", h-menuHeight-20)
-    .style("left", 15);
+    .style("left", 15)
+    .style("width", menuWidth+8)
+    .style("height", menuHeight+8);
 
   this.menu.icon
     .transition()
@@ -243,7 +247,6 @@ updatePageActions : function(w, h) {
             .attr("y", 0)
             .attr("width", 0)
             .attr("height", 2)
-            .on("click", function(d) { $this.actionItem_onClick(d) } )
             .call(function() {
               this.transition().delay(250)
                 .attr("width", function(d) { return 40; })
@@ -279,8 +282,16 @@ updatePageActions : function(w, h) {
 },
 
 updateGoal : function(w, h) {
+  var $this = this;
   var visible = this.goal.recording && !this.menu.opened;
-  var steps = (visible ? this.goal.steps : []);
+  var steps = [];
+  if(visible) {
+    var index = 0;
+    this.goal.steps.concat({type:"add"}).forEach(function(step) {
+      step.index = index++;
+      steps.push(step);
+    });
+  }
 
   var zIndex = 10010;
   var padding = 15;
@@ -306,18 +317,26 @@ updateGoal : function(w, h) {
       enter.append("g")
         .attr("class", "landmark-hud-goal-step")
         .attr("transform", "translate(5,5)")
+        .on("click", function(d) { $this.step_onClick(d) } )
         .call(function() {
           this.transition()
             .attr("transform", transform);
           this.append("rect")
+            .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-goal-add-step" : "";})
             .attr("width", 40)
             .attr("height", stepHeight)
             .attr("rx", 20)
             .attr("ry", 20)
-            .on("click", function(d) { $this.actionItem_onClick(d) } )
             .call(function() {
-              this.transition().attr("width", stepWidth)
+              this.transition()
+                .attr("width", function(d) { return d.type == 'add' ? 80 : stepWidth;})
             })
+          this.append("svg:image")
+            .attr("xlink:href", "/assets/plus-20x20.png")
+            .attr("x", 47)
+            .attr("y", 9)
+            .attr("width", 20)
+            .attr("height", 20);
         })
       exit.remove();
     })
@@ -428,6 +447,11 @@ menuItem_onClick : function(d) {
 
 actionItem_onClick : function(d) {
   alert("ACTION CLICK");
+},
+
+step_onClick : function(d) {
+  this.goal.steps = [{__resource__:landmark.resource()}].concat(steps);
+  this.update();
 },
 
 }
