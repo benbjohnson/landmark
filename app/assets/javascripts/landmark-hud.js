@@ -1,3 +1,6 @@
+//= require 'd3'
+//= require_self
+
 (function() {
 
 var hud = {
@@ -298,6 +301,7 @@ updateGoal : function(w, h) {
   var maxStepWidth = 300;
   var stepWidth = Math.round(Math.min(maxStepWidth, (w - (padding*2)) / steps.length));
   var stepHeight = 40;
+  var stepTextLength = stepWidth / 10;
 
   this.goal.svg
     .transition()
@@ -306,13 +310,14 @@ updateGoal : function(w, h) {
 
   // Create the step rects
   this.goal.svg.selectAll(".landmark-hud-goal-step")
-    .data(steps.reverse(), function(d) { return d.index; })
+    .data(steps.reverse()) //, function(d) { return d.index; })
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
-      var transform = function(d, i) { return "translate(" + ((d.index*stepWidth)-(d.index*40)+5) + ",5)"};
-      selection.attr("transform", transform);
+      var transformFunc = function(d, i) { return "translate(" + ((d.index*stepWidth)-(d.index*40)+5) + ",5)"};
+      var rectWidthFunc = function(d) { return d.type == 'add' ? 80 : stepWidth;}
+      selection.attr("transform", transformFunc);
       selection.select("rect")
-        .attr("width", stepWidth)
+        .attr("width", rectWidthFunc)
       ;
       enter.append("g")
         .attr("class", "landmark-hud-goal-step")
@@ -320,24 +325,28 @@ updateGoal : function(w, h) {
         .on("click", function(d) { $this.step_onClick(d) } )
         .call(function() {
           this.transition()
-            .attr("transform", transform);
+            .attr("transform", transformFunc);
           this.append("rect")
-            .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-goal-add-step" : "";})
             .attr("width", 40)
             .attr("height", stepHeight)
             .attr("rx", 20)
             .attr("ry", 20)
-            .call(function() {
-              this.transition()
-                .attr("width", function(d) { return d.type == 'add' ? 80 : stepWidth;})
-            })
+            .attr("width", rectWidthFunc)
           this.append("svg:image")
             .attr("xlink:href", "/assets/plus-20x20.png")
             .attr("x", 47)
             .attr("y", 9)
             .attr("width", 20)
             .attr("height", 20);
-        })
+          this.append("text")
+            .attr("dy", "1em")
+            .attr("x", 45)
+            .attr("y", 12);
+        });
+      selection.select("rect")
+        .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-goal-add-step" : "";})
+      selection.select("text")
+        .text(function(d) { return d.type == 'add' ? '' : $this.ellipsize(d.__resource__, stepTextLength); });
       exit.remove();
     })
 },
@@ -426,6 +435,17 @@ offset : function(obj) {
   return pos;
 },
 
+ellipsize : function(url, length) {
+  url = url.replace(/http:\/\/(www\.)?/g, "");
+  if(url.length >= length) {
+    tmp = url.substring(0, (length / 2));
+    tmp2 = url.substr(url.length - (length / 2));
+    return tmp + "…" + tmp2;
+  } else {
+    return url;
+  }
+},
+
 
 //--------------------------------------
 // Event handlers
@@ -450,8 +470,10 @@ actionItem_onClick : function(d) {
 },
 
 step_onClick : function(d) {
-  this.goal.steps = [{__resource__:landmark.resource()}].concat(steps);
-  this.update();
+  if(d.type == "add") {
+    this.goal.steps.unshift({__resource__:landmark.resource()});
+    this.update();
+  }
 },
 
 }
@@ -477,15 +499,6 @@ var linkTag = document.createElement('link');
 linkTag.rel = "stylesheet";
 linkTag.href = landmark.baseUrl() + "/assets/landmark-hud.css";
 landmark.scriptTag.parentNode.insertBefore(linkTag);
-
-// Load D3 if it's not already on the page.
-if(!window.d3) {
-  var script = document.createElement('script');
-  script.type = "text/javascript";
-  script.src = landmark.baseUrl() + "/assets/d3.js";
-  script.onload = function() {
-    hud.initialize();
-  };
-  landmark.scriptTag.parentNode.insertBefore(script);
-}
 })();
+
+landmark.hud.initialize();
