@@ -1,6 +1,7 @@
 class Project < ActiveRecord::Base
   belongs_to :account
   has_many :resources
+  has_many :flows
   before_create :before_create
   after_create :after_create
 

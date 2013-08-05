@@ -74,6 +74,71 @@ ALTER SEQUENCE accounts_id_seq OWNED BY accounts.id;
 
 
 --
+-- Name: flow_steps; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE flow_steps (
+    id integer NOT NULL,
+    flow_id integer NOT NULL,
+    resource character varying(255) DEFAULT ''::character varying NOT NULL,
+    index integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: flow_steps_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE flow_steps_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flow_steps_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE flow_steps_id_seq OWNED BY flow_steps.id;
+
+
+--
+-- Name: flows; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE flows (
+    id integer NOT NULL,
+    project_id integer NOT NULL,
+    name character varying(255) DEFAULT ''::character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: flows_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE flows_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: flows_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE flows_id_seq OWNED BY flows.id;
+
+
+--
 -- Name: projects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -231,6 +296,20 @@ ALTER TABLE ONLY accounts ALTER COLUMN id SET DEFAULT nextval('accounts_id_seq':
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY flow_steps ALTER COLUMN id SET DEFAULT nextval('flow_steps_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY flows ALTER COLUMN id SET DEFAULT nextval('flows_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY projects ALTER COLUMN id SET DEFAULT nextval('projects_id_seq'::regclass);
 
 
@@ -264,6 +343,22 @@ ALTER TABLE ONLY accounts
 
 
 --
+-- Name: flow_steps_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY flow_steps
+    ADD CONSTRAINT flow_steps_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flows_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY flows
+    ADD CONSTRAINT flows_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -293,6 +388,13 @@ ALTER TABLE ONLY resources
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_flow_steps_on_flow_id_and_index; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_flow_steps_on_flow_id_and_index ON flow_steps USING btree (flow_id, index);
 
 
 --
@@ -351,3 +453,7 @@ INSERT INTO schema_migrations (version) VALUES ('20130721204833');
 INSERT INTO schema_migrations (version) VALUES ('20130722212649');
 
 INSERT INTO schema_migrations (version) VALUES ('20130726223211');
+
+INSERT INTO schema_migrations (version) VALUES ('20130805215425');
+
+INSERT INTO schema_migrations (version) VALUES ('20130805215655');

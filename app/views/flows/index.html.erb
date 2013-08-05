@@ -1,0 +1,27 @@
+<div class="row" style="padding: 0 32px; margin-top:20px">
+  <div class="span12">
+    <h3>Flows</h3>
+
+    <% if @flows.length == 0 %>
+      <p>It doesn't look like you've recorded any flows yet. Just go to your web site, click the Landmark icon and then "Record Flow".</p>
+
+    <% else %>
+      <table id="flows" class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th class="span5">Flow Name</th>
+            <th>Steps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @flows.each do |flow| %>
+            <tr>
+              <td><%= link_to(flow.public_name, edit_flow_path(flow)) %></td>
+              <td><%= flow.steps.count %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+</div>
