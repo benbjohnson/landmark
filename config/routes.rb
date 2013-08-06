@@ -17,6 +17,7 @@ Landmark::Application.routes.draw do
     get :contact
     get :signup
   end
+  match "demo/signup/:plan" => 'demos#signup'
 
   namespace :api do
     namespace :v1 do
