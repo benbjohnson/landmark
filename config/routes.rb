@@ -2,6 +2,7 @@ Landmark::Application.routes.draw do
   devise_for :users, :controllers => {:registrations => "registrations"}
   resource :account
   resources :projects do
+    resources :flows
     collection do
       get :auth
     end
@@ -11,7 +12,12 @@ Landmark::Application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :flows
+      resources :flows do
+        collection do
+          get :current
+          post :set_current
+        end
+      end
 
       resources :resources do
         collection do

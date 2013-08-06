@@ -1,6 +1,6 @@
 class Flow < ActiveRecord::Base
   belongs_to :project
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
   has_many :steps, :class_name => 'FlowStep', :dependent => :destroy
 
   attr_accessible :name
