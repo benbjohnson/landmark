@@ -18,8 +18,8 @@ overlay : {
 menu : {
   opened: false,
   items:[
-    {id:"record_goal", label:"Record Goal", visible:true},
-    {id:"stop_goal", label:"Stop Recording", visible:false},
+    {id:"record_flow", label:"Record Flow", visible:true},
+    {id:"stop_flow", label:"Stop Recording", visible:false},
     {id:"show_page_actions", label:"Show Page Actions", visible:true},
     {id:"hide_page_actions", label:"Hide Page Actions", visible:false},
     {id:"hide", label:"Hide", visible:true}
@@ -29,7 +29,7 @@ menu : {
   borderThickness: 2
 },
 
-goal : {
+flow : {
   recording: false,
   steps: [],
   /*
@@ -71,8 +71,8 @@ initialize : function() {
     .style("height", 0)
   ;
 
-  this.goal.svg = d3.select("body").append("svg")
-    .attr("class", "landmark-hud-goal");
+  this.flow.svg = d3.select("body").append("svg")
+    .attr("class", "landmark-hud-flow");
 
   this.menu.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-menu");
@@ -104,7 +104,7 @@ update : function() {
   this.updateOverlay(w, h);
   this.updateMenu(w, h);
   this.updatePageActions(w, h);
-  this.updateGoal(w, h);
+  this.updateFlow(w, h);
 },
 
 updateLinks : function() {
@@ -284,13 +284,13 @@ updatePageActions : function(w, h) {
   ;
 },
 
-updateGoal : function(w, h) {
+updateFlow : function(w, h) {
   var $this = this;
-  var visible = this.goal.recording && !this.menu.opened;
+  var visible = this.flow.recording && !this.menu.opened;
   var steps = [];
   if(visible) {
     var index = 0;
-    this.goal.steps.concat({type:"add"}).forEach(function(step) {
+    this.flow.steps.concat({type:"add"}).forEach(function(step) {
       step.index = index++;
       steps.push(step);
     });
@@ -303,13 +303,13 @@ updateGoal : function(w, h) {
   var stepHeight = 40;
   var stepTextLength = stepWidth / 10;
 
-  this.goal.svg
+  this.flow.svg
     .transition()
     .style("left", padding)
     .style("top", h-60);
 
   // Create the step rects
-  this.goal.svg.selectAll(".landmark-hud-goal-step")
+  this.flow.svg.selectAll(".landmark-hud-flow-step")
     .data(steps.reverse()) //, function(d) { return d.index; })
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
@@ -320,7 +320,7 @@ updateGoal : function(w, h) {
         .attr("width", rectWidthFunc)
       ;
       enter.append("g")
-        .attr("class", "landmark-hud-goal-step")
+        .attr("class", "landmark-hud-flow-step")
         .attr("transform", "translate(5,5)")
         .on("click", function(d) { $this.step_onClick(d) } )
         .call(function() {
@@ -344,7 +344,7 @@ updateGoal : function(w, h) {
             .attr("y", 12);
         });
       selection.select("rect")
-        .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-goal-add-step" : "";})
+        .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-flow-add-step" : "";})
       selection.select("text")
         .text(function(d) { return d.type == 'add' ? '' : $this.ellipsize(d.__resource__, stepTextLength); });
       exit.remove();
@@ -369,15 +369,32 @@ setMenuItemVisible : function(id, value) {
 },
 
 //--------------------------------------
-// Goal Recording
+// Flow Recording
 //--------------------------------------
 
-setGoalRecordingState : function(recording) {
-  this.goal.recording = recording;
+setFlowRecordingState : function(recording) {
+  if(recording) {
+    var name = prompt("Please name this flow:");
+    if(name) {
+      var xhr = d3.json(landmark.baseUrl() + "/flows.json?apiKey=" + encodeURIComponent(landmark.apiKey));
+      xhr.header('Content-Type', 'application/json');
+      xhr.post(JSON.stringify({"name":name}), function(error, json) {
+        if(error) return landmark.log(error);
+        debugger;
+
+        this.flow.recording = recording;
+        this.setMenuItemVisible("record_flow", false);
+        this.setMenuItemVisible("stop_flow", true);
+        this.update();
+      });
+    } else {
+      recording = false;
+    }
+  }
 
   this.menu.opened = false;
-  this.setMenuItemVisible("record_goal", !recording);
-  this.setMenuItemVisible("stop_goal", recording);
+  this.setMenuItemVisible("record_flow", !recording);
+  this.setMenuItemVisible("stop_flow", recording);
   this.update();
 },
 
@@ -388,7 +405,7 @@ setGoalRecordingState : function(recording) {
 setPageActionsVisible : function(enabled) {
   var $this = this;
   if(enabled) {
-    d3.json(landmark.baseUrl() + "/resources/next_page_actions?apiKey=" + encodeURIComponent(landmark.apiKey) + "&name=" + encodeURIComponent(landmark.resource()), function(error, json) {
+    d3.json(landmark.baseUrl() + "/api/v1/resources/next_page_actions?apiKey=" + encodeURIComponent(landmark.apiKey) + "&name=" + encodeURIComponent(landmark.resource()), function(error, json) {
       if(error) return landmark.log(error);
       $this.actions.total = json.count;
       $this.actions.data = $this.normalizeActionData(json);
@@ -457,8 +474,8 @@ onresize : function() {
 
 menuItem_onClick : function(d) {
   switch(d.id) {
-    case "record_goal": this.setGoalRecordingState(true); break;
-    case "stop_goal": this.setGoalRecordingState(false); break;
+    case "record_flow": this.setFlowRecordingState(true); break;
+    case "stop_flow": this.setFlowRecordingState(false); break;
     case "show_page_actions": this.setPageActionsVisible(true); break;
     case "hide_page_actions": this.setPageActionsVisible(false); break;
     case "hide": hide(); break;
@@ -471,7 +488,7 @@ actionItem_onClick : function(d) {
 
 step_onClick : function(d) {
   if(d.type == "add") {
-    this.goal.steps.unshift({__resource__:landmark.resource()});
+    this.flow.steps.unshift({__resource__:landmark.resource()});
     this.update();
   }
 },
