@@ -30,10 +30,10 @@ menu : {
 },
 
 flow : {
-  id: 0,
+  current: null,
   steps: [],
   recording : function() {
-    return this.id;
+    return (this.current != null);
   }
 },
 
@@ -285,7 +285,7 @@ updatePageActions : function(w, h) {
 
 updateFlow : function(w, h) {
   var $this = this;
-  var visible = this.flow.id > 0 && !this.menu.opened;
+  var visible = this.flow.recording() && !this.menu.opened;
   var steps = [];
   if(visible) {
     var index = 0;
@@ -376,8 +376,7 @@ getCurrentFlow : function() {
   d3.json(landmark.baseUrl() + "/api/v1/flows/current?apiKey=" + encodeURIComponent(landmark.apiKey),
     function(error, json) {
       if(error) return landmark.log(error);
-      var id = json.id
-      $this.flow.id = parseInt(id);
+      $this.flow.current = (!json || Object.keys(json).length == 0 ? null : json);
       $this.setMenuItemVisible("record_flow", !$this.flow.recording());
       $this.setMenuItemVisible("stop_flow", $this.flow.recording());
       $this.update();
@@ -391,10 +390,29 @@ setCurrentFlow : function(id) {
   xhr.header('Content-Type', 'application/json');
   xhr.post(null, function(error, json) {
     if(error) return landmark.log(error);
-    $this.flow.id = parseInt(id);
+    $this.flow.current = (!json || Object.keys(json).length == 0 ? null : json);
     $this.setMenuItemVisible("record_flow", !$this.flow.recording());
     $this.setMenuItemVisible("stop_flow", $this.flow.recording());
+    $this.menu.opened = false;
     $this.update();
+  });
+},
+
+createFlow : function(name) {
+  var $this = this;
+  var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows?apiKey=" + encodeURIComponent(landmark.apiKey));
+  xhr.header('Content-Type', 'application/json');
+  xhr.post(JSON.stringify({"name":name}), function(error, json) {
+    if(error) {
+      var response = {};
+      try { response = JSON.parse(error.response); } catch(e) {}
+      if(response.name) {
+        return alert("The '" + name + "' flow already exists. Please try a different name.");
+      } else {
+        return landmark.log(error);
+      }
+    }
+    $this.setCurrentFlow(json.id);
   });
 },
 
@@ -409,12 +427,8 @@ setFlowRecordingState : function(recording) {
       return;
     }
 
-    var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows?apiKey=" + encodeURIComponent(landmark.apiKey));
-    xhr.header('Content-Type', 'application/json');
-    xhr.post(JSON.stringify({"name":name}), function(error, json) {
-      if(error) return landmark.log(error);
-      $this.setCurrentFlow(json.id);
-    });
+    this.createFlow(name);
+
   } else {
     $this.setCurrentFlow(0);
   }

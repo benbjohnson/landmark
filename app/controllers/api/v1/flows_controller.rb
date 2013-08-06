@@ -3,13 +3,13 @@ module Api::V1
     # GET /api/v1/flows
     def index
       @flows = @project.flows.includes(:steps)
-      render json: @flows
+      render json: @flows.to_json(:include => :steps)
     end
 
     # GET /api/v1/flows/1
     def show
       @flow = @project.flows.includes(:steps).find(params[:id])
-      render json: @flow
+      render json: @flow.to_json(:include => :steps)
     end
 
     # POST /api/v1/flows
@@ -43,13 +43,24 @@ module Api::V1
 
     # GET /api/v1/flows/current
     def current
-      render json: {id: session[:current_flow_id]}
+      if session[:current_flow_id].to_i == 0
+        head :no_content
+      else
+        @flow = @project.flows.includes(:steps).find(session[:current_flow_id])
+        render json: @flow.to_json(:include => :steps)
+      end
     end
 
     # POST /api/v1/flows/set_current
     def set_current
-      session[:current_flow_id] = params[:id]
-      head :no_content
+      if params[:id].to_i == 0
+        session[:current_flow_id] = 0
+        head :no_content
+      else
+        @flow = @project.flows.includes(:steps).find(params[:id])
+        session[:current_flow_id] = @flow.id
+        render json: @flow.to_json(:include => :steps)
+      end
     end
   end
 end
