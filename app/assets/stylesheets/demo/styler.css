@@ -6,7 +6,7 @@ body {
 	width:40px; 
 	padding:10px 0;
 	background-color:#2773ae;
-	background-image:url(../img/paintbrush_w.png); 
+	background-image:url(/assets/demo/paintbrush_w.png); 
 	background-size:80%;
 	background-position:center;
 	background-repeat:no-repeat;
@@ -99,7 +99,7 @@ body {
 .mtp-primary-color:after {
 	width:25px;
 	height:25px;
-	background-image:url(../img/paintbrush_w.png);
+	background-image:url(/assets/demo/paintbrush_w.png);
 	background-size:100%;
 	background-repeat:no-repeat;
 	left:50%;
@@ -120,27 +120,27 @@ body {
 .mtp-background-pattern, .mtp-background-image, .mtp-color {
 	margin:0 -5px 0 0;
 }
-.mtp-background-pattern li.pattern_0 {background:url('../img/patterns/pattern_0.png') center;}
-.mtp-background-pattern li.pattern_1 {background:url('../img/patterns/pattern_1.png') center;}
-.mtp-background-pattern li.pattern_2 {background:url('../img/patterns/pattern_2.png') center;}
-.mtp-background-pattern li.pattern_3 {background:url('../img/patterns/pattern_3.png') center;}
-.mtp-background-pattern li.pattern_4 {background:url('../img/patterns/pattern_4.png') center;}
-.mtp-background-pattern li.pattern_5 {background:url('../img/patterns/pattern_5.png') center;}
-.mtp-background-pattern li.pattern_6 {background:url('../img/patterns/pattern_6.png') center;}
-.mtp-background-pattern li.pattern_7 {background:url('../img/patterns/pattern_7.png') center;}
-.mtp-background-pattern li.pattern_8 {background:url('../img/patterns/pattern_8.png') center;}
-.mtp-background-pattern li.pattern_9 {background:url('../img/patterns/pattern_9.png') center;}
-.mtp-background-pattern li.pattern_10 {background:url('../img/patterns/pattern_10.png') center;}
-.mtp-background-pattern li.pattern_11 {background:url('../img/patterns/pattern_11.png') center;}
-.mtp-background-pattern li.pattern_12 {background:url('../img/patterns/pattern_12.png') center;}
-.mtp-background-pattern li.pattern_13 {background:url('../img/patterns/pattern_13.png') center;}
-.mtp-background-pattern li.pattern_14 {background:url('../img/patterns/pattern_14.png') center;}
-.mtp-background-pattern li.pattern_15 {background:url('../img/patterns/pattern_15.png') center;}
-.mtp-background-pattern li.pattern_16 {background:url('../img/patterns/pattern_16.png') center;}
-.mtp-background-image li.image_1 {background-image:url('../img/images/image_1_s.png');}
-.mtp-background-image li.image_2 {background-image:url('../img/images/image_2_s.png');}
-.mtp-background-image li.image_3 {background-image:url('../img/images/image_3_s.png');}
-.mtp-background-image li.image_4 {background-image:url('../img/images/image_4_s.png');}
+.mtp-background-pattern li.pattern_0 {background:url('/assets/demo/patterns/pattern_0.png') center;}
+.mtp-background-pattern li.pattern_1 {background:url('/assets/demo/patterns/pattern_1.png') center;}
+.mtp-background-pattern li.pattern_2 {background:url('/assets/demo/patterns/pattern_2.png') center;}
+.mtp-background-pattern li.pattern_3 {background:url('/assets/demo/patterns/pattern_3.png') center;}
+.mtp-background-pattern li.pattern_4 {background:url('/assets/demo/patterns/pattern_4.png') center;}
+.mtp-background-pattern li.pattern_5 {background:url('/assets/demo/patterns/pattern_5.png') center;}
+.mtp-background-pattern li.pattern_6 {background:url('/assets/demo/patterns/pattern_6.png') center;}
+.mtp-background-pattern li.pattern_7 {background:url('/assets/demo/patterns/pattern_7.png') center;}
+.mtp-background-pattern li.pattern_8 {background:url('/assets/demo/patterns/pattern_8.png') center;}
+.mtp-background-pattern li.pattern_9 {background:url('/assets/demo/patterns/pattern_9.png') center;}
+.mtp-background-pattern li.pattern_10 {background:url('/assets/demo/patterns/pattern_10.png') center;}
+.mtp-background-pattern li.pattern_11 {background:url('/assets/demo/patterns/pattern_11.png') center;}
+.mtp-background-pattern li.pattern_12 {background:url('/assets/demo/patterns/pattern_12.png') center;}
+.mtp-background-pattern li.pattern_13 {background:url('/assets/demo/patterns/pattern_13.png') center;}
+.mtp-background-pattern li.pattern_14 {background:url('/assets/demo/patterns/pattern_14.png') center;}
+.mtp-background-pattern li.pattern_15 {background:url('/assets/demo/patterns/pattern_15.png') center;}
+.mtp-background-pattern li.pattern_16 {background:url('/assets/demo/patterns/pattern_16.png') center;}
+.mtp-background-image li.image_1 {background-image:url('/assets/demo/images/image_1_s.png');}
+.mtp-background-image li.image_2 {background-image:url('/assets/demo/images/image_2_s.png');}
+.mtp-background-image li.image_3 {background-image:url('/assets/demo/images/image_3_s.png');}
+.mtp-background-image li.image_4 {background-image:url('/assets/demo/images/image_4_s.png');}
 .mtp-background-image li {
 	background-size:cover;
 	}

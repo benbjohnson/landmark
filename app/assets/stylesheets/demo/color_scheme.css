@@ -174,7 +174,7 @@ a:hover {
     display: block;
     width: 42px;
     height: 27px;
-    background: transparent url("../img/portfolio_toggles.png") top left no-repeat;
+    background: transparent url("/assets/demo/portfolio_toggles.png") top left no-repeat;
     border-radius: 5px;
 }
 .portfolio-switch li.collapsed a {
@@ -199,7 +199,7 @@ a:hover {
     background-color: #2773ae;
 }
 .fancy-wrapper .fancy {
-    /* background: url("../img/home_portfolio_hover_orange.png") no-repeat scroll center center transparent; */
+    /* background: url("/assets/demo/home_portfolio_hover_orange.png") no-repeat scroll center center transparent; */
 	background-color:#2773ae;
 	
 }
@@ -230,12 +230,12 @@ a:hover {
     border-bottom: 1px solid #2773ae;
 }
 a.cs-logo {
-    background: url("../img/logo.png") no-repeat top left transparent;
+    background: url("/assets/demo/logo.png") no-repeat top left transparent;
 }
 /*Dark grey hero-unit background
 ----------------------------------------------------------------------*/
 .dark-hero {
-    background: url("../img/dark_tissue.png") repeat scroll 0 0 transparent;
+    background: url("/assets/demo/dark_tissue.png") repeat scroll 0 0 transparent;
 }
 /*Dark grey hero-unit button styles
 ----------------------------------------------------------------------*/

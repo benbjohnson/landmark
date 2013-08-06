@@ -49,7 +49,7 @@ html[xmlns] .slides {display: block;}
 
 /* Direction Nav */
 .flex-direction-nav {*height: 0;}
-.flex-direction-nav a {width: 30px; height: 29px; display: block; background: url(../img/slider_arrows.png) no-repeat 0 0; position: absolute; top: 48%; cursor: pointer; text-indent: -9999px;}
+.flex-direction-nav a {width: 30px; height: 29px; display: block; background: url(/assets/demo/slider_arrows.png) no-repeat 0 0; position: absolute; top: 48%; cursor: pointer; text-indent: -9999px;}
 .flex-direction-nav .flex-next {background-position: 100% 0; right: 20px; }
 .flex-direction-nav .flex-prev {left: 20px; background-position: 0 0;}
 .flexslider .flex-next:hover {background-position: -30px -29px;}
@@ -78,7 +78,7 @@ html[xmlns] .slides {display: block;}
     width: 380px;
     height: 85px;
     position: absolute;
-    background: transparent url('../img/slide_info_bg.png') top left repeat;
+    background: transparent url('/assets/demo/slide_info_bg.png') top left repeat;
     bottom: 20px;
     right: 30px;
     padding: 15px 20px;

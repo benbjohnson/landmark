@@ -33,7 +33,7 @@ jQuery(document).ready(function() {
 	}
 	
 	
-	jQuery('head').append('<script type="text/javascript" src="' + directory + 'js/style-switcher/jquery.cookie.js">');
+	jQuery('head').append('<script type="text/javascript" src="' + directory + '/assets/demo/style-switcher/jquery.cookie.js">');
 
 	
 	if(enable_style_switcher){

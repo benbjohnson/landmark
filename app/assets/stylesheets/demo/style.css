@@ -129,7 +129,7 @@ a:hover {
 	bottom:0;
 	left:0;
 	right:0;
-	background:url(../img/line.png) repeat-x;
+	background:url(/assets/demo/line.png) repeat-x;
 	box-sizing:border-box;
 	-moz-box-sizing:border-box;
 }
@@ -152,7 +152,7 @@ a:hover {
 	left:0;
 	width:100%;
 	height:100%;
-	background:url(../img/over.png);
+	background:url(/assets/demo/over.png);
 	content:'';
 	z-index:1;
 }
@@ -168,7 +168,7 @@ a:hover {
 	left:50%;
 	width:156px;
 	height:156px;
-	background:url(../img/over_round.png) no-repeat;
+	background:url(/assets/demo/over_round.png) no-repeat;
 	margin:-78px 0 0 -78px;
 	content:'Details...';
 	z-index:2;
@@ -188,7 +188,7 @@ a:hover {
 	border:0;
 	background:#2773ae;}
 #solutions li:last-child:hover:after {
-    background:url(../img/line.png) repeat-x;
+    background:url(/assets/demo/line.png) repeat-x;
 }
 #solutions li a .img {
 	border:1px solid #c9c9c9;

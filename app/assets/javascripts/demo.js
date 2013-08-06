@@ -1,0 +1,11 @@
+//= require demo/jquery.min
+//= require demo/jquery-ui.min
+//= require demo/bootstrap
+//= require demo/style-switcher/style-switcher
+//= require demo/jquery.flexslider-min
+//= require demo/jquery.isotope
+//= require demo/jquery.fancybox.pack
+//= require demo/rs-plugin/js/jquery.themepunch.plugins.min
+//= require demo/rs-plugin/js/jquery.themepunch.revolution.min
+//= require demo/revolution.custom
+//= require demo/custom
