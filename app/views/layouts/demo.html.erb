@@ -17,7 +17,7 @@
                 <div class="row">
                     <!-- HEADER: LOGO AREA -->
                     <div class="span4 logo">
-                        <a class="logo" href="index.html">
+                        <a class="logo" href="/demo">
                             <img alt="logo" title="bizstrap" src="/assets/demo/logo.png">
                         </a>
                     </div>
@@ -45,44 +45,24 @@
                             <div class="nav-collapse">
                                 <ul class="nav nav-pills">
                                     <li class="active">
-                                        <a href="index.html">
+                                        <a href="/demo">
                                             HOME
                                         </a>
                                     </li>
-                                    <li class="dropdown">
-                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                            PRODUCTS
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="crm.html">MegaCRM</a></li>
-                                            <li><a href="erp.html">MegaERP</a></li>
-                                            <li><a href="data.html">MegaData</a></li>
-                                        </ul>
+                                    <li>
+                                        <%= link_to('PRICING', pricing_demo_path) %>
                                     </li>
                                     <li>
-                                        <a href="blog.html">
-                                            BLOG
-                                        </a>
+                                        <%= link_to('SIGN UP', signup_demo_path) %>
                                     </li>
                                     <li>
-                                        <a href="philosophy.html">
-                                            PHILOSOPHY
-                                        </a>
+                                        <%= link_to('BLOG', blog_demo_path) %>
                                     </li>
                                     <li>
-                                        <a href="team.html">
-                                            OUR TEAM
-                                        </a>
+                                        <%= link_to('ABOUT', about_demo_path) %>
                                     </li>
                                     <li>
-                                        <a href="aboutus.html">
-                                            ABOUT US
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="contactus.html">
-                                            CONTACT
-                                        </a>
+                                        <%= link_to('CONTACT', contact_demo_path) %>
                                     </li>
                                 </ul>
                             </div>

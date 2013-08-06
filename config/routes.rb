@@ -11,6 +11,11 @@ Landmark::Application.routes.draw do
   get '/track', :to => 'events#track'
 
   resource :demo, :only => [:show] do
+    get :pricing
+    get :blog
+    get :about
+    get :contact
+    get :signup
   end
 
   namespace :api do
