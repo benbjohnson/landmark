@@ -289,8 +289,8 @@ updateFlow : function(w, h) {
   var steps = [];
   if(visible) {
     var index = 0;
-    this.flow.steps.concat({type:"add"}).forEach(function(step) {
-      step.index = index++;
+    this.flow.current.steps.concat({type:"add"}).forEach(function(step) {
+      step._index = index++;
       steps.push(step);
     });
   }
@@ -309,10 +309,10 @@ updateFlow : function(w, h) {
 
   // Create the step rects
   this.flow.svg.selectAll(".landmark-hud-flow-step")
-    .data(steps.reverse()) //, function(d) { return d.index; })
+    .data(steps.reverse()) //, function(d) { return d._index; })
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
-      var transformFunc = function(d, i) { return "translate(" + ((d.index*stepWidth)-(d.index*40)+5) + ",5)"};
+      var transformFunc = function(d, i) { return "translate(" + ((d._index*stepWidth)-(d._index*40)+5) + ",5)"};
       var rectWidthFunc = function(d) { return d.type == 'add' ? 80 : stepWidth;}
       selection.attr("transform", transformFunc);
       selection.select("rect")
@@ -345,7 +345,7 @@ updateFlow : function(w, h) {
       selection.select("rect")
         .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-flow-add-step" : "";})
       selection.select("text")
-        .text(function(d) { return d.type == 'add' ? '' : $this.ellipsize(d.__resource__, stepTextLength); });
+        .text(function(d) { return d.type == 'add' ? '' : $this.ellipsize(d.resource, stepTextLength); });
       exit.remove();
     })
 },
@@ -368,7 +368,7 @@ setMenuItemVisible : function(id, value) {
 },
 
 //--------------------------------------
-// Flow Recording
+// Flow
 //--------------------------------------
 
 getCurrentFlow : function() {
@@ -435,6 +435,23 @@ setFlowRecordingState : function(recording) {
 },
 
 //--------------------------------------
+// Flow Steps
+//--------------------------------------
+
+createFlowStep : function(data) {
+  if(!this.flow.recording()) return landmark.log("Cannot create new step while recording is stopped.");
+  var $this = this;
+  var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows/" + this.flow.current.id + "/steps?apiKey=" + encodeURIComponent(landmark.apiKey));
+  xhr.header('Content-Type', 'application/json');
+  xhr.post(JSON.stringify({"step":data}), function(error, json) {
+    if(error) return landmark.log(error);
+    $this.flow.current.steps.push(json)
+    $this.update();
+  });
+},
+
+
+//--------------------------------------
 // Page Actions
 //--------------------------------------
 
@@ -489,6 +506,7 @@ offset : function(obj) {
 },
 
 ellipsize : function(url, length) {
+  if(!url) return "";
   url = url.replace(/http:\/\/(www\.)?/g, "");
   if(url.length >= length) {
     tmp = url.substring(0, (length / 2));
@@ -524,7 +542,7 @@ actionItem_onClick : function(d) {
 
 step_onClick : function(d) {
   if(d.type == "add") {
-    this.flow.steps.unshift({__resource__:landmark.resource()});
+    this.createFlowStep({"resource":landmark.resource()})
     this.update();
   }
 },

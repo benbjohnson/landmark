@@ -44,7 +44,7 @@ module Api::V1
     # GET /api/v1/flows/current
     def current
       if session[:current_flow_id].to_i == 0
-        head :no_content
+        render json: {}
       else
         @flow = @project.flows.includes(:steps).find(session[:current_flow_id])
         render json: @flow.to_json(:include => :steps)
@@ -55,7 +55,7 @@ module Api::V1
     def set_current
       if params[:id].to_i == 0
         session[:current_flow_id] = 0
-        head :no_content
+        render json: {}
       else
         @flow = @project.flows.includes(:steps).find(params[:id])
         session[:current_flow_id] = @flow.id

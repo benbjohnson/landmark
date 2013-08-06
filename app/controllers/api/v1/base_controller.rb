@@ -1,6 +1,7 @@
 module Api
   module V1
     class BaseController < Api::BaseController
+      skip_before_filter :verify_authenticity_token
       before_filter :authenticate_api_user!
       before_filter :find_project
 

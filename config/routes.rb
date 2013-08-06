@@ -17,6 +17,8 @@ Landmark::Application.routes.draw do
           get :current
           post :set_current
         end
+
+        resources :steps, :controller => "flow_steps"
       end
 
       resources :resources do
