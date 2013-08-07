@@ -4,4 +4,20 @@ class Flow < ActiveRecord::Base
   has_many :steps, :class_name => 'FlowStep', :dependent => :destroy
 
   attr_accessible :name
+
+  # Generates a funnel analysis query to be run against Sky.
+  def query(options={})
+    root = {sessionIdleTime:7200, steps:[]}
+
+    parent = root
+    steps.each_with_index do |step, index|
+      condition = {:type => 'condition', :expression => "__resource__ == #{step.resource.to_s.to_lua} && __action__ == '__page_view__'", :steps => [
+        {:type => 'selection', :name => index.to_s, :dimensions => [], :fields => [:name => 'count', :expression => 'count()']},
+      ]}
+      parent[:steps] << condition
+      parent = condition
+    end
+
+    return root
+  end
 end

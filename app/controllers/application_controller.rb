@@ -7,16 +7,4 @@ class ApplicationController < ActionController::Base
     @project ||= current_project
     set_current_project(@project)
   end
-
-  def encode_lua_string(str)
-    str.to_s.gsub(/\n|\f|\t|"|'|\\/) do |m|
-      case m
-      when "\n" then "\\n"
-      when "\f" then "\\f"
-      when "\t" then "\\t"
-      when "\"" then "\\\""
-      when "'" then "\\'"
-      end
-    end
-  end
 end
