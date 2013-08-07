@@ -1,6 +1,6 @@
 require 'functional/test_helper'
 
-class ResourcesControllerTest < ActionController::TestCase
+class Api::V1::ResourcesControllerTest < ActionController::TestCase
   setup do
     sky_delete_test_tables()
     setup_account()
