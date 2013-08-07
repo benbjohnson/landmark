@@ -22,6 +22,10 @@ Landmark::Application.routes.draw do
   namespace :api do
     namespace :v1 do
       resources :flows do
+        member do
+          get :query
+        end
+
         collection do
           get :current
           post :set_current

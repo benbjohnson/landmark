@@ -19,16 +19,16 @@ class FlowTest < ActiveSupport::TestCase
       {:sessionIdleTime=>7200,
        :steps=>
         [{:type=>"condition",
-          :expression=>
-           "__resource__ == '/index.html' && __action__ == '__page_view__'",
+          :within=>[0, 0],
+          :expression=>"__resource__ == '/index.html' && __action__ == '__page_view__'",
           :steps=>
            [{:type=>"selection",
              :name=>"0",
              :dimensions=>[],
              :fields=>[{:name=>"count", :expression=>"count()"}]},
             {:type=>"condition",
-             :expression=>
-              "__resource__ == '/signup.html' && __action__ == '__page_view__'",
+             :within=>[1, 1000000],
+             :expression=>"__resource__ == '/signup.html' && __action__ == '__page_view__'",
              :steps=>
               [{:type=>"selection",
                 :name=>"1",

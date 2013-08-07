@@ -14,7 +14,7 @@ module Api::V1
             ]}
           ]}
         ]}
-        results = @project.query(q)
+        results = @project.run_query(q)
       end
       
       render :json => results

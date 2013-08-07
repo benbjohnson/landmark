@@ -41,6 +41,13 @@ module Api::V1
       head :no_content
     end
 
+    # GET /api/v1/flows/query
+    def query
+      @flow = @project.flows.includes(:steps).find(params[:id])
+      results = @project.run_query(@flow.query())
+      render json: results
+    end
+
     # GET /api/v1/flows/current
     def current
       if session[:current_flow_id].to_i == 0

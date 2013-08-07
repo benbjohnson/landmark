@@ -119,7 +119,7 @@ class Project < ActiveRecord::Base
   end
 
   # Executes a query against the project's events.
-  def query(q)
+  def run_query(q)
     return sky_table.query(q)
   end
 
