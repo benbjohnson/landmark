@@ -1,0 +1,1 @@
+landmark.hud.initialize();
