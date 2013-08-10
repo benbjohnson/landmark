@@ -1,5 +1,6 @@
 //= require 'd3'
 //= require_self
+//= require hud/overlay
 //= require hud/menu
 //= require hud/actions
 //= require hud/flow
@@ -8,17 +9,6 @@
 (function() {
 
 var hud = {
-
-//------------------------------------------------------------------------------
-//
-// Properties
-//
-//------------------------------------------------------------------------------
-
-overlay : {
-  enabled: false
-},
-
 
 //------------------------------------------------------------------------------
 //
@@ -33,29 +23,7 @@ overlay : {
 initialize : function() {
   var $this = this;
   
-  this.overlay.svg = d3.select("body").append("svg")
-    .attr("class", "landmark-hud-overlay");
-  this.overlay.g = this.overlay.svg.append("g");
-  this.overlay.rect = this.overlay.g.append("rect");
-
-  this.overlay.svg.append("filter")
-    .attr("id", "dropshadow")
-    .attr("height", "130%")
-    .call(function() {
-      this.append("feGaussianBlur")
-        .attr("in", "SourceAlpha")
-        .attr("stdDeviation", "1");
-      this.append("feOffset")
-        .attr("dx", "2")
-        .attr("dy", "2")
-        .attr("result", "offsetblur");
-      this.append("feMerge")
-        .call(function() {
-          this.append("feMergeNode");
-          this.append("feMergeNode").attr("in", "SourceGraphic");
-        });
-    });
-
+  hud.overlay.initialize();
   hud.menu.initialize();
   hud.actions.initialize();
   hud.flow.initialize();
@@ -70,28 +38,10 @@ initialize : function() {
 update : function() {
   var w = window.innerWidth || document.documentElement.clientWidth;
   var h = window.innerHeight || document.documentElement.clientHeight;
-  this.updateOverlay(w, h);
+  this.overlay.update(w, h);
   this.menu.update(w, h);
   this.actions.update(w, h);
   this.flow.update(w, h);
-},
-
-updateOverlay : function(w, h) {
-  this.overlay.svg
-    .style("left", "0px")
-    .style("top", "0px")
-    .attr("width", (this.overlay.enabled ? w : 0))
-    .attr("height", (this.overlay.enabled ? h : 0))
-  ;
-  this.overlay.rect
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", (this.overlay.enabled ? w : 0))
-    .attr("height", (this.overlay.enabled ? h : 0))
-    .attr("fill", "#000000")
-    .transition()
-      .attr("opacity", (this.overlay.enabled ? 0.3 : 0))
-  ;
 },
 
 
