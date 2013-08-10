@@ -8,13 +8,25 @@ window.landmark.hud.flow = {
 //
 //------------------------------------------------------------------------------
 
-current: null,
+_current: null,
 
-steps: [],
+current : function(v) {
+  if(arguments.length == 0) return this._current;
+  this._current = (!v || Object.keys(v).length == 0 ? null : v);
+  landmark.hud.menu.setMenuItemVisible("record_flow", !this.recording());
+  landmark.hud.menu.setMenuItemVisible("stop_flow", this.recording());
+  landmark.hud.menu.opened = false;
+  landmark.hud.update();
+  if(this.current()) {
+    this.query(this.current().id);
+  }
+},
 
 recording : function() {
-  return (this.current != null);
+  return (this.current() != null);
 },
+
+data: [],
 
 //------------------------------------------------------------------------------
 //
@@ -27,6 +39,8 @@ recording : function() {
 //--------------------------------------
 
 initialize : function() {
+  var $this = this;
+
   this.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-flow");
 
@@ -34,8 +48,13 @@ initialize : function() {
     .attr("filter", "url(#dropshadow)")
   ;
 
-  // Retrieve current recording id.
-  this.getCurrentFlow();
+  // Retrieve current recording flow.
+  d3.json(landmark.baseUrl() + "/api/v1/flows/current?apiKey=" + encodeURIComponent(landmark.apiKey),
+    function(error, json) {
+      if(error) return landmark.log(error);
+      $this.current(json);
+    }
+  );
 },
 
 
@@ -49,7 +68,7 @@ update : function(w, h) {
   var steps = [];
   if(visible) {
     var index = 0;
-    this.current.steps.concat({type:"add"}).forEach(function(step) {
+    this.current().steps.concat({type:"add"}).forEach(function(step) {
       step._index = index++;
       steps.push(step);
     });
@@ -116,30 +135,13 @@ update : function(w, h) {
 // Flow
 //--------------------------------------
 
-getCurrentFlow : function() {
-  var $this = this;
-  d3.json(landmark.baseUrl() + "/api/v1/flows/current?apiKey=" + encodeURIComponent(landmark.apiKey),
-    function(error, json) {
-      if(error) return landmark.log(error);
-      $this.current = (!json || Object.keys(json).length == 0 ? null : json);
-      landmark.hud.menu.setMenuItemVisible("record_flow", !$this.recording());
-      landmark.hud.menu.setMenuItemVisible("stop_flow", $this.recording());
-      landmark.hud.update();
-    }
-  );
-},
-
 setCurrentFlow : function(id) {
   var $this = this;
   var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows/set_current?apiKey=" + encodeURIComponent(landmark.apiKey) + "&id=" + encodeURIComponent(id));
   xhr.header('Content-Type', 'application/json');
   xhr.post(null, function(error, json) {
     if(error) return landmark.log(error);
-    $this.current = (!json || Object.keys(json).length == 0 ? null : json);
-    landmark.hud.menu.setMenuItemVisible("record_flow", !$this.recording());
-    landmark.hud.menu.setMenuItemVisible("stop_flow", $this.recording());
-    landmark.hud.menu.opened = false;
-    landmark.hud.update();
+    $this.current(json);
   });
 },
 
@@ -184,13 +186,29 @@ setFlowRecordingState : function(recording) {
 createFlowStep : function(data) {
   if(!this.recording()) return landmark.log("Cannot create new step while recording is stopped.");
   var $this = this;
-  var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows/" + this.current.id + "/steps?apiKey=" + encodeURIComponent(landmark.apiKey));
+  var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows/" + this.current().id + "/steps?apiKey=" + encodeURIComponent(landmark.apiKey));
   xhr.header('Content-Type', 'application/json');
   xhr.post(JSON.stringify({"step":data}), function(error, json) {
     if(error) return landmark.log(error);
-    $this.current.steps.push(json)
+    $this.current().steps.push(json)
     landmark.hud.update();
   });
+},
+
+
+//--------------------------------------
+// Query
+//--------------------------------------
+
+query : function(id) {
+  var $this = this;
+  d3.json(landmark.baseUrl() + "/api/v1/flows/" + id + "/query?apiKey=" + encodeURIComponent(landmark.apiKey),
+    function(error, json) {
+      if(error) return landmark.log(error);
+      $this.data = json;
+      landmark.hud.update();
+    }
+  );
 },
 
 
