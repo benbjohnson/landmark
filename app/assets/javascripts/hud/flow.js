@@ -123,6 +123,7 @@ update : function(w, h) {
 
 updateSteps : function(w, h, steps, options) {
   var $this = this;
+  var resource = landmark.resource();
 
   if(options.visible) {
     steps = steps.slice();
@@ -164,7 +165,7 @@ updateSteps : function(w, h, steps, options) {
             .attr("y", 9)
             .attr("width", 20)
             .attr("height", 20)
-            .on("click", function(d) { if(d.type != "add") $this.removeFlowStep(d) } )
+            .on("click", function(d) { if(d.type != "add") $this.removeFlowStep(d); } )
           this.append("text")
             .attr("dy", "1em")
             .attr("x", 45)
@@ -174,6 +175,7 @@ updateSteps : function(w, h, steps, options) {
       selection.select("rect")
         .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-flow-add-step" : "";})
       selection.select("text")
+        .style("font-weight", function(d) { return d.resource == resource ? "bold" : "normal" })
         .text(function(d) { return d.type == 'add' ? '' : landmark.hud.ellipsize(d.resource, options.stepTextLength); });
       exit.remove();
     })
@@ -293,6 +295,10 @@ step_onClick : function(d) {
   if(d.type == "add") {
     this.createFlowStep({"resource":landmark.resource()})
     landmark.hud.update();
+  } else {
+    if(d3.event.toElement.className.baseVal.toString() != "landmark-hud-flow-remove-image") {
+      window.location = d.resource;
+    }
   }
 },
 
