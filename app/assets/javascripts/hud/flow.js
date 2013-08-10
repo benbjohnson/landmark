@@ -122,8 +122,8 @@ getCurrentFlow : function() {
     function(error, json) {
       if(error) return landmark.log(error);
       $this.current = (!json || Object.keys(json).length == 0 ? null : json);
-      landmark.hud.setMenuItemVisible("record_flow", !$this.recording());
-      landmark.hud.setMenuItemVisible("stop_flow", $this.recording());
+      landmark.hud.menu.setMenuItemVisible("record_flow", !$this.recording());
+      landmark.hud.menu.setMenuItemVisible("stop_flow", $this.recording());
       landmark.hud.update();
     }
   );
@@ -136,8 +136,8 @@ setCurrentFlow : function(id) {
   xhr.post(null, function(error, json) {
     if(error) return landmark.log(error);
     $this.current = (!json || Object.keys(json).length == 0 ? null : json);
-    landmark.hud.setMenuItemVisible("record_flow", !$this.recording());
-    landmark.hud.setMenuItemVisible("stop_flow", $this.recording());
+    landmark.hud.menu.setMenuItemVisible("record_flow", !$this.recording());
+    landmark.hud.menu.setMenuItemVisible("stop_flow", $this.recording());
     landmark.hud.menu.opened = false;
     landmark.hud.update();
   });
