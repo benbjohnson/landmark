@@ -154,8 +154,8 @@ menuItem_onClick : function(d) {
   switch(d.id) {
     case "record_flow": landmark.hud.flow.setFlowRecordingState(true); break;
     case "stop_flow": landmark.hud.flow.setFlowRecordingState(false); break;
-    case "show_page_actions": landmark.hud.setPageActionsVisible(true); break;
-    case "hide_page_actions": landmark.hud.setPageActionsVisible(false); break;
+    case "show_page_actions": landmark.hud.actions.visible(true); break;
+    case "hide_page_actions": landmark.hud.actions.visible(false); break;
     case "hide": hide(); break;
   }
 },
