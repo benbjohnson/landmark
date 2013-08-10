@@ -55,6 +55,24 @@ initialize : function() {
   this.overlay.g = this.overlay.svg.append("g");
   this.overlay.rect = this.overlay.g.append("rect");
 
+  this.overlay.svg.append("filter")
+    .attr("id", "dropshadow")
+    .attr("height", "130%")
+    .call(function() {
+      this.append("feGaussianBlur")
+        .attr("in", "SourceAlpha")
+        .attr("stdDeviation", "1");
+      this.append("feOffset")
+        .attr("dx", "2")
+        .attr("dy", "2")
+        .attr("result", "offsetblur");
+      this.append("feMerge")
+        .call(function() {
+          this.append("feMergeNode");
+          this.append("feMergeNode").attr("in", "SourceGraphic");
+        });
+    });
+
   this.actions.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-actions")
     .style("width", 0)

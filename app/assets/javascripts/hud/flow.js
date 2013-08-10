@@ -30,6 +30,10 @@ initialize : function() {
   this.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-flow");
 
+  this.g = this.svg.append("g")
+    .attr("filter", "url(#dropshadow)")
+  ;
+
   // Retrieve current recording id.
   this.getCurrentFlow();
 },
@@ -61,10 +65,11 @@ update : function(w, h) {
   this.svg
     .transition()
     .style("left", padding)
-    .style("top", h-60);
+    .style("top", h-60)
+  ;
 
   // Create the step rects
-  this.svg.selectAll(".landmark-hud-flow-step")
+  this.g.selectAll(".landmark-hud-flow-step")
     .data(steps.reverse()) //, function(d) { return d._index; })
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
