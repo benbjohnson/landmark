@@ -265,7 +265,7 @@
         function() {
           var src = "";
           if($this.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + $this.host() + ($this.port() > 0 ? ":" + $this.port() : "");
-          src += "/assets/landmark-hud.js";
+          src += "/assets/hud.js";
 
           var script = document.createElement('script');
           script.type = "text/javascript";

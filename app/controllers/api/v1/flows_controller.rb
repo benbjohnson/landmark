@@ -41,7 +41,7 @@ module Api::V1
       head :no_content
     end
 
-    # GET /api/v1/flows/query
+    # GET /api/v1/flows/:id/query
     def query
       @flow = @project.flows.includes(:steps).find(params[:id])
       results = @project.run_query(@flow.query())
