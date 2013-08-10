@@ -82,8 +82,19 @@ svg.landmark-hud-flow
         stroke-width: 2
         stroke-opacity: 1
 
+      text
+        pointer-events: none
+
       rect.landmark-hud-flow-add-step
         fill: #0b7359
+
+      .landmark-hud-flow-remove-image
+        opacity: .8
+        visibility: hidden
+
+      &:hover
+        .landmark-hud-flow-remove-image
+          visibility: visible
 
     .landmark-hud-flow-bar
       rect

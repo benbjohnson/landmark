@@ -15,11 +15,6 @@ current : function(v) {
   this._current = (!v || Object.keys(v).length == 0 ? null : v);
   landmark.hud.menu.setMenuItemVisible("record_flow", !this.recording());
   landmark.hud.menu.setMenuItemVisible("stop_flow", this.recording());
-  landmark.hud.menu.opened = false;
-  landmark.hud.update();
-  if(this.current()) {
-    this.query(this.current().id);
-  }
 },
 
 recording : function() {
@@ -55,6 +50,19 @@ initialize : function() {
     function(error, json) {
       if(error) return landmark.log(error);
       $this.current(json);
+      $this.load()
+    }
+  );
+},
+
+load : function() {
+  var $this = this;
+  if(!this.current()) return;
+  d3.json(landmark.baseUrl() + "/api/v1/flows/" + this.current().id + "?apiKey=" + encodeURIComponent(landmark.apiKey),
+    function(error, json) {
+      if(error) return landmark.log(error);
+      $this.current(json);
+      $this.query($this.current().id);
     }
   );
 },
@@ -102,11 +110,13 @@ updateSteps : function(w, h, steps, options) {
     steps.push({type:"add", index:steps.length});
   }
 
-  this.g.steps.attr("transform", "translate(0," + options.maxBarHeight + ")");
+  this.g.steps
+    .attr("transform", "translate(0," + options.maxBarHeight + ")")
+  ;
 
   // Create the step rects
   this.g.steps.selectAll(".landmark-hud-flow-step")
-    .data(steps.reverse())
+    .data(steps.reverse(), function(d) { return d.id; })
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
       var transformFunc = function(d, i) { return "translate(" + ((d.index*options.stepWidth)-(d.index*40)+5) + ",5)"};
@@ -115,12 +125,12 @@ updateSteps : function(w, h, steps, options) {
       selection.select("rect")
         .attr("width", rectWidthFunc)
       ;
-      enter.append("g")
+      enter.insert("g", ":first-child")
         .attr("class", "landmark-hud-flow-step")
         .attr("transform", "translate(5,5)")
         .on("click", function(d) { $this.step_onClick(d) } )
         .call(function() {
-          this.transition()
+          this
             .attr("transform", transformFunc);
           this.append("rect")
             .attr("width", 40)
@@ -129,16 +139,19 @@ updateSteps : function(w, h, steps, options) {
             .attr("ry", 20)
             .attr("width", rectWidthFunc)
           this.append("svg:image")
-            .attr("xlink:href", "/assets/plus-20x20.png")
-            .attr("x", 47)
+            .attr("class", function(d) { return d.type == "add" ? "landmark-hud-flow-add-image" : "landmark-hud-flow-remove-image"} )
+            .attr("xlink:href", function(d) { return d.type == "add" ? "/assets/plus-20x20.png" : "/assets/minus-black-20x20.png"})
+            .attr("x", function(d) { return d.type == "add" ? 47 : rectWidthFunc(d) - 35})
             .attr("y", 9)
             .attr("width", 20)
-            .attr("height", 20);
+            .attr("height", 20)
+            .on("click", function(d) { if(d.type != "add") $this.removeFlowStep(d) } )
           this.append("text")
             .attr("dy", "1em")
             .attr("x", 45)
             .attr("y", 12);
         });
+      selection.order();
       selection.select("rect")
         .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-flow-add-step" : "";})
       selection.select("text")
@@ -197,6 +210,9 @@ setCurrentFlow : function(id) {
   xhr.post(null, function(error, json) {
     if(error) return landmark.log(error);
     $this.current(json);
+    $this.load();
+    landmark.hud.menu.opened = false;
+    landmark.hud.update();
   });
 },
 
@@ -245,8 +261,18 @@ createFlowStep : function(data) {
   xhr.header('Content-Type', 'application/json');
   xhr.post(JSON.stringify({"step":data}), function(error, json) {
     if(error) return landmark.log(error);
-    $this.current().steps.push(json)
-    landmark.hud.update();
+    $this.load();
+  });
+},
+
+removeFlowStep : function(data) {
+  if(!this.recording()) return landmark.log("Cannot create new step while recording is stopped.");
+  var $this = this;
+  var xhr = d3.xhr(landmark.baseUrl() + "/api/v1/flows/" + this.current().id + "/steps/" + data.id + "?apiKey=" + encodeURIComponent(landmark.apiKey));
+  xhr.header('Content-Type', 'application/json');
+  xhr.send("DELETE", null, function(error, json) {
+    if(error) return landmark.log(error);
+    $this.load();
   });
 },
 
