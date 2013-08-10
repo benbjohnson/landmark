@@ -102,7 +102,7 @@ window.onresize = function() {
 // Load stylesheet.
 var linkTag = document.createElement('link');
 linkTag.rel = "stylesheet";
-linkTag.href = landmark.baseUrl() + "/assets/landmark-hud.css";
+linkTag.href = landmark.baseUrl() + "/assets/hud.css";
 landmark.scriptTag.parentNode.insertBefore(linkTag);
 })();
 

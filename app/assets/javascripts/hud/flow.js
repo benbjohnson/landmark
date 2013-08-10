@@ -44,7 +44,9 @@ initialize : function() {
   this.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-flow");
 
-  this.g = this.svg.append("g")
+  this.g = {};
+  this.g.chart = this.svg.append("g");
+  this.g.steps = this.svg.append("g")
     .attr("filter", "url(#dropshadow)")
   ;
 
@@ -63,37 +65,52 @@ initialize : function() {
 //--------------------------------------
 
 update : function(w, h) {
-  var $this = this;
   var visible = this.recording() && !landmark.hud.menu.opened;
   var steps = [];
   if(visible) {
-    var index = 0;
-    this.current().steps.concat({type:"add"}).forEach(function(step) {
-      step._index = index++;
-      steps.push(step);
+    steps = this.current().steps.map(function(step, index) {
+      step.index = index;
+      return step;
     });
   }
 
-  var zIndex = 10010;
-  var padding = 15;
   var maxStepWidth = 300;
-  var stepWidth = Math.round(Math.min(maxStepWidth, (w - (padding*2)) / steps.length));
-  var stepHeight = 40;
-  var stepTextLength = stepWidth / 10;
+  var options = {};
+  options.visible = visible;
+  options.padding = 15;
+  options.marginBottom = 20;
+  options.stepWidth = Math.round(Math.min(maxStepWidth, (w - (options.padding*2)) / steps.length));
+  options.stepHeight = 40;
+  options.stepTextLength = options.stepWidth / 10;
+  options.maxBarHeight = 60;
 
   this.svg
     .transition()
-    .style("left", padding)
-    .style("top", h-60)
+    .style("left", options.padding)
+    .style("top", h-options.marginBottom-options.stepHeight-options.maxBarHeight)
   ;
 
+  this.updateSteps(w, h, steps, options);
+  this.updateChart(w, h, steps, options);
+},
+
+updateSteps : function(w, h, steps, options) {
+  var $this = this;
+
+  if(options.visible) {
+    steps = steps.slice();
+    steps.push({type:"add", index:steps.length});
+  }
+
+  this.g.steps.attr("transform", "translate(0," + options.maxBarHeight + ")");
+
   // Create the step rects
-  this.g.selectAll(".landmark-hud-flow-step")
-    .data(steps.reverse()) //, function(d) { return d._index; })
+  this.g.steps.selectAll(".landmark-hud-flow-step")
+    .data(steps.reverse())
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
-      var transformFunc = function(d, i) { return "translate(" + ((d._index*stepWidth)-(d._index*40)+5) + ",5)"};
-      var rectWidthFunc = function(d) { return d.type == 'add' ? 80 : stepWidth;}
+      var transformFunc = function(d, i) { return "translate(" + ((d.index*options.stepWidth)-(d.index*40)+5) + ",5)"};
+      var rectWidthFunc = function(d) { return d.type == 'add' ? 80 : options.stepWidth;}
       selection.attr("transform", transformFunc);
       selection.select("rect")
         .attr("width", rectWidthFunc)
@@ -107,7 +124,7 @@ update : function(w, h) {
             .attr("transform", transformFunc);
           this.append("rect")
             .attr("width", 40)
-            .attr("height", stepHeight)
+            .attr("height", options.stepHeight)
             .attr("rx", 20)
             .attr("ry", 20)
             .attr("width", rectWidthFunc)
@@ -125,7 +142,45 @@ update : function(w, h) {
       selection.select("rect")
         .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-flow-add-step" : "";})
       selection.select("text")
-        .text(function(d) { return d.type == 'add' ? '' : landmark.hud.ellipsize(d.resource, stepTextLength); });
+        .text(function(d) { return d.type == 'add' ? '' : landmark.hud.ellipsize(d.resource, options.stepTextLength); });
+      exit.remove();
+    })
+},
+
+updateChart : function(w, h, steps, options) {
+  var $this = this;
+  var barWidth = Math.min(150, options.stepWidth - 60);
+
+  var values = steps.map(function(d) { var obj = $this.data[d.index.toString()]; return obj ? obj.count : 0 });
+  var y = d3.scale.linear()
+    .domain([0, d3.max(values)])
+    .range([0, options.maxBarHeight]);
+
+  // Create the bars in the chart.
+  this.g.chart.selectAll(".landmark-hud-flow-bar")
+    .data(steps.reverse(), function(d) {return d.index})
+    .call(function(selection) {
+      var enter = selection.enter(), exit = selection.exit();
+      enter.append("g")
+        .attr("class", "landmark-hud-flow-bar")
+        .attr("transform", "translate(5,5)")
+        .call(function() {
+          this.append("rect")
+            .style("fill-opacity", 0)
+            .transition().delay(function(d, i) {return (d.index+1) * 100})
+              .style("fill-opacity", 1)
+          ;
+        });
+      selection.attr("transform", function(d, i) {
+        return "translate(" + ((d.index*options.stepWidth)-(d.index*40)+(options.stepWidth/2)-(barWidth/2)+5) + ",5)"}
+      );
+      selection.select("rect")
+        .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-flow-add-step" : "";})
+        .attr("y", function(d) { return options.maxBarHeight - y(values[d.index]) })
+        .attr("width", barWidth)
+        .attr("height", function(d) { return y(values[d.index]) });
+      selection.select("text")
+        .text(function(d) { return d.type == 'add' ? '' : landmark.hud.ellipsize(d.resource, options.stepTextLength); });
       exit.remove();
     })
 },

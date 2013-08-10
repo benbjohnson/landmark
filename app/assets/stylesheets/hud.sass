@@ -70,16 +70,21 @@ svg.landmark-hud-flow
   position: fixed
   z-index: 10002
 
-  g.landmark-hud-flow-step
-    cursor: hand
-    cursor: pointer
+  g
+    .landmark-hud-flow-step
+      cursor: hand
+      cursor: pointer
 
-    rect
-      fill: white
-      fill-opacity: 1
-      stroke: #0b7359
-      stroke-width: 2
-      stroke-opacity: 1
+      rect
+        fill: white
+        fill-opacity: 1
+        stroke: #0b7359
+        stroke-width: 2
+        stroke-opacity: 1
 
-    rect.landmark-hud-flow-add-step
-      fill: #0b7359
+      rect.landmark-hud-flow-add-step
+        fill: #0b7359
+
+    .landmark-hud-flow-bar
+      rect
+        fill: #0b7359
