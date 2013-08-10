@@ -8,13 +8,24 @@ window.landmark.hud.flow = {
 //
 //------------------------------------------------------------------------------
 
+all : [],
+
 _current: null,
 
 current : function(v) {
   if(arguments.length == 0) return this._current;
+
+  var previd = (this._current ? this._current.id : 0);
   this._current = (!v || Object.keys(v).length == 0 ? null : v);
-  landmark.hud.menu.setMenuItemVisible("record_flow", !this.recording());
-  landmark.hud.menu.setMenuItemVisible("stop_flow", this.recording());
+  landmark.hud.menu.setMenuItemVisible("new_flow", !this.recording());
+  landmark.hud.menu.setMenuItemVisible("hide_flow", this.recording());
+
+  var id = (this._current ? this._current.id : 0);
+  if(previd != id) {
+    var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows/set_current?apiKey=" + encodeURIComponent(landmark.apiKey) + "&id=" + encodeURIComponent(id));
+    xhr.header('Content-Type', 'application/json');
+    xhr.post();
+  }
 },
 
 recording : function() {
@@ -44,6 +55,14 @@ initialize : function() {
   this.g.steps = this.svg.append("g")
     .attr("filter", "url(#dropshadow)")
   ;
+
+  // Retrieve a list of all flows.
+  d3.json(landmark.baseUrl() + "/api/v1/flows?apiKey=" + encodeURIComponent(landmark.apiKey),
+    function(error, json) {
+      if(error) return landmark.log(error);
+      $this.all = json || [];
+    }
+  );
 
   // Retrieve current recording flow.
   d3.json(landmark.baseUrl() + "/api/v1/flows/current?apiKey=" + encodeURIComponent(landmark.apiKey),
@@ -203,20 +222,7 @@ updateChart : function(w, h, steps, options) {
 // Flow
 //--------------------------------------
 
-setCurrentFlow : function(id) {
-  var $this = this;
-  var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows/set_current?apiKey=" + encodeURIComponent(landmark.apiKey) + "&id=" + encodeURIComponent(id));
-  xhr.header('Content-Type', 'application/json');
-  xhr.post(null, function(error, json) {
-    if(error) return landmark.log(error);
-    $this.current(json);
-    $this.load();
-    landmark.hud.menu.opened = false;
-    landmark.hud.update();
-  });
-},
-
-createFlow : function(name) {
+create : function(name) {
   var $this = this;
   var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows?apiKey=" + encodeURIComponent(landmark.apiKey));
   xhr.header('Content-Type', 'application/json');
@@ -230,25 +236,11 @@ createFlow : function(name) {
         return landmark.log(error);
       }
     }
-    $this.setCurrentFlow(json.id);
+    $this.current({id:json.id});
+    $this.load();
   });
 },
 
-setFlowRecordingState : function(recording) {
-  if(recording) {
-    var name = prompt("Please name this flow:");
-    if(!name) {
-      landmark.hud.menu.opened = false;
-      landmark.hud.update();
-      return;
-    }
-
-    this.createFlow(name);
-
-  } else {
-    this.setCurrentFlow(0);
-  }
-},
 
 //--------------------------------------
 // Flow Steps

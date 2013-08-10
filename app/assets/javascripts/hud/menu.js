@@ -11,8 +11,9 @@ window.landmark.hud.menu = {
 opened: false,
 
 items:[
-  {id:"record_flow", label:"Record Flow", visible:true},
-  {id:"stop_flow", label:"Stop Recording", visible:false},
+  {id:"new_flow", label:"New Flow", visible:true},
+  {id:"hide_flow", label:"Hide Current Flow", visible:false},
+  {id:"flows", label:"", visible:true},
   {id:"show_page_actions", label:"Show Page Actions", visible:true},
   {id:"hide_page_actions", label:"Hide Page Actions", visible:false},
   {id:"hide", label:"Hide", visible:true}
@@ -94,7 +95,7 @@ updateMenuItems : function(w, h, menuWidth, menuHeight) {
   var items = opened ? this.getVisibleMenuItems() : [];
 
   this.svg.selectAll(".landmark-hud-menu-item")
-    .data(items, function(d) { return d.id; })
+    .data(items)
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
       enter.append("g")
@@ -133,7 +134,19 @@ updateMenuItems : function(w, h, menuWidth, menuHeight) {
 //--------------------------------------
 
 getVisibleMenuItems : function() {
-  return this.items.filter(function(item) { return item.visible; });
+  var flowItems = landmark.hud.flow.all.map(function(flow) {
+    return {id:"show_flow", flow:flow, label:"Show '" + flow.name + "' Flow"};
+  })
+
+  items = this.items.filter(function(item) { return item.visible; });
+  for(var i=0; i<items.length; i++) {
+    if(items[i].id == "flows") {
+      items.splice.apply(items, [i, 1].concat(flowItems));
+      break;
+    }
+  }
+
+  return items;
 },
 
 setMenuItemVisible : function(id, value) {
@@ -152,12 +165,28 @@ setMenuItemVisible : function(id, value) {
 
 menuItem_onClick : function(d) {
   switch(d.id) {
-    case "record_flow": landmark.hud.flow.setFlowRecordingState(true); break;
-    case "stop_flow": landmark.hud.flow.setFlowRecordingState(false); break;
+    case "new_flow":
+      var name = prompt("Please name this flow:");
+      if(name) {
+        landmark.hud.flow.create(name);
+      }
+      break;
+
+    case "hide_flow":
+      landmark.hud.flow.current(null);
+      break;
+
     case "show_page_actions": landmark.hud.actions.visible(true); break;
     case "hide_page_actions": landmark.hud.actions.visible(false); break;
+    case "show_flow":
+      landmark.hud.flow.current(d.flow);
+      landmark.hud.flow.load();
+      break;
     case "hide": hide(); break;
   }
+
+  this.opened = false;
+  landmark.hud.update();
 },
 
 }
