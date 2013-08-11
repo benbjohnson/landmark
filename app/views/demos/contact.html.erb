@@ -1,0 +1,104 @@
+<div class="main-content">
+    <div class="container">                             
+        <div class="row show-grid">
+            <div class="span12" data-original-title="">
+                <div id="breadcrumb">
+                <ul>
+                    <li class="home"><a href="#">Home</a></li>
+                    <li>Contact Us</li>
+                </ul>
+                </div>
+                <div class="clear_both"></div>
+                <div class="col-wrapper">                        
+                <div class="row show-grid">
+                    <div class="contact-form span8">
+                        <div id="result">
+
+                        </div>
+                        <form name="contactForm" id="validForm" method="GET">
+                            <div class="control-group">
+                                <label class="control-label" for="inputName">NAME<sup>*</sup></label>
+                                <div class="controls">
+                                    <input name="name" type="text" class="span4" id="inputName" placeholder="Name">
+                                    <span class="help-inline">Please fill your name</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="inputEmail">EMAIL<sup>*</sup></label>
+                                <div class="controls">
+                                    <input name="email" type="text" class="span4" id="inputEmail" placeholder="Email">
+                                    <span class="help-inline">Please correct your email</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label for="textarea" class="control-label">COMMENT<sup>*</sup></label>
+                                <div class="controls">
+                                    <textarea name="comment" rows="4" class="span8" id="textarea"></textarea>
+                                    <span class="help-inline">Please write a comment</span>
+                                </div>
+                            </div>
+                            <?php
+                                    require_once('config.php');
+                                    require_once('recaptchalib.php');
+                                    if($use_recaptcha === true){
+                                        echo recaptcha_get_html($publickey);
+                                    }
+                                ?>
+                            <div class="control-group form-button-offset">
+                                <input type="submit" class="btn" value="Send Message" />
+                            </div>
+                        </form>
+                    </div>
+
+                        <div class="contact-info span4">
+                            <h2>MegaCorp</h2>
+                            <address>
+                                123 Fake St<br />
+                                Denver, CO 80205<br />
+                                Phone: 1 800 555 5555<br />
+                                Fax: 1 800 555 5556<br />
+                                Email: <a href="mailto:noreply@megacorp.com">contact@megacorp.com</a><br />
+                                Web: <a href="#">megacorp.com</a>
+                            </address>
+                                                        
+                            <h2>Hours of Business Operation</h2>
+                                <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td class="small">Monday:</td>
+                                        <td class="bold">8am to 6pm</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">Tuesday:</td>
+                                        <td class="bold">8am to 6pm</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">Wednesday:</td>
+                                        <td class="bold">8am to 6pm</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">Thursday:</td>
+                                        <td class="bold">8am to 6pm</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">Friday:</td>
+                                        <td class="bold">8am to 6pm</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">Saturday:</td>
+                                        <td>Closed</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="small">Sunday:</td>
+                                        <td>Closed</td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                        </div>
+                    </div>               
+                </div>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
