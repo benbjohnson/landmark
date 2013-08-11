@@ -1,3 +1,9 @@
+.landmark-hud-filters
+  position: fixed
+  z-index: 10000
+  left: 0px
+  top: 0px
+
 .landmark-hud-overlay
   position: fixed
   z-index: 10000
@@ -47,8 +53,6 @@
       stroke-width: 2
       stroke-opacity: 1
       shape-rendering: crispEdges
-      cursor: hand
-      cursor: pointer
 
     rect.landmark-hud-action-item-stats
       fill: white
@@ -57,8 +61,6 @@
       stroke-width: 2
       stroke-opacity: 1
       shape-rendering: crispEdges
-      cursor: hand
-      cursor: pointer
 
     text.landmark-hud-action-item-stats
       font-family: Helvetica, Arial, sans-serif
@@ -98,4 +100,5 @@ svg.landmark-hud-flow
 
     .landmark-hud-flow-bar
       rect
+        shape-rendering: crispEdges
         fill: #0b7359

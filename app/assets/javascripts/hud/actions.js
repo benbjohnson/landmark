@@ -164,7 +164,6 @@ normalize : function(data) {
 //--------------------------------------
 
 actionItem_onClick : function(d) {
-  alert("ACTION CLICK");
 },
 
 }

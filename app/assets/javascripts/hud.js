@@ -1,5 +1,6 @@
 //= require 'd3'
 //= require_self
+//= require hud/filters
 //= require hud/overlay
 //= require hud/menu
 //= require hud/actions
@@ -23,6 +24,7 @@ var hud = {
 initialize : function() {
   var $this = this;
   
+  hud.filters.initialize();
   hud.overlay.initialize();
   hud.menu.initialize();
   hud.actions.initialize();

@@ -109,12 +109,14 @@ update : function(w, h) {
   options.stepWidth = Math.round(Math.min(maxStepWidth, (w - (options.padding*2)) / steps.length));
   options.stepHeight = 40;
   options.stepTextLength = options.stepWidth / 10;
+  options.chartLabelHeight = 14;
   options.maxBarHeight = 60;
+  options.chartHeight = options.chartLabelHeight + options.maxBarHeight;
 
   this.svg
     .transition()
     .style("left", options.padding)
-    .style("top", h-options.marginBottom-options.stepHeight-options.maxBarHeight)
+    .style("top", h-options.marginBottom-options.stepHeight-options.chartHeight)
   ;
 
   this.updateSteps(w, h, steps, options);
@@ -131,7 +133,7 @@ updateSteps : function(w, h, steps, options) {
   }
 
   this.g.steps
-    .attr("transform", "translate(0," + options.maxBarHeight + ")")
+    .attr("transform", "translate(0," + options.chartHeight + ")")
   ;
 
   // Create the step rects
@@ -189,6 +191,7 @@ updateChart : function(w, h, steps, options) {
   var y = d3.scale.linear()
     .domain([0, d3.max(values)])
     .range([0, options.maxBarHeight]);
+  var barYFunc = function(d) { return options.chartLabelHeight + options.maxBarHeight - y(values[d.index]) };
 
   // Create the bars in the chart.
   this.g.chart.selectAll(".landmark-hud-flow-bar")
@@ -200,21 +203,35 @@ updateChart : function(w, h, steps, options) {
         .attr("transform", "translate(5,5)")
         .call(function() {
           this.append("rect")
-            .style("fill-opacity", 0)
-            .transition().delay(function(d, i) {return (d.index+1) * 100})
-              .style("fill-opacity", 1)
+            .attr("filter", "url(#dropshadow)")
+          ;
+          this.append("text")
+            .attr("class", "landmark-hud-flow-bar-text-shadow")
+            .attr("dy", "1em")
+            .style("fill", "white")
+          ;
+          this.append("text")
+            .attr("class", "landmark-hud-flow-bar-text")
+            .attr("dy", "1em")
           ;
         });
+
       selection.attr("transform", function(d, i) {
         return "translate(" + ((d.index*options.stepWidth)-(d.index*40)+(options.stepWidth/2)-(barWidth/2)+5) + ",5)"}
       );
       selection.select("rect")
         .attr("class", function(d) { return d.type == 'add' ? "landmark-hud-flow-add-step" : "";})
-        .attr("y", function(d) { return options.maxBarHeight - y(values[d.index]) })
+        .attr("y", barYFunc)
         .attr("width", barWidth)
         .attr("height", function(d) { return y(values[d.index]) });
-      selection.select("text")
-        .text(function(d) { return d.type == 'add' ? '' : landmark.hud.ellipsize(d.resource, options.stepTextLength); });
+      selection.select("text.landmark-hud-flow-bar-text-shadow")
+        .attr("x", 1)
+        .attr("y", function(d) { return barYFunc(d) - options.chartLabelHeight + 1; })
+        .text(function(d) { return values[d.index] + " Visits"; });
+      selection.select("text.landmark-hud-flow-bar-text")
+        .attr("y", function(d) { return barYFunc(d) - options.chartLabelHeight; })
+        .text(function(d) { return values[d.index] + " Visits"; });
+
       exit.remove();
     })
 },
