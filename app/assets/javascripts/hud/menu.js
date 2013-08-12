@@ -48,7 +48,7 @@ initialize : function() {
     });
   this.rect = this.g.append("rect");
   this.icon = this.g.append("svg:image")
-    .attr("xlink:href", "/assets/icon-30x30.png")
+    .attr("xlink:href", landmark.baseUrl() + "/assets/icon-30x30.png")
     .attr("width", 30)
     .attr("height", 30);
 },
