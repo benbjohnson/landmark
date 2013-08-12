@@ -105,6 +105,6 @@ window.onresize = function() {
 var linkTag = document.createElement('link');
 linkTag.rel = "stylesheet";
 linkTag.href = landmark.baseUrl() + "/assets/hud.css";
-landmark.scriptTag.parentNode.insertBefore(linkTag);
+landmark.scriptTag.parentNode.appendChild(linkTag);
 })();
 
