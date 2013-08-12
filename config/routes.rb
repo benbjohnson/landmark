@@ -3,9 +3,6 @@ Landmark::Application.routes.draw do
   resource :account
   resources :projects do
     resources :flows
-    collection do
-      get :auth
-    end
   end
 
   get '/track', :to => 'events#track'
@@ -21,6 +18,12 @@ Landmark::Application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      resources :projects, :only => [] do
+        collection do
+          get :auth
+        end
+      end
+
       resources :flows do
         member do
           get :query

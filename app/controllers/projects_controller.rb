@@ -37,15 +37,4 @@ class ProjectsController < ApplicationController
     @project.update_attributes(params[:project])
     render 'edit'
   end
-
-  # GET /projects/auth
-  def auth
-    api_key = params[:apiKey]
-    
-    if api_key == 'demo' || (current_account && current_account.projects.where(:api_key => api_key).count > 0)
-      render :json => {:status => 'ok'}
-    else
-      head 404
-    end
-  end
 end
