@@ -402,6 +402,7 @@
         xhr.open(method, url, async);
         xhr.setRequestHeader("Content-type", "application/json");
         xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.withCredentials = true;
       } else if (typeof XDomainRequest != "undefined") {
         xhr = new XDomainRequest();
         xhr.open(method, url);

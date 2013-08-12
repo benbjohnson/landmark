@@ -66,7 +66,7 @@ module Landmark
       allow do
         origins '*'
         resource '/track', :headers => :any, :methods => [:get]
-        resource '/api/*', :headers => :any, :methods => [:get, :post, :put, :patch, :delete]
+        resource '/api/*', :headers => :any, :methods => [:get, :post, :put, :patch, :delete], :credentials => true
       end
     end
   end
