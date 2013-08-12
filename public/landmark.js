@@ -269,6 +269,8 @@
       var $this = this;
       var xhr = this.createXMLHttpRequest("GET", "/api/v1/projects/auth?apiKey=" + this.apiKey, true,
         function() {
+          if(this.status != 200) return;
+          
           var src = "";
           if($this.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + $this.host() + ($this.port() > 0 ? ":" + $this.port() : "");
           src += "/assets/hud.js";

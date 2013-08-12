@@ -164,7 +164,7 @@ updateSteps : function(w, h, steps, options) {
             .attr("width", rectWidthFunc)
           this.append("svg:image")
             .attr("class", function(d) { return d.type == "add" ? "landmark-hud-flow-add-image" : "landmark-hud-flow-remove-image"} )
-            .attr("xlink:href", function(d) { return d.type == "add" ? "/assets/plus-20x20.png" : "/assets/minus-black-20x20.png"})
+            .attr("xlink:href", function(d) { return landmark.baseUrl() + (d.type == "add" ? "/assets/plus-20x20.png" : "/assets/minus-black-20x20.png")})
             .attr("x", function(d) { return d.type == "add" ? 47 : rectWidthFunc(d) - 35})
             .attr("y", 9)
             .attr("width", 20)
