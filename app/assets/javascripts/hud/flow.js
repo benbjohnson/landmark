@@ -115,8 +115,10 @@ update : function(w, h) {
 
   this.svg
     .transition()
-    .style("left", options.padding)
-    .style("top", h-options.marginBottom-options.stepHeight-options.chartHeight)
+    .style("left", options.padding + "px")
+    .style("top", (h-options.marginBottom-options.stepHeight-options.chartHeight) + "px")
+    .style("width", (w - (options.padding*2)) + "px")
+    .style("height", (options.chartHeight + options.stepHeight + 10) + "px")
   ;
 
   this.updateSteps(w, h, steps, options);
@@ -313,7 +315,8 @@ step_onClick : function(d) {
     this.createFlowStep({"resource":landmark.resource()})
     landmark.hud.update();
   } else {
-    if(d3.event.toElement.className.baseVal.toString() != "landmark-hud-flow-remove-image") {
+    var target = d3.event.target || d3.event.toElement;
+    if(target.className.baseVal.toString() != "landmark-hud-flow-remove-image") {
       window.location = d.resource;
     }
   }

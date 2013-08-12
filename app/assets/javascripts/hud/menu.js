@@ -66,10 +66,10 @@ update : function(w, h) {
   // Update button.
   this.svg
     .transition()
-    .style("top", h-menuHeight-20)
-    .style("left", 15)
-    .style("width", menuWidth+8)
-    .style("height", menuHeight+8);
+    .style("top", (h-menuHeight-20) + "px")
+    .style("left", "15px")
+    .style("width", (menuWidth+8) + "px")
+    .style("height", (menuHeight+8) + "px");
 
   this.icon
     .transition()

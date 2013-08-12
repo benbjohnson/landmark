@@ -24,8 +24,8 @@ data: [],
 initialize : function() {
   this.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-actions")
-    .style("width", 0)
-    .style("height", 0)
+    .style("width", "0px")
+    .style("height", "0px")
   ;
 },
 
@@ -112,10 +112,11 @@ update : function(w, h) {
     });
 
   // Resize the SVG container.
+  var documentWidth = (document.width !== undefined) ? document.width : document.body.offsetWidth;
   var documentHeight = (document.height !== undefined) ? document.height : document.body.offsetHeight;
   this.svg
-    .style("width", (visible ? null : 0))
-    .style("height", (visible ? documentHeight - 20 : 0))
+    .style("width", (visible ? documentWidth - 10 : 0) + "px")
+    .style("height", (visible ? documentHeight - 20 : 0) + "px")
   ;
 },
 

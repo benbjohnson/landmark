@@ -15,8 +15,8 @@ window.landmark.hud.filters = {
 initialize : function() {
   this.svg = d3.select("body").append("svg")
     .attr("class", "landmark-hud-filters")
-    .attr("width", 0)
-    .attr("height", 0);
+    .attr("width", "0px")
+    .attr("height", "0px");
 
   this.svg.append("filter")
     .attr("id", "dropshadow")
