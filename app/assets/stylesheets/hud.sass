@@ -1,0 +1,104 @@
+.landmark-hud-filters
+  position: fixed
+  z-index: 10000
+  left: 0px
+  top: 0px
+
+.landmark-hud-overlay
+  position: fixed
+  z-index: 10000
+
+  svg
+    left: 0px
+    top: 0px
+
+
+.landmark-hud-menu
+  position: fixed
+  z-index: 10100
+
+  g.landmark-hud-menu-button
+    cursor: pointer
+    cursor: hand
+
+    rect
+      stroke: #0b7359
+      stroke-width: 2px
+      fill: white
+
+  g.landmark-hud-menu-item
+    cursor: pointer
+    cursor: hand
+    shape-rendering: crispEdges
+
+    rect
+      fill: #0b7359
+
+    text
+      font-family: Helvetica, Arial, sans-serif
+      font-size: 16px
+      fill: white
+
+.landmark-hud-actions
+  position: absolute
+  left: 0
+  top: 0
+  z-index: 10001
+
+  g.landmark-hud-action-item
+    rect.landmark-hud-action-item-highlight
+      fill: white
+      fill-opacity: 0.2
+      stroke: white
+      stroke-width: 2
+      stroke-opacity: 1
+      shape-rendering: crispEdges
+
+    rect.landmark-hud-action-item-stats
+      fill: white
+      fill-opacity: 1
+      stroke: white
+      stroke-width: 2
+      stroke-opacity: 1
+      shape-rendering: crispEdges
+
+    text.landmark-hud-action-item-stats
+      font-family: Helvetica, Arial, sans-serif
+      font-size: 12px
+      font-weight: bold
+      fill: #333
+
+svg.landmark-hud-flow
+  position: fixed
+  z-index: 10002
+
+  g
+    .landmark-hud-flow-step
+      cursor: hand
+      cursor: pointer
+
+      rect
+        fill: white
+        fill-opacity: 1
+        stroke: #0b7359
+        stroke-width: 2
+        stroke-opacity: 1
+
+      text
+        pointer-events: none
+
+      rect.landmark-hud-flow-add-step
+        fill: #0b7359
+
+      .landmark-hud-flow-remove-image
+        opacity: .8
+        visibility: hidden
+
+      &:hover
+        .landmark-hud-flow-remove-image
+          visibility: visible
+
+    .landmark-hud-flow-bar
+      rect
+        shape-rendering: crispEdges
+        fill: #0b7359

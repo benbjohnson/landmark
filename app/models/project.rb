@@ -1,6 +1,7 @@
 class Project < ActiveRecord::Base
   belongs_to :account
   has_many :resources
+  has_many :flows
   before_create :before_create
   after_create :after_create
 
@@ -118,7 +119,7 @@ class Project < ActiveRecord::Base
   end
 
   # Executes a query against the project's events.
-  def query(q)
+  def run_query(q)
     return sky_table.query(q)
   end
 

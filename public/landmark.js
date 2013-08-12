@@ -1,7 +1,7 @@
 (function() {
   var config = {};
   var xhrs = [];
-  var xhrDelay = 20, xhrSyncTimeout = 20;
+  var xhrDelay = 20, xhrSyncTimeout = 1;
   var xhrTimeoutId = 0;
 
   var landmark = {
@@ -55,7 +55,13 @@
      */
     __initialize__ : function() {
       // Prepend a page view if one has not been made.
-      var pageViewCount = this.pending.filter(function(e) { return e && e.__action__ == "page_view"}).length;
+      var pageViewCount = 0;
+      for(var i=0; i<this.pending.length; i++) {
+        var e = this.pending[i];
+        if(e && e.__action__ == "page_view") {
+          pageViewCount++;
+        }
+      }
       if(pageViewCount == 0) {
         this.trackPageView();
         this.pending.unshift(this.pending.pop());
@@ -241,7 +247,7 @@
       }
 
       var self = this;
-      this.sendXMLHttpRequest("GET", path, true,
+      this.sendXMLHttpRequest("GET", path,
         function() {},
         function() {
           var response = {};
@@ -265,13 +271,13 @@
         function() {
           var src = "";
           if($this.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + $this.host() + ($this.port() > 0 ? ":" + $this.port() : "");
-          src += "/assets/landmark-hud.js";
+          src += "/assets/hud.js";
 
           var script = document.createElement('script');
           script.type = "text/javascript";
           script.async = true;
           script.src = src;
-          $this.scriptTag.parentNode.insertBefore(script);
+          $this.scriptTag.parentNode.appendChild(script);
         },
         function() {}
       );
@@ -437,7 +443,8 @@
     deliverPendingXMLHttpRequests : function(async) {
       var $this = this;
       if(arguments.length == 0) async = true;
-      xhrs.forEach(function(xhr) {
+      for(var i=0; i<xhrs.length; i++) {
+        var xhr = xhrs[i];
         xhr = $this.createXMLHttpRequest(xhr.method, xhr.path, async, xhr.loadHandler, xhr.errorHandler);
         if(xhr) {
           if(!async) {
@@ -447,7 +454,7 @@
           }
           xhr.send();
         }
-      });
+      };
       xhrs = [];
       clearTimeout(xhrTimeoutId);
     },
