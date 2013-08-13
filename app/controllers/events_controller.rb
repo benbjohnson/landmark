@@ -20,6 +20,9 @@ class EventsController < ApplicationController
     })
 
     internal_tracking_id = (tracking_id.blank? ? nil : "~#{tracking_id}")
+
+    # Ignore demo requests.
+    return head 200 if api_key == 'demo'
     
     # This is an invalid request if we do not have an API key, some kind of id or any properties.
     return head 422 if api_key.blank? || (id.blank? && tracking_id.blank?) || (properties.empty? && traits.empty?)
