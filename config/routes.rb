@@ -13,6 +13,7 @@ Landmark::Application.routes.draw do
     get :about
     get :contact
     get :signup
+    get '/test/:id/edit', to: 'demos#test'
   end
   match "demo/signup/:plan" => 'demos#signup'
 

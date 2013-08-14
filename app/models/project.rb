@@ -73,6 +73,16 @@ class Project < ActiveRecord::Base
     @sky_table.create_property(:name => '__url__', :transient => true, :data_type => 'factor')
   end
 
+  # Creates tables for each project.
+  def self.create_sky_tables
+    all.each do |project|
+      begin
+        project.create_sky_table()
+      rescue
+      end
+    end
+  end
+
   # Automatically creates properties based on the data type of incoming event fields.
   def auto_create_sky_properties(properties, transient, obj)
     return unless obj.is_a?(Hash)

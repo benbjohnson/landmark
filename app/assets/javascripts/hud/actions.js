@@ -42,8 +42,9 @@ update : function(w, h) {
   var links = {};
   if(this.data.length > 0) {
     Array.prototype.slice.call(document.getElementsByTagName("a")).forEach(function(link) {
-      if(!links[link.href]) links[link.href] = [];
-      links[link.href].push(link);
+      var href = landmark.normalize(link.href);
+      if(!links[href]) links[href] = [];
+      links[href].push(link);
     });
   }
 
