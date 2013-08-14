@@ -420,6 +420,32 @@
     },
 
     /**
+     * Executes a JSON over XHR request.
+     * 
+     * @param {String} method   The HTTP method to use.
+     * @param {String} path     The path to send to.
+     * @param {String} data     The data to send.
+     */
+    json : function(method, path, data, loadHandler, errorHandler) {
+      var xhr = this.createXMLHttpRequest(method, path, true,
+        function() {
+          var response = {};
+          try { response = JSON.parse(xhr.responseText); } catch(e){}
+          if(typeof(loadHandler) == "function") loadHandler(response);
+        },
+        function() {
+          var response = {};
+          try { response = JSON.parse(xhr.responseText); } catch(e){}
+          landmark.log("[landmark] JSON XHR ERROR: " + path + "; " + response);
+          if(typeof(errorHandler) == "function") errorHandler(response);
+        }
+      );
+      if(xhr) {
+        xhr.send(data != null ? JSON.stringify(data) : "");
+      }
+    },
+
+    /**
      * Queues an XHR to be sent.
      * 
      * @param {XMLHttpRequest} xhr   The XHR to send.
