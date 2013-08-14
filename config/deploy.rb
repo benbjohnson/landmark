@@ -21,6 +21,7 @@ ssh_options[:port] = 25000
 
 # if you want to clean up old releases on each deploy uncomment this:
 before 'deploy:setup', 'rvm:install_rvm'
+after "deploy:update_code", "deploy:migrate"
 after "deploy:restart", "deploy:cleanup"
 
 # If you are using Passenger mod_rails uncomment this:
