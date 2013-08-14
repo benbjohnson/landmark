@@ -1,6 +1,7 @@
 module Api::V1
   class ProjectsController < Api::V1::BaseController
     skip_before_filter :authenticate_api_user!, :only => [:track]
+    skip_before_filter :find_project, :only => [:track]
 
     # GET /api/v1/projects/auth
     def auth
@@ -27,6 +28,9 @@ module Api::V1
       })
 
       internal_tracking_id = (tracking_id.blank? ? nil : "~#{tracking_id}")
+
+      @project = Project.find_by_api_key(api_key)
+      return head 404 if @project.nil?
 
       # Ignore requests if the project is locked.
       return head 202 if @project.locked?
