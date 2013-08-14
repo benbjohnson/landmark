@@ -128,12 +128,13 @@ update : function(w, h) {
 visible : function(enabled) {
   var $this = this;
   if(enabled) {
-    d3.json(landmark.baseUrl() + "/api/v1/resources/next_page_actions?apiKey=" + encodeURIComponent(landmark.apiKey) + "&name=" + encodeURIComponent(landmark.resource()), function(error, json) {
-      if(error) return landmark.log(error);
-      $this.total = json.count;
-      $this.data = $this.normalize(json);
-      landmark.hud.update();
-    });
+    landmark.json("GET", "/api/v1/resources/next_page_actions?apiKey=" + encodeURIComponent(landmark.apiKey) + "&name=" + encodeURIComponent(landmark.resource()), null,
+      function(json) {
+        $this.total = json.count;
+        $this.data = $this.normalize(json);
+        landmark.hud.update();
+      }
+    );
   } else {
     this.data = [];
   }

@@ -22,9 +22,7 @@ current : function(v) {
 
   var id = (this._current ? this._current.id : 0);
   if(previd != id) {
-    var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows/set_current?apiKey=" + encodeURIComponent(landmark.apiKey) + "&id=" + encodeURIComponent(id));
-    xhr.header('Content-Type', 'application/json');
-    xhr.post();
+    landmark.json("POST", "/api/v1/flows/set_current?apiKey=" + encodeURIComponent(landmark.apiKey) + "&id=" + encodeURIComponent(id), null);
   }
 },
 
@@ -57,17 +55,15 @@ initialize : function() {
   ;
 
   // Retrieve a list of all flows.
-  d3.json(landmark.baseUrl() + "/api/v1/flows?apiKey=" + encodeURIComponent(landmark.apiKey),
-    function(error, json) {
-      if(error) return landmark.log(error);
+  landmark.json("GET", "/api/v1/flows?apiKey=" + encodeURIComponent(landmark.apiKey), null,
+    function(json) {
       $this.all = json || [];
     }
   );
 
   // Retrieve current recording flow.
-  d3.json(landmark.baseUrl() + "/api/v1/flows/current?apiKey=" + encodeURIComponent(landmark.apiKey),
-    function(error, json) {
-      if(error) return landmark.log(error);
+  landmark.json("GET", "/api/v1/flows/current?apiKey=" + encodeURIComponent(landmark.apiKey), null,
+    function(json) {
       $this.current(json);
       $this.load()
     }
@@ -77,9 +73,8 @@ initialize : function() {
 load : function() {
   var $this = this;
   if(!this.current()) return;
-  d3.json(landmark.baseUrl() + "/api/v1/flows/" + this.current().id + "?apiKey=" + encodeURIComponent(landmark.apiKey),
-    function(error, json) {
-      if(error) return landmark.log(error);
+  landmark.json("GET", "/api/v1/flows/" + this.current().id + "?apiKey=" + encodeURIComponent(landmark.apiKey), null,
+    function(json) {
       $this.current(json);
       $this.query($this.current().id);
     }
@@ -245,21 +240,19 @@ updateChart : function(w, h, steps, options) {
 
 create : function(name) {
   var $this = this;
-  var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows?apiKey=" + encodeURIComponent(landmark.apiKey));
-  xhr.header('Content-Type', 'application/json');
-  xhr.post(JSON.stringify({"name":name}), function(error, json) {
-    if(error) {
-      var response = {};
-      try { response = JSON.parse(error.response); } catch(e) {}
+  landmark.json("POST", "/api/v1/flows?apiKey=" + encodeURIComponent(landmark.apiKey), {"name":name},
+    function(json) {
+      $this.current({id:json.id});
+      $this.load();
+    },
+    function(json) {
       if(response.name) {
         return alert("The '" + name + "' flow already exists. Please try a different name.");
       } else {
         return landmark.log(error);
       }
     }
-    $this.current({id:json.id});
-    $this.load();
-  });
+  );
 },
 
 
@@ -270,23 +263,21 @@ create : function(name) {
 createFlowStep : function(data) {
   if(!this.recording()) return landmark.log("Cannot create new step while recording is stopped.");
   var $this = this;
-  var xhr = d3.json(landmark.baseUrl() + "/api/v1/flows/" + this.current().id + "/steps?apiKey=" + encodeURIComponent(landmark.apiKey));
-  xhr.header('Content-Type', 'application/json');
-  xhr.post(JSON.stringify({"step":data}), function(error, json) {
-    if(error) return landmark.log(error);
-    $this.load();
-  });
+  landmark.json("POST", "/api/v1/flows/" + this.current().id + "/steps?apiKey=" + encodeURIComponent(landmark.apiKey), {"step":data},
+    function(json) {
+      $this.load();
+    }
+  );
 },
 
 removeFlowStep : function(data) {
   if(!this.recording()) return landmark.log("Cannot create new step while recording is stopped.");
   var $this = this;
-  var xhr = d3.xhr(landmark.baseUrl() + "/api/v1/flows/" + this.current().id + "/steps/" + data.id + "?apiKey=" + encodeURIComponent(landmark.apiKey));
-  xhr.header('Content-Type', 'application/json');
-  xhr.send("DELETE", null, function(error, json) {
-    if(error) return landmark.log(error);
-    $this.load();
-  });
+  landmark.json("DELETE", "/api/v1/flows/" + this.current().id + "/steps/" + data.id + "?apiKey=" + encodeURIComponent(landmark.apiKey), null,
+    function(json) {
+      $this.load();
+    }
+  );
 },
 
 
@@ -296,9 +287,8 @@ removeFlowStep : function(data) {
 
 query : function(id) {
   var $this = this;
-  d3.json(landmark.baseUrl() + "/api/v1/flows/" + id + "/query?apiKey=" + encodeURIComponent(landmark.apiKey),
-    function(error, json) {
-      if(error) return landmark.log(error);
+  landmark.json("GET", "/api/v1/flows/" + id + "/query?apiKey=" + encodeURIComponent(landmark.apiKey), null,
+    function(json) {
       $this.data = json;
       landmark.hud.update();
     }
