@@ -1,11 +1,10 @@
 module Api::V1
   class ProjectsController < Api::V1::BaseController
-    skip_before_filter :authenticate_api_user!, :only => [:track]
+    skip_before_filter :authenticate_api_user!, :only => [:auth, :track]
     skip_before_filter :find_project, :only => [:track]
 
     # GET /api/v1/projects/auth
     def auth
-      return head 404 if @project.nil?
       render :json => {:status => 'ok'}
     end
 
@@ -29,15 +28,15 @@ module Api::V1
 
       internal_tracking_id = (tracking_id.blank? ? nil : "~#{tracking_id}")
 
+      # This is an invalid request if we do not have an API key, some kind of id or any properties.
+      return head 422 if api_key.blank? || (id.blank? && tracking_id.blank?) || (properties.empty? && traits.empty?)
+
       @project = Project.find_by_api_key(api_key)
       return head 404 if @project.nil?
 
       # Ignore requests if the project is locked.
       return head 202 if @project.locked?
       
-      # This is an invalid request if we do not have an API key, some kind of id or any properties.
-      return head 422 if (id.blank? && tracking_id.blank?) || (properties.empty? && traits.empty?)
-
       # Mark the action as anonymous if we do not have a source system id.
       anonymous = id.blank?
       properties['__anonymous__'] = anonymous

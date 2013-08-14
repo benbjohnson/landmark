@@ -1,17 +1,51 @@
 require 'functional/test_helper'
 
-class EventsControllerTest < ActionController::TestCase
+class Api::V1::ProjectsControllerTest < ActionController::TestCase
   setup do
     sky_delete_test_tables()
-    @account = Account.create!(:name => 'Test Account')
-    @project = @account.projects.first
-    @project.api_key = '123'
-    @project.save!
+    setup_account()
   end
 
   teardown do
     sky_delete_test_tables()
   end
+
+  ######################################
+  # Auth
+  ######################################
+
+  def test_auth_when_signed_in
+    sign_in(@user)
+    get :auth, {'apiKey' => @project.api_key}
+    assert_response 200
+    assert_equal({'status' => 'ok'}, JSON.parse(response.body))
+  end
+
+  def test_auth_when_signed_in_but_not_authorized
+    sign_in(@user)
+    get :auth, {'apiKey' => 'bad_key'}
+    assert_response 404
+  end
+
+  def test_auth_when_signed_out
+    get :auth, {'apiKey' => 'bad_key'}
+    assert_response 404
+  end
+
+  def test_auth_demo
+    account = Account.create!(:name => 'DEMO')
+    project = account.projects.first
+    project.api_key = 'demo'
+    project.save!
+
+    get :auth, {'apiKey' => 'demo'}
+    assert_response 200
+  end
+
+
+  ######################################
+  # Tracking
+  ######################################
 
   def test_track_anonymous_events
     Timecop.freeze(DateTime.iso8601('2000-01-01T00:00:00Z')) do

@@ -7,6 +7,8 @@ class ActionController::TestCase
   def setup_account()
     @account = Account.create!()
     @project = @account.projects.first
+    @project.api_key = '123'
+    @project.save!
     @user = User.new(:email => 'test@skylandlabs.com', :password => 'password')
     @user.account = @account
     @user.save!

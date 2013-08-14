@@ -25,7 +25,7 @@ class ActionDispatch::IntegrationTest
   end
 
   def track(project, id, t, traits={}, properties={})
-    url = "/track?"
+    url = "/api/v1/projects/track?"
     url += "apiKey=#{project.api_key}"
     url += "&id=#{URI.encode(id.to_s)}" unless id.blank?
     url += "&t=#{URI.encode(t.to_s)}" unless t.blank?
