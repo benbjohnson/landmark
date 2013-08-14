@@ -148,7 +148,8 @@ CREATE TABLE projects (
     name character varying(255) DEFAULT ''::character varying,
     api_key character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    locked boolean DEFAULT false NOT NULL
 );
 
 
@@ -457,3 +458,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130726223211');
 INSERT INTO schema_migrations (version) VALUES ('20130805215425');
 
 INSERT INTO schema_migrations (version) VALUES ('20130805215655');
+
+INSERT INTO schema_migrations (version) VALUES ('20130814143426');

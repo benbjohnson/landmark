@@ -5,8 +5,6 @@ Landmark::Application.routes.draw do
     resources :flows
   end
 
-  get '/track', :to => 'events#track'
-
   resource :demo, :only => [:show] do
     get :pricing
     get :blog
@@ -22,6 +20,7 @@ Landmark::Application.routes.draw do
       resources :projects, :only => [] do
         collection do
           get :auth
+          get :track
         end
       end
 

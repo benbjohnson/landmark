@@ -65,7 +65,6 @@ module Landmark
     config.middleware.use Rack::Cors do
       allow do
         origins '*'
-        resource '/track', :headers => :any, :methods => [:get]
         resource '/api/*', :headers => :any, :methods => [:get, :post, :put, :patch, :delete], :credentials => true
       end
     end

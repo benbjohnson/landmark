@@ -233,7 +233,7 @@
       }
       
       // Send event data to "GET /track".
-      var path = "/track";
+      var path = "/api/v1/projects/track";
       path += "?apiKey=" + encodeURIComponent(this.apiKey);
       path += "&t=" + encodeURIComponent(t);
       if(userIdAvailable) {
