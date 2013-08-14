@@ -382,6 +382,10 @@
     normalize : function(str) {
       if(typeof(str) != "string") return str;
       str = str.replace(/\/(\d+|\d+-[^\/#]+)(?=\/|#|$)/g, "/:id");
+      str = str.replace(/\?.+?(?=#|$)/, "");
+      if(!config.trackHashChange) {
+        str = str.replace(/#.*$/, "");
+      }
       return str;
     },
 
