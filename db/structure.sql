@@ -246,6 +246,40 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: states; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE states (
+    id integer NOT NULL,
+    project_id integer NOT NULL,
+    parent_id integer,
+    name character varying(255) NOT NULL,
+    expression character varying(255) NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: states_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE states_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: states_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE states_id_seq OWNED BY states.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -332,6 +366,13 @@ ALTER TABLE ONLY resources ALTER COLUMN id SET DEFAULT nextval('resources_id_seq
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY states ALTER COLUMN id SET DEFAULT nextval('states_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
@@ -381,6 +422,14 @@ ALTER TABLE ONLY resource_hits
 
 ALTER TABLE ONLY resources
     ADD CONSTRAINT resources_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: states_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY states
+    ADD CONSTRAINT states_pkey PRIMARY KEY (id);
 
 
 --
@@ -460,3 +509,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130805215425');
 INSERT INTO schema_migrations (version) VALUES ('20130805215655');
 
 INSERT INTO schema_migrations (version) VALUES ('20130814143426');
+
+INSERT INTO schema_migrations (version) VALUES ('20130822132640');

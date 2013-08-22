@@ -42,6 +42,12 @@ Landmark::Application.routes.draw do
           get :next_page_actions
         end
       end
+
+      resources :states do
+        collection do
+          get :query
+        end
+      end
     end
   end
 

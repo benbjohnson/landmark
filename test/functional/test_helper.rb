@@ -16,8 +16,10 @@ class ActionController::TestCase
 
   def track(project, id, t, traits={}, properties={})
     properties.merge!({'__anonymous__' => id.blank?})
-    id = t.to_s if id.blank?
-    project.track(id, traits, properties)
+    project.track(id.blank? ? t.to_s : id, traits, properties)
+    if !id.blank? && !t.blank?
+      @project.sky_table.merge_objects(id.to_s, t.to_s)
+    end
   end
 
   def track_web(project, id, t, path, traits={}, properties={})
@@ -26,7 +28,6 @@ class ActionController::TestCase
       '__channel__' => 'web',
       '__resource__' => resource,
       '__url__' => path,
-      '__channel__' => 'web',
       })
     track(project, id, t, traits, properties)
   end
