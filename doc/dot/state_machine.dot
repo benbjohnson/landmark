@@ -1,0 +1,9 @@
+digraph g {
+  rankdir=LR;
+  node [shape=box];
+  visited -> registered;
+  registered -> trial;
+  trial -> expired;
+  trial -> subscribed;
+  subscribed -> renewed;
+}
