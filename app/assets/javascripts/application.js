@@ -9,6 +9,7 @@
 //= require humanize
 //= require d3
 //= require landmark
+//= require state
 //= require application
 
 $(document).ready(function() {

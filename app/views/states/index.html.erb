@@ -1,0 +1,18 @@
+<div id="states" class="row" style="padding: 0 32px; margin-top:20px">
+  <div class="span12">
+    <h3>States</h3>
+
+    <% if @project.states.count == 0 %>
+      <p>It doesn't look like you've set up any user states yet.</p>
+
+    <% else %>
+      <div id="chart"></div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  $(function() {
+    landmark.state.initialize(<%= @project.id %>);
+  })
+</script>

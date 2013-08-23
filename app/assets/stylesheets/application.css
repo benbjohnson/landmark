@@ -5,6 +5,7 @@
  *= require flat-ui
  *= require font-awesome
  *= require typeahead
+ *= require states
  *= require_self
  */
 
@@ -17,32 +18,3 @@ label {
   line-height: 1.722169;
 }
 
-#chart {
-  border:1px solid #ccc;
-  overflow: hidden;
-}
-
-#chart .node {
-  shape-rendering: crispEdges;
-  cursor: pointer;
-}
-
-#chart .node .title {
-  font-size: 16px;
-}
-
-#chart .link {
-  fill: none;
-  stroke: #ECEEF0;
-  stroke-opacity: 1;
-}
-
-.node-popover {
-  border: none;
-  box-shadow: none;
-  -webkit-box-shadow: none;
-}
-
-.node-popover .popover-content {
-  padding: 0;
-}

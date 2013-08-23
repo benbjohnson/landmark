@@ -12,11 +12,14 @@ module Api
       end
 
       def find_project
-        api_key = params[:apiKey]
-        if api_key == 'demo'
-          @project = Project.find_by_api_key(api_key)
+        if params[:apiKey] == 'demo'
+          @project = Project.find_by_api_key(params[:apiKey])
         elsif user_signed_in?
-          @project = current_user.account.projects.find_by_api_key(api_key)
+          if params[:project_id]
+            @project = current_user.account.projects.find(params[:project_id])
+          else
+            @project = current_user.account.projects.find_by_api_key(params[:apiKey])
+          end
         end
         return head 404 if @project.nil?
       end
