@@ -50,7 +50,13 @@ namespace :segmentio do
           project.sky_table.merge_objects(tracking_id, internal_tracking_id)
         end
 
-        project.track(id, traits, properties)
+        begin
+          project.track(id, traits, properties)
+        rescue StandardError => e
+          File.open(File.join(Rails.root, "log/segmentio.error.log"), 'a') do |f|
+            f.puts("#{filename}:#{$.} #{e.message}")
+          end
+        end
       end
     end
   end

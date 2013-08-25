@@ -214,13 +214,25 @@ update : function() {
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
 
-      enter.append("path")
+      enter.append("g")
         .attr("class", "transition")
+        .call(function() {
+          this.append("title");
+          this.append("path")
+        })
       ;
 
-      selection.transition()
-        .attr("d", curve())
-        .attr("stroke-width", function(d) { return d.dy })
+      selection
+        .call(function() {
+          this.select("title")
+            .text(function(d) { return Humanize.intcomma(d.value.count) + " users" })
+          ;
+          this.select("path")
+            .transition()
+            .attr("d", curve())
+            .attr("stroke-width", function(d) { return d.dy })
+          ;
+        })
       ;
 
       exit.remove();
@@ -246,7 +258,7 @@ layout : function(w, h) {
 
   for(var i=0; i<transitions.length; i++) {
     var transition = transitions[i];
-    transition.dy = Math.round(scales.transitions(transition.value.count));
+    transition.dy = Math.max(1, Math.round(scales.transitions(transition.value.count)));
     transition.x0 = Math.round(transition.source ? transition.source.x + settings.state.width : 0);
     transition.y0 = Math.round(transition.source ? transition.source.y  + (settings.state.height / 2) : h/2);
     transition.x1 = Math.round(transition.target.x);
