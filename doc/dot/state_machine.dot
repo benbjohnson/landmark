@@ -1,9 +1,13 @@
 digraph g {
+  // To convert from size to pixels is SIZE * 96
+  bgcolor=lightgray;
   rankdir=LR;
-  node [shape=box];
+  // edge [penwidth=4]
+  node [shape=box,style=filled,fillcolor=white];
   visited -> registered;
   registered -> trial;
-  trial -> expired;
+  trial -> expired [label="2,302,102"];
+  expired -> subscribed;
   trial -> subscribed;
   subscribed -> renewed;
 }

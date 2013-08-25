@@ -11,6 +11,7 @@ gem 'rack-cors', '~> 0.2.7', :require => 'rack/cors'
 gem 'high_voltage', '~> 1.2.3'
 gem 'airbrake', '~> 3.1.12'
 gem 'json', '~> 1.7.7'
+gem 'ruby-graphviz', '~> 1.0.9', :require => 'graphviz'
 gem 'yajl-ruby', '~> 1.1.0', :require => false
 gem 'skydb', :git => 'git@github.com:skydb/sky.rb.git', :ref => 'ce6dea9'
 

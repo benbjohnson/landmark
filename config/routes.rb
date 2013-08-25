@@ -55,6 +55,12 @@ Landmark::Application.routes.draw do
           get :query
         end
       end
+
+      resource :graph, :only => [] do
+        collection do
+          post :layout
+        end
+      end
     end
   end
 
