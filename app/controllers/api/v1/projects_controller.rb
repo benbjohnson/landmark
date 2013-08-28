@@ -51,7 +51,7 @@ module Api::V1
       end
       
       # Track the event in Sky.
-      @project.track(id, traits, properties, :timestamp => timestamp)
+      @project.track(id, traits, properties)
       
       render :status => :created, :json => {:status => :ok}
     end

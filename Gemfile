@@ -11,8 +11,8 @@ gem 'rack-cors', '~> 0.2.7', :require => 'rack/cors'
 gem 'high_voltage', '~> 1.2.3'
 gem 'airbrake', '~> 3.1.12'
 gem 'json', '~> 1.7.7'
-gem 'ruby-graphviz', '~> 1.0.9', :require => 'graphviz'
 gem 'yajl-ruby', '~> 1.1.0', :require => false
+gem 'miniviz', path:"/projects/benbjohnson/miniviz" # '~> 0.1'
 gem 'skydb', :git => 'git@github.com:skydb/sky.rb.git', :ref => 'ce6dea9'
 
 gem 'rvm-capistrano', '~> 1.3.4'

@@ -26,7 +26,7 @@ module Api::V1
 
       output << "WHEN state == #{state.parent_id.to_i} && #{state.expression} THEN"
       output << "  SET state = #{state.id}"
-      output << "  SELECT count() AS count INTO '#{state.id}';"
+      output << "  SELECT count() AS count INTO '#{state.id}'"
       output << "END"
 
       state.children.each do |child|
