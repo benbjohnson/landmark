@@ -2,44 +2,6 @@
 var states = [], statesById = {};
 var root = null, maxDepth = 0, maxTransitionValue = 0, depths = {};
 var data = [], transitions = [];
-var scales = {
-  transitions: d3.scale.linear()
-};
-
-var settings = {};
-settings.state = {
-  width:160,
-  height:40,
-  padding:{top:20, bottom:20, left:40, right:40}
-}
-
-//------------------------------------------------------------------------------
-//
-// Private Functions
-//
-//------------------------------------------------------------------------------
-
-function curve() {
-  var curvature = .5;
-
-  function link(d) {
-    var xi = d3.interpolateNumber(d.x0, d.x1);
-    var x2 = xi(curvature);
-    var x3 = xi(1 - curvature);
-    
-    return "M" + d.x0 + "," + d.y0
-         + "C" + x2 + "," + d.y0
-         + " " + x3 + "," + d.y1
-         + " " + d.x1 + "," + d.y1;
-  }
-
-  link.curvature = function(_) {
-    if (!arguments.length) return curvature;
-    curvature = +_; return link;
-  };
-
-  return link;
-}
 
 
 window.landmark.state = {
@@ -53,6 +15,8 @@ window.landmark.state = {
 projectId : 0,
 
 data : [],
+
+layout : { width:0, height:0 },
 
 state : function(id) {
   return statesById[id];
@@ -129,18 +93,17 @@ load : function() {
   d3.json("/api/v1/projects/" + this.projectId + "/states/query",
     function(error, json) {
       if(error) return console.warn(error);
+      $this.layout.width = json.width;
+      $this.layout.height = json.height;
+
       $this.states(json.states);
 
-      var transitions = [];
-      for(var id in json.results) {
-        var target = $this.state(parseInt(id));
-        if(target) {
-          var source = $this.state(target.parent_id);
-          var transitionId = target.parent_id + "-" + id;
-          transitions.push({id:transitionId, target:target, source:source, value:json.results[id]});
-        }
+      for(var i=0; i<json.transitions.length; i++) {
+        var transition = json.transitions[i];
+        transition.source = $this.state(transition.source);
+        transition.target = $this.state(transition.target);
       }
-      $this.transitions(transitions);
+      $this.transitions(json.transitions);
 
       $this.update();
     }
@@ -172,9 +135,11 @@ update : function() {
   var w = $(this.chart).width();
   var h = window.innerHeight - $(this.chart).offset().top - 40;
 
-  this.layout(w, h);
-
   this.svg.attr("height", h);
+
+  // Vertically center the layout.
+  this.g.states.attr("transform", "translate(10," + ((h/2)-(this.layout.height/2)) + ")");
+  this.g.transitions.attr("transform", "translate(10," + ((h/2)-(this.layout.height/2)) + ")");
 
   this.g.states.selectAll(".state")
     .data(this.states(), function(d) { return d.id; })
@@ -191,15 +156,14 @@ update : function() {
           this.append("rect");
 
           this.append("text")
-            .attr("dy", "1em")
-            .attr("x", settings.state.width/2)
-            .attr("y", 10)
+            .attr("x", function(d) { return d.label_x - d.x })
+            .attr("y", function(d) { return d.label_y - d.y - 3 })
             .attr("text-anchor", "middle");
         });
 
       selection.select("rect")
-        .attr("width", settings.state.width)
-        .attr("height", settings.state.height)
+        .attr("width", function(d) { return d.width })
+        .attr("height", function(d) { return d.height })
       ;
       selection.select("text")
         .text(function(d) { return d.name; })
@@ -210,7 +174,7 @@ update : function() {
   );
 
   this.g.transitions.selectAll(".transition")
-    .data(this.transitions(), function(d) { return d.id; })
+    .data(this.transitions(), function(d) { return d.source.id + "-" + d.target.id; })
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
 
@@ -218,19 +182,26 @@ update : function() {
         .attr("class", "transition")
         .call(function() {
           this.append("title");
-          this.append("path")
+          this.append("path");
+          this.append("polygon").attr("class", "arrowhead");
         })
       ;
 
       selection
         .call(function() {
           this.select("title")
-            .text(function(d) { return Humanize.intcomma(d.value.count) + " users" })
+            .text(function(d) { return Humanize.intcomma(d.count) + " users" })
           ;
           this.select("path")
             .transition()
-            .attr("d", curve())
-            .attr("stroke-width", function(d) { return d.dy })
+            .attr("d", function(d) { return d.d })
+            .attr("stroke-width", function(d) { return 2 })
+          ;
+          this.select("polygon.arrowhead")
+            .transition()
+            .attr("stroke", "black")
+            .attr("fill", "black")
+            .attr("points", function(d) { return d.arrowhead })
           ;
         })
       ;
@@ -238,32 +209,6 @@ update : function() {
       exit.remove();
     }
   );
-},
-
-layout : function(w, h) {
-  scales.transitions
-    .domain(d3.extent(transitions, function(d) { return d.value.count }))
-    .range([0, settings.state.height])
-  ;
-
-  for(var i=0; i<states.length; i++) {
-    var state = states[i];
-    var siblings = depths[state.depth];
-    var index = siblings.indexOf(state);
-    var siblingHeight = siblings.length * (settings.state.padding.top + settings.state.padding.bottom + settings.state.height);
-
-    state.x = settings.state.padding.left + (state.depth * (settings.state.padding.left + settings.state.width + settings.state.padding.right));
-    state.y = (h/2) - (siblingHeight/2) + (index * (settings.state.padding.top + settings.state.padding.bottom + settings.state.height)) + settings.state.padding.top;
-  }
-
-  for(var i=0; i<transitions.length; i++) {
-    var transition = transitions[i];
-    transition.dy = Math.max(1, Math.round(scales.transitions(transition.value.count)));
-    transition.x0 = Math.round(transition.source ? transition.source.x + settings.state.width : 0);
-    transition.y0 = Math.round(transition.source ? transition.source.y  + (settings.state.height / 2) : h/2);
-    transition.x1 = Math.round(transition.target.x);
-    transition.y1 = Math.round(transition.target.y + (settings.state.height/2));
-  }
 },
 
 
