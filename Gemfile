@@ -35,6 +35,7 @@ group :test do
   gem 'poltergeist', '~> 1.3.0'
   gem 'launchy', '~> 2.3.0'
   gem 'unindentable', '~> 0.1.0'
+  gem 'm', '~> 1.3'
 end
 
 group :development, :test do

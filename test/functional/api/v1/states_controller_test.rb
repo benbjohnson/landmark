@@ -43,11 +43,11 @@ class Api::V1::StatesControllerTest < ActionController::TestCase
           {"id" => registered.id, "name" => "Registered", "parent_id" => visited.id},
           {"id" => trial.id, "name" => "Trialing", "parent_id" => registered.id},
         ],
-        "results" => {
-          visited.id.to_s => {"count"=>4},
-          registered.id.to_s => {"count"=>3},
-          trial.id.to_s => {"count"=>1}
-        }
+        "transitions" => [
+          {"source" => 0, "target" => visited.id, "count"=>4},
+          {"source" => visited.id, "target" => registered.id, "count"=>3},
+          {"source" => registered.id, "target" => trial.id, "count"=>1}
+        ]
       },
       JSON.parse(response.body)
     )
