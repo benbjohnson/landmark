@@ -11,9 +11,11 @@ class Api::V1::StatesControllerTest < ActionController::TestCase
   end
 
   def test_query
-    visited = @project.states.create!(name: "Visited", expression: "true")
-    registered = @project.states.create!(name: "Registered", expression: "__anonymous__ == false", parent:visited)
-    trial = @project.states.create!(name: "Trialing", expression: "__action__ == '__page_view__' && __resource__ == '/start_trial'", parent:registered)
+    visited = @project.states.create!(name: "Visited", expression: "state == 0")
+    registered = @project.states.create!(name: "Registered", expression: "__anonymous__ == false")
+    registered.sources << visited
+    trial = @project.states.create!(name: "Trialing", expression: "__action__ == '__page_view__' && __resource__ == '/start_trial'")
+    trial.sources << registered
 
     Timecop.freeze(10.minute.ago) do
       track_page_view(@project, nil, 1, '/home')
@@ -43,9 +45,9 @@ class Api::V1::StatesControllerTest < ActionController::TestCase
     assert_equal(
       {
         "states" => [
-          {"id" => visited.id, "name" => "Visited", "parent_id" => nil},
-          {"id" => registered.id, "name" => "Registered", "parent_id" => visited.id},
-          {"id" => trial.id, "name" => "Trialing", "parent_id" => registered.id},
+          {"id" => visited.id, "name" => "Visited"},
+          {"id" => registered.id, "name" => "Registered"},
+          {"id" => trial.id, "name" => "Trialing"},
         ],
         "transitions" => [
           {"source" => visited.id, "target" => registered.id, "count"=>3},

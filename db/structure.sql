@@ -246,13 +246,44 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: state_links; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE state_links (
+    id integer NOT NULL,
+    source_id integer NOT NULL,
+    target_id integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: state_links_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE state_links_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: state_links_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE state_links_id_seq OWNED BY state_links.id;
+
+
+--
 -- Name: states; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE states (
     id integer NOT NULL,
     project_id integer NOT NULL,
-    parent_id integer,
     name character varying(255) NOT NULL,
     expression character varying(255) NOT NULL,
     created_at timestamp without time zone NOT NULL,
@@ -366,6 +397,13 @@ ALTER TABLE ONLY resources ALTER COLUMN id SET DEFAULT nextval('resources_id_seq
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY state_links ALTER COLUMN id SET DEFAULT nextval('state_links_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY states ALTER COLUMN id SET DEFAULT nextval('states_id_seq'::regclass);
 
 
@@ -422,6 +460,14 @@ ALTER TABLE ONLY resource_hits
 
 ALTER TABLE ONLY resources
     ADD CONSTRAINT resources_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: state_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY state_links
+    ADD CONSTRAINT state_links_pkey PRIMARY KEY (id);
 
 
 --
@@ -511,3 +557,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130805215655');
 INSERT INTO schema_migrations (version) VALUES ('20130814143426');
 
 INSERT INTO schema_migrations (version) VALUES ('20130822132640');
+
+INSERT INTO schema_migrations (version) VALUES ('20130829225037');

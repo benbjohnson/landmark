@@ -2,14 +2,15 @@ module Api::V1
   class StatesController < Api::V1::BaseController
     # GET /projects/:id/states/query
     def query
-      @root = @project.states.where("parent_id IS NULL").first
-      return render json: {} if @root.nil?
+      return render json: {} if @project.states.empty?
 
       # Generate the Sky query.
       query = []
       query << "DECLARE prev_state AS INTEGER"
       query << "DECLARE state AS INTEGER"
-      query << codegen(@root)
+      @project.states.each do |state|
+        query << codegen(state)
+      end
       query = query.join("\n")
       results = @project.run_query(query: query)
 
@@ -45,15 +46,16 @@ module Api::V1
     def codegen(state)
       output = []
 
-      output << "WHEN state == #{state.parent_id.to_i} && #{state.expression} THEN"
+      source_condition = "true"
+      if !state.sources.empty?
+        source_condition = state.sources.map {|source| "state == #{source.id}"}.join(" || ")
+      end
+
+      output << "WHEN (#{source_condition}) && (#{state.expression}) THEN"
       output << "  SET prev_state = state"
       output << "  SET state = #{state.id}"
       output << "  SELECT count() AS count GROUP BY prev_state, state INTO 'transitions'"
       output << "END"
-
-      state.children.each do |child|
-        output << codegen(child)
-      end
 
       return output.join("\n")
     end
