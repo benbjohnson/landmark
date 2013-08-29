@@ -36,6 +36,10 @@ class Api::V1::StatesControllerTest < ActionController::TestCase
     sign_in(@user)
     get :query, {'apiKey' => @project.api_key}
     assert_response 200
+    resp = JSON.parse(response.body)
+    resp.delete_if {|k,v| !%w(width height).index(k).nil?}
+    resp["states"].each {|s| s.delete_if {|k,v| !%w(x y width height label_x label_y).index(k).nil?}}
+    resp["transitions"].each {|s| s.delete_if {|k,v| !%w(d arrowhead).index(k).nil?}}
     assert_equal(
       {
         "states" => [
@@ -44,12 +48,11 @@ class Api::V1::StatesControllerTest < ActionController::TestCase
           {"id" => trial.id, "name" => "Trialing", "parent_id" => registered.id},
         ],
         "transitions" => [
-          {"source" => 0, "target" => visited.id, "count"=>4},
           {"source" => visited.id, "target" => registered.id, "count"=>3},
           {"source" => registered.id, "target" => trial.id, "count"=>1}
         ]
       },
-      JSON.parse(response.body)
+      resp
     )
   end
 end

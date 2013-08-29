@@ -146,8 +146,9 @@ update : function() {
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
 
-      selection.transition()
-        .attr("transform", function(d) { return "translate("+d.x+","+d.y+")"; });
+      selection
+        .transition()
+          .attr("transform", function(d) { return "translate("+d.x+","+d.y+")"; });
 
       enter.append("g")
         .attr("class", "state")
@@ -157,9 +158,10 @@ update : function() {
 
           this.append("text")
             .attr("x", function(d) { return d.label_x - d.x })
-            .attr("y", function(d) { return d.label_y - d.y - 3 })
+            .attr("y", function(d) { return d.label_y - d.y - 2 })
             .attr("text-anchor", "middle");
-        });
+          }
+        );
 
       selection.select("rect")
         .attr("width", function(d) { return d.width })

@@ -13,8 +13,10 @@ module Api::V1
       query = query.join("\n")
       results = @project.run_query(query: query)
 
-      # Normalize the states and transitions to flat arrays.
+      # Convert states to hashes.
       states = @project.states.as_json(only: [:id, :name, :parent_id])
+
+      # Normalize the transitions to flat arrays.
       transitions = []
       results["transitions"]["prev_state"].delete("0")
       results["transitions"]["prev_state"].each_pair do |source, v|
@@ -63,7 +65,7 @@ module Api::V1
       graph = Miniviz::Graph.new(nodes:states, edges:transitions)
       graph.rankdir = "LR"
       graph.fontname = "Helvetica"
-      graph.fontsize = 12
+      graph.fontsize = 14
       errors = graph.layout()
       graph.apply_layout()
 
