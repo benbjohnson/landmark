@@ -4,7 +4,7 @@ class CreateStates < ActiveRecord::Migration
       t.references :project, null: false
       t.references :parent
       t.string :name, null: false
-      t.string :expression, null: false
+      t.string :expression
       t.timestamps
     end
   end

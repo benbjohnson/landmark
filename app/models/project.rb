@@ -153,6 +153,26 @@ class Project < ActiveRecord::Base
     return properties
   end
 
+  ######################################
+  # Codegen
+  ######################################
+
+  # Generates Sky query code for the states declarations.
+  def codegen_state_decl
+    output = []
+    output << "DECLARE prev_state AS INTEGER"
+    output << "DECLARE state AS INTEGER"
+    return output.join("\n")
+  end
+
+  # Generates Sky query code for the states of the project.
+  def codegen_states(options={})
+    output = states.map do |state|
+      state.codegen
+    end
+    return output.join("\n")
+  end
+
 
   ######################################
   # Resources

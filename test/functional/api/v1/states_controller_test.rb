@@ -11,7 +11,7 @@ class Api::V1::StatesControllerTest < ActionController::TestCase
   end
 
   def test_query
-    visited = @project.states.create!(name: "Visited", expression: "state == 0")
+    visited = @project.states.create!(name: "Visited")
     registered = @project.states.create!(name: "Registered", expression: "__anonymous__ == false")
     registered.sources << visited
     trial = @project.states.create!(name: "Trialing", expression: "__action__ == '__page_view__' && __resource__ == '/start_trial'")
