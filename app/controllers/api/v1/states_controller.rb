@@ -121,6 +121,8 @@ module Api::V1
         lookup[transition["source"]][transition["target"]] ||= {
           "source" => transition["source"],
           "target" => transition["target"], 
+          "label" => transition["count"].to_i,
+          "weight" => transition["count"].to_i,
           "indices" => {},
         }
         index = (transition["index"] || 1) - 1

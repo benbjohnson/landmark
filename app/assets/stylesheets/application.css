@@ -5,6 +5,7 @@
  *= require flat-ui
  *= require font-awesome
  *= require typeahead
+ *= require chosen
  *= require states
  *= require_self
  */

@@ -73,7 +73,8 @@ initialize : function(projectId) {
   this.projectId = projectId;
 
   $(document).on("click", function() { $this.document_onClick() });
-
+  $(document).on("click", ".show-node-actions", this.showNodeActions_onClick);
+  
   this.chart = $("#chart")[0];
   this.svg = d3.select(this.chart).append("svg");
   this.g = {
@@ -209,7 +210,16 @@ update : function() {
             .attr("fill", "black")
             .attr("points", function(d) { return d.arrowhead })
           ;
+          this.append("text")
+            .attr("x", function(d) { return d.label_x })
+            .attr("y", function(d) { return d.label_y })
+            .attr("text-anchor", "middle")
+          ;
         })
+      ;
+
+      selection.select("text")
+        .text(function(d) { return d.label; })
       ;
 
       exit.remove();
@@ -251,9 +261,10 @@ node_onClick : function(d) {
     template: '<div class="popover node-popover"><div class="popover-content"></div></div>',
     content:
       '<div class="dropdown open">' +
-      '  <ul class="dropdown-menu">' +
+      '  <ul class="dropdown-menu dropdown-inverse">' +
       '    <li class="show-next-actions">' +
-      '      <a href="#">Show Actions</a>' +
+      '      <a class="show-node-actions" href="#">Show Actions</a>' +
+      '      <a href="' + window.location.pathname + '/' + d.id + '/edit">Edit State</a>' +
       '    </li>' +
       '  </ul>' +
       '</div>'
@@ -263,6 +274,9 @@ node_onClick : function(d) {
   popover.css("left", d3.event.x + 10);
   popover.css("top", d3.event.y + 10);
   d3.event.stopPropagation();
+},
+
+showNodeActions_onClick : function() {
 },
 
 }

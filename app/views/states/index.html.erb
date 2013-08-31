@@ -1,6 +1,18 @@
 <div id="states" class="row" style="padding: 0 32px; margin-top:20px">
   <div class="span12">
-    <h3>States</h3>
+    <h3 style="display: inline">States</h3>
+
+    <div class="pull-right" style="width:160px">
+    <div class="btn-group select select-block">
+      <button class="btn dropdown-toggle clearfix btn-small btn-primary" data-toggle="dropdown">
+        <span class="filter-option pull-left">Actions</span>&nbsp;
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu dropdown-inverse" role="menu" style="overflow-y: auto;">
+        <li><%= link_to("Add State", new_project_state_path(@project)) %></a></li>
+      </ul>
+    </div>
+  </div>
 
     <% if @project.states.count == 0 %>
       <p>It doesn't look like you've set up any user states yet.</p>

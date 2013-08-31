@@ -8,7 +8,7 @@ class State < ActiveRecord::Base
   validates :name, presence: true  
   validates :name, uniqueness: {scope: :project_id}
 
-  attr_accessible(:name, :expression)
+  attr_accessible(:name, :expression, :sources)
 
   # Generates a partial Sky query for the state change.
   def codegen(options={})

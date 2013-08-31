@@ -1,0 +1,29 @@
+<%= form_for [@project, @state] do |f| %>
+  <div class="control-group">
+    <%= f.label :name, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_field :name, :class => "input-xlarge" %>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <%= f.label :expression, :class => 'control-label' %>
+    <div class="controls">
+      <%= f.text_area :expression, :class => "input-xlarge", style: "height:80px" %>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <%= f.label :sources, "Source States", :class => 'control-label' %>
+    <div class="controls">
+      <%= f.collection_select :sources, State.all, :id, :name, {selected: @state.sources.map{|s| s.id}}, multiple: true, class: "chosen-select", style: "width:280px", "data-placeholder" => " " %>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="controls">
+      <%= f.submit(:class => 'btn btn-primary btn-embossed') %>
+      <%= link_to('Back', :back, :class => 'btn btn-inverse btn-embossed') %>
+    </div>
+  </div>
+<% end %>
