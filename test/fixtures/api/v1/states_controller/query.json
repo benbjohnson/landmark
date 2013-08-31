@@ -1,0 +1,36 @@
+{
+  "states": [
+    {
+      "id": 1,
+      "name": "Visited"
+    },
+    {
+      "id": 2,
+      "name": "Registered"
+    },
+    {
+      "id": 3,
+      "name": "Trialing"
+    }
+  ],
+  "transitions": [
+    {
+      "source": 1,
+      "target": 2,
+      "indices": {
+        "0": {
+          "count": 3
+        }
+      }
+    },
+    {
+      "source": 2,
+      "target": 3,
+      "indices": {
+        "0": {
+          "count": 1
+        }
+      }
+    }
+  ]
+}

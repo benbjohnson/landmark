@@ -14,6 +14,10 @@ WebMock.disable_net_connect!(:allow_localhost => true)
 class ActiveSupport::TestCase
   fixtures :all
 
+  def readfixture(path)
+    IO.read(File.join(File.expand_path('../fixtures', __FILE__), path))
+  end
+
   def assert_mail(exp, act, failure_message=nil)
     exp = exp.encoded.gsub(/Message-ID: <.+>/, '').gsub(/Date: .+/, '')
     act = act.encoded.gsub(/Message-ID: <.+>/, '').gsub(/Date: .+/, '')

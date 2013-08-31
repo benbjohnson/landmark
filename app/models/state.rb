@@ -11,7 +11,7 @@ class State < ActiveRecord::Base
   attr_accessible(:name, :expression)
 
   # Generates a partial Sky query for the state change.
-  def codegen()
+  def codegen(options={})
     output = []
 
     source_condition = nil
@@ -37,7 +37,14 @@ class State < ActiveRecord::Base
     output << "WHEN (#{source_condition}) && (#{expression_condition}) THEN"
     output << "  SET prev_state = state"
     output << "  SET state = #{id}"
-    output << "  SELECT count() AS count GROUP BY prev_state, state INTO 'transitions'"
+
+    # Inject an after-hook from the caller.
+    if options[:after].is_a?(Proc)
+      output << options[:after].call(self).to_s.gsub(/^/, "  ")
+    elsif options[:after].is_a?(String)
+      output << options[:after].gsub(/^/, "  ")
+    end
+
     output << "END"
 
     return output.join("\n")

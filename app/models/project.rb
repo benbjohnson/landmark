@@ -8,6 +8,11 @@ class Project < ActiveRecord::Base
 
   attr_accessible :name
 
+  # Retrieves the state on the project that has no sources and no expression.
+  def enter_state
+    states.where("expression IS NULL OR expression == ''").select {|state| state.sources.length }.first
+  end
+
   ######################################
   # Callbacks
   ######################################
@@ -168,7 +173,7 @@ class Project < ActiveRecord::Base
   # Generates Sky query code for the states of the project.
   def codegen_states(options={})
     output = states.map do |state|
-      state.codegen
+      state.codegen(options)
     end
     return output.join("\n")
   end
