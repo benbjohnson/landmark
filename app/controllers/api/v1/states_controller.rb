@@ -103,10 +103,12 @@ module Api::V1
     # Converts prev_state/state nested data when using replay.
     def normalize_replay_transitions(results)
       transitions = []
-      results["index"].each_pair do |index, v|
-        tmp = normalize_transitions(v)
-        tmp.each {|t| t["index"] = index.to_i}
-        transitions.concat(tmp)
+      if results["index"]
+        results["index"].each_pair do |index, v|
+          tmp = normalize_transitions(v)
+          tmp.each {|t| t["index"] = index.to_i}
+          transitions.concat(tmp)
+        end
       end
       return transitions
     end

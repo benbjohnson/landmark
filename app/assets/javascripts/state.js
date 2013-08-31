@@ -72,6 +72,8 @@ initialize : function(projectId) {
   var $this = this;
   this.projectId = projectId;
 
+  $(document).on("click", function() { $this.document_onClick() });
+
   this.chart = $("#chart")[0];
   this.svg = d3.select(this.chart).append("svg");
   this.g = {
@@ -132,6 +134,7 @@ normalize : function() {
 //--------------------------------------
 
 update : function() {
+  var $this = this;
   var w = $(this.chart).width();
   var h = window.innerHeight - $(this.chart).offset().top - 40;
 
@@ -152,6 +155,7 @@ update : function() {
 
       enter.append("g")
         .attr("class", "state")
+        .on("click", function(d) { $this.node_onClick(d) })
         .attr("transform", function(d) { return "translate("+d.x+","+d.y+")"; })
         .call(function() {
           this.append("rect");
@@ -215,11 +219,50 @@ update : function() {
 
 
 //--------------------------------------
+// Utility
+//--------------------------------------
+
+removePopover : function() {
+  popoverNode = null;
+  $(".popover").remove()
+  $(".tooltip").remove()
+},
+
+
+//--------------------------------------
 // Events
 //--------------------------------------
 
 onresize : function() {
   this.update();
+},
+
+document_onClick : function() {
+  if($(event.target).attr("rel") == "popover") return;  
+  if($(event.target).parents(".popover").length > 0) return;
+  this.removePopover();
+},
+
+node_onClick : function(d) {
+  this.removePopover();
+  $(this).popover({
+    html: true, container:"body", trigger:"manual",
+    placement: "left",
+    template: '<div class="popover node-popover"><div class="popover-content"></div></div>',
+    content:
+      '<div class="dropdown open">' +
+      '  <ul class="dropdown-menu">' +
+      '    <li class="show-next-actions">' +
+      '      <a href="#">Show Actions</a>' +
+      '    </li>' +
+      '  </ul>' +
+      '</div>'
+  });
+  $(this).popover("show");
+  var popover = $(this).data("popover").$tip
+  popover.css("left", d3.event.x + 10);
+  popover.css("top", d3.event.y + 10);
+  d3.event.stopPropagation();
 },
 
 }
