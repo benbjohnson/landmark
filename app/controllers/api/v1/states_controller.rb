@@ -6,9 +6,8 @@ module Api::V1
 
       replay_from = params[:replay_from].to_i
       step = (params[:step] || 1).to_i
-      step_unit = (params[:step_unit] || "DAY").to_s.upcase
       duration = (params[:duration] || 30).to_i
-      duration_unit = (params[:duration_unit] || "DAY").to_s.upcase
+      unit = (params[:unit] || "DAY").to_s.upcase
 
       # Generate the Sky query.
       query = []
@@ -17,7 +16,7 @@ module Api::V1
         after: lambda {|state|
           out = []
           if state.id == replay_from
-            out << "FOR index EVERY #{step} #{step_unit} WITHIN #{duration} #{duration_unit}"
+            out << "FOR index EVERY #{step} #{unit} WITHIN #{duration} #{unit}"
             out << "  FOR EACH EVENT"
             out << @project.codegen_states(
               after: "SELECT count() AS count GROUP BY index, prev_state, state INTO 'transitions'"
@@ -32,6 +31,7 @@ module Api::V1
         }
        )
       query = query.join("\n")
+      warn(query)
       results = @project.run_query(query: query)
 
       # Normalize states.
@@ -48,12 +48,21 @@ module Api::V1
 
       # Generate the layout.
       width, height = generate_layout(states, transitions)
-      render :json => {
+      json = {
         width: width,
         height: height,
         states: states,
         transitions: transitions,
       }
+      if replay_from > 0
+        json[:replay] = {
+            id: replay_from,
+            step: step,
+            duration: duration,
+            unit: unit,
+          }
+      end
+      render :json => json
     end
 
 

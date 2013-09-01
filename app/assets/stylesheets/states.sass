@@ -1,25 +1,36 @@
 #states
   #chart
-    border: 1px solid #ccc
-    overflow: hidden
-    .state
-      shape-rendering: crispEdges
-      cursor: pointer
-      rect
-        fill: #fff
-        stroke: #0b7359
-        stroke-width: 2
-      text
-        font: 14px Helvetica
-        text-align: center
-        fill: #0b7359
-    .transition
-      path
-        fill: none
-        stroke: #333
-      polygon.arrowhead
-        fill: #333
-        stroke: #333
+    svg.focus
+      border: 1px solid #ccc
+      overflow: hidden
+      .state
+        shape-rendering: crispEdges
+        cursor: pointer
+        rect
+          fill: #fff
+          stroke: #0b7359
+          stroke-width: 2
+        text
+          font: 14px Helvetica
+          text-align: center
+          fill: #0b7359
+      .transition
+        path
+          fill: none
+          stroke: #333
+        polygon.arrowhead
+          fill: #333
+          stroke: #333
+
+    svg.context
+      .brush-background
+        rect
+          fill: #0b7359
+          shape-rendering: crispEdges
+      .extent
+        fill: #000
+        fill-opacity: .3
+        shape-rendering: crispEdges
 
 .popover
   border: none
