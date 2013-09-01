@@ -285,9 +285,10 @@ CREATE TABLE states (
     id integer NOT NULL,
     project_id integer NOT NULL,
     name character varying(255) NOT NULL,
-    expression character varying(255),
+    expression text,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    variable character varying(255)
 );
 
 
@@ -559,3 +560,7 @@ INSERT INTO schema_migrations (version) VALUES ('20130814143426');
 INSERT INTO schema_migrations (version) VALUES ('20130822132640');
 
 INSERT INTO schema_migrations (version) VALUES ('20130829225037');
+
+INSERT INTO schema_migrations (version) VALUES ('20130831235917');
+
+INSERT INTO schema_migrations (version) VALUES ('20130901010745');

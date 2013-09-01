@@ -8,7 +8,7 @@ class State < ActiveRecord::Base
   validates :name, presence: true  
   validates :name, uniqueness: {scope: :project_id}
 
-  attr_accessible(:name, :expression, :sources)
+  attr_accessible(:name, :expression, :variable, :sources)
 
   # Generates a partial Sky query for the state change.
   def codegen(options={})
@@ -37,6 +37,9 @@ class State < ActiveRecord::Base
     output << "WHEN (#{source_condition}) && (#{expression_condition}) THEN"
     output << "  SET prev_state = state"
     output << "  SET state = #{id}"
+
+    # Set variable when we enter.
+    output << "  SET #{variable} = true" unless variable.blank?
 
     # Inject an after-hook from the caller.
     if options[:after].is_a?(Proc)

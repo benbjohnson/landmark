@@ -219,7 +219,7 @@ update : function() {
       ;
 
       selection.select("text")
-        .text(function(d) { return d.label; })
+        .text(function(d) { return Humanize.intcomma(d.label); })
       ;
 
       exit.remove();
@@ -265,6 +265,7 @@ node_onClick : function(d) {
       '    <li class="show-next-actions">' +
       '      <a class="show-node-actions" href="#">Show Actions</a>' +
       '      <a href="' + window.location.pathname + '/' + d.id + '/edit">Edit State</a>' +
+      '      <a href="' + window.location.pathname + '/' + d.id + '" data-method="delete" data-confirm="Are you sure?">Remove State</a>' +
       '    </li>' +
       '  </ul>' +
       '</div>'

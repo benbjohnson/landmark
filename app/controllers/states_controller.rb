@@ -4,17 +4,17 @@ class StatesController < ApplicationController
   before_filter :normalize_params
   respond_to :html
 
-  # GET /projects/:id/states
+  # GET /projects/:project_id/states
   def index
     @states = @project.states
   end
 
-  # GET /projects/:id/states/new
+  # GET /projects/:project_id/states/new
   def new
     @state = @project.states.build
   end
 
-  # POST /projects/:id/states
+  # POST /projects/:project_id/states
   def create
     @state = @project.states.build(params[:state])
     if @state.save
@@ -24,19 +24,26 @@ class StatesController < ApplicationController
     end
   end
 
-  # GET /projects/:id/states/new
+  # GET /projects/:project_id/states/:id/edit
   def edit
     @state = @project.states.find(params[:id])
   end
 
-  # POST /projects/:id/states
+  # POST /projects/:project_id/states/:id
   def update
     @state = @project.states.find(params[:id])
     if @state.update_attributes(params[:state])
-      redirect_to(project_states_path(@project), :notice => 'State was successfully created.')
+      redirect_to(project_states_path(@project), :notice => 'State was successfully updated.')
     else
       render :action => "edit"
     end
+  end
+
+  # DELETE /projects/:project_id/states/:id/destroy
+  def destroy
+    @state = @project.states.find(params[:id])
+    @state.destroy()
+    redirect_to(project_states_path(@project), :notice => 'State was successfully removed.')
   end
 
   private

@@ -167,6 +167,9 @@ class Project < ActiveRecord::Base
     output = []
     output << "DECLARE prev_state AS INTEGER"
     output << "DECLARE state AS INTEGER"
+    states.each do |state|
+      output << "DECLARE #{state.variable} AS BOOLEAN" unless state.variable.blank?
+    end
     return output.join("\n")
   end
 
