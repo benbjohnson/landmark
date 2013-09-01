@@ -1,6 +1,7 @@
 (function() {
 var states = [], statesById = {};
-var replay = {id:1, unit:"seconds"}; // null;
+var replay = null
+var replayFunc = null
 var currentIndex = 0;
 var root = null, maxTransitionValue = 0;
 var data = [], transitions = [];
@@ -8,7 +9,8 @@ var popoverNode = null;
 var brush = d3.svg.brush();
 
 var settings = {};
-settings.brush = {height:10};
+settings.brush = {height:20};
+settings.brush.label = {width:60, padding:{left:2}};
 
 window.landmark.state = {
 
@@ -74,7 +76,9 @@ initialize : function(projectId) {
 
   $(document).on("click", function() { $this.document_onClick() });
   $(document).on("click", ".show-replay", function() { $this.showReplay_onClick(popoverNode) });
-  $(document).on("click", ".show-node-actions", function() { this.showNodeActions_onClick(popoverNode) });
+  $(document).on("click", ".show-node-actions", function() { $this.showNodeActions_onClick(popoverNode) });
+  $("#replay-play").on("click", function(event) { $this.replayPlay_onClick(); event.preventDefault(); });
+  $("#replay-close").on("click", function(event) { $this.replayClose_onClick(); event.preventDefault(); });
   
   this.chart = $("#chart")[0];
   this.svg = {};
@@ -87,6 +91,9 @@ initialize : function(projectId) {
   };
   this.g.brush.append("g").attr("class", "brush-background"),
   this.g.brush.append("g").attr("class", "brush"),
+  this.g.brush.append("g").attr("class", "label");
+  this.g.brush.select(".label").append("rect");
+  this.g.brush.select(".label").append("text");
 
   this.update();
   this.load();
@@ -152,8 +159,16 @@ update : function() {
   var w = $(this.chart).width();
   var h = window.innerHeight - $(this.chart).offset().top - 40;
 
-  this.svg.focus.attr("height", (h - settings.brush.height));
-  this.svg.context.attr("height", settings.brush.height);
+  if(replay) {
+    $("#replay-toolbar").show();
+    $("#replay-play i").attr("class", (replayFunc ? "fui-pause" : "fui-play"))
+  } else {
+    $("#replay-toolbar").hide();
+  }
+
+  var bh = (replay ? settings.brush.height : 0);
+  this.svg.focus.attr("height", (h - bh));
+  this.svg.context.attr("height", bh);
 
   this.updateStates(w, h);
   this.updateTransitions(w, h);
@@ -163,7 +178,8 @@ update : function() {
 updateStates : function(w, h) {
   var $this = this;
 
-  this.g.states.attr("transform", "translate(10," + (((h-settings.brush.height)/2)-(this.layout.height/2)) + ")");
+  var bh = (replay ? settings.brush.height : 0);
+  this.g.states.attr("transform", "translate(10," + (((h-bh)/2)-(this.layout.height/2)) + ")");
 
   this.g.states.selectAll(".state")
     .data(this.states(), function(d) { return d.id; })
@@ -182,9 +198,14 @@ updateStates : function(w, h) {
           this.append("rect");
 
           this.append("text")
-            .attr("x", function(d) { return d.label_x - d.x })
-            .attr("y", function(d) { return d.label_y - d.y - 2 })
-            .attr("text-anchor", "middle");
+            .attr("class", "title")
+            .attr("text-anchor", "middle")
+          ;
+
+          this.append("text")
+            .attr("class", "subtitle")
+            .attr("text-anchor", "middle")
+          ;
           }
         );
 
@@ -192,8 +213,15 @@ updateStates : function(w, h) {
         .attr("width", function(d) { return d.width })
         .attr("height", function(d) { return d.height })
       ;
-      selection.select("text")
+      selection.select("text.title")
+        .attr("x", function(d) { return d.label_x - d.x })
+        .attr("y", function(d) { return d.label_y - d.y - (replay ? 7 : 2) })
         .text(function(d) { return d.name; })
+      ;
+      selection.select("text.subtitle")
+        .attr("x", function(d) { return d.label_x - d.x })
+        .attr("y", function(d) { return d.label_y - d.y + 6 })
+        .text(function(d) { return replay && d.indices[currentIndex] ? Humanize.intcomma(d.indices[currentIndex].count) : ""; })
       ;
 
       exit.remove();
@@ -204,7 +232,8 @@ updateStates : function(w, h) {
 updateTransitions : function(w, h) {
   var $this = this;
 
-  this.g.transitions.attr("transform", "translate(10," + (((h-settings.brush.height)/2)-(this.layout.height/2)) + ")");
+  var bh = (replay ? settings.brush.height : 0);
+  this.g.transitions.attr("transform", "translate(10," + (((h-bh)/2)-(this.layout.height/2)) + ")");
 
   this.g.transitions.selectAll(".transition")
     .data(this.transitions(), function(d) { return d.source.id + "-" + d.target.id; })
@@ -222,9 +251,6 @@ updateTransitions : function(w, h) {
 
       selection
         .call(function() {
-          this.select("title")
-            .text(function(d) { return Humanize.intcomma(d.count) + " users" })
-          ;
           this.select("path")
             .transition()
             .attr("d", function(d) { return d.d })
@@ -237,14 +263,14 @@ updateTransitions : function(w, h) {
             .attr("points", function(d) { return d.arrowhead })
           ;
           this.append("text")
-            .attr("x", function(d) { return d.label_x })
-            .attr("y", function(d) { return d.label_y })
             .attr("text-anchor", "middle")
           ;
         })
       ;
 
       selection.select("text")
+        .attr("x", function(d) { return d.label_x })
+        .attr("y", function(d) { return d.label_y })
         .text(function(d) {
           return Humanize.intcomma(d.indices[currentIndex] ? d.indices[currentIndex].count : 0);
         })
@@ -265,15 +291,19 @@ updateBrush : function(w, h) {
     }
   });
 
+  this.svg.context.style("display", replay ? "block" : "none");
+
+  var bw = w - settings.brush.label.width;
+
   var scales = {};
   scales.linear = {};
   scales.linear.x = d3.scale.linear()
     .domain(d3.extent(data, function(d) { return d.index }))
-    .range([0, w])
+    .range([0, bw])
   ;
   scales.x = d3.scale.ordinal()
     .domain(data.map(function(d) { return d.index }).sort())
-    .rangeRoundBands([0, w])
+    .rangeRoundBands([0, bw])
   ;
   scales.y = d3.scale.ordinal()
     .domain(states.map(function(d) { return d.xIndex }).sort())
@@ -317,8 +347,53 @@ updateBrush : function(w, h) {
       .attr("y", 0)
       .attr("height", settings.brush.height);
   ;
+  this.g.brush.select(".background").remove();
+  this.g.brush.select(".resize").remove();
+
+  var quantity = Math.round(currentIndex * (replay ? replay.step : 0)) + 1;
+  var unit = (replay && replay.unit ? replay.unit.toLowerCase() : null);
+  if(unit == "second") unit = "sec";
+  if(unit == "minute") unit = "min";
+  unit +=  (unit && quantity != 1 ? "s" : "");
+  this.g.brush.select(".label")
+    .attr("display", replay ? "block" : "none")
+    .call(function() {
+      this.select("rect")
+        .attr("x", w - settings.brush.label.width + settings.brush.label.padding.left)
+        .attr("width", settings.brush.label.width)
+        .attr("height", settings.brush.height)
+      ;
+      this.select("text")
+        .attr("x", w - (settings.brush.label.width/2))
+        .attr("y", 13)
+        .attr("width", settings.brush.label.width)
+        .text(replay ? quantity + " " + unit : "")
+      ;
+    })
+  ;
 },
 
+
+//--------------------------------------
+// Replay
+//--------------------------------------
+
+play : function() {
+  var $this = this;
+  replayFunc = function() {
+    if(!replayFunc) return;
+    currentIndex++;
+    if(currentIndex >= replay.duration) currentIndex = 0;
+    $this.update();
+    setTimeout(function() { if(replayFunc) replayFunc() }, 200);
+  }
+  replayFunc();
+},
+
+pause : function() {
+  replayFunc = null;
+  this.update();
+},
 
 //--------------------------------------
 // Utility
@@ -357,6 +432,7 @@ node_onClick : function(d) {
       '    <li class="show-next-actions">' +
       '      <a class="show-replay" href="#">Show Replay</a>' +
       '      <a class="show-node-actions" href="#">Show Actions</a>' +
+      '      <div class="divider"></div>' +
       '      <a href="' + window.location.pathname + '/' + d.id + '/edit">Edit State</a>' +
       '      <a href="' + window.location.pathname + '/' + d.id + '" data-method="delete" data-confirm="Are you sure?">Remove State</a>' +
       '    </li>' +
@@ -373,8 +449,22 @@ node_onClick : function(d) {
 
 showReplay_onClick : function(d) {
   this.removePopover();
-  this.replay({id:d.id});
+  this.replay({id:d.id, step:1, duration:30, unit:"second"});
   this.load()
+},
+
+replayPlay_onClick : function(d) {
+  if(replayFunc) {
+    this.pause();
+  } else {
+    this.play();
+  }
+},
+
+replayClose_onClick : function(d) {
+  this.pause();
+  replay = null;
+  this.load();
 },
 
 showNodeActions_onClick : function() {

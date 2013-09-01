@@ -10,8 +10,12 @@
           fill: #fff
           stroke: #0b7359
           stroke-width: 2
-        text
+        text.title
           font: 14px Helvetica
+          text-align: center
+          fill: #0b7359
+        text.subtitle
+          font: 10px Helvetica
           text-align: center
           fill: #0b7359
       .transition
@@ -21,16 +25,26 @@
         polygon.arrowhead
           fill: #333
           stroke: #333
+        text.subtitle
+          font: 12px Helvetica
+          text-align: center
 
     svg.context
       .brush-background
         rect
-          fill: #0b7359
+          fill: #f1c40f
           shape-rendering: crispEdges
       .extent
         fill: #000
         fill-opacity: .3
         shape-rendering: crispEdges
+      .label
+        rect
+          fill: #f1c40f
+        text
+          fill: #fff
+          font: 12px Helvetica
+          text-anchor: middle
 
 .popover
   border: none
