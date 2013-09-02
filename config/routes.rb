@@ -4,6 +4,7 @@ Landmark::Application.routes.draw do
   resources :projects do
     resources :flows
     resources :states
+    resources :actions
   end
 
   resource :demo, :only => [:show] do
@@ -25,6 +26,12 @@ Landmark::Application.routes.draw do
         end
 
         resources :states do
+          collection do
+            get :query
+          end
+        end
+
+        resources :actions do
           collection do
             get :query
           end

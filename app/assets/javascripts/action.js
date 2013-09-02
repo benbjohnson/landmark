@@ -221,7 +221,7 @@ updateStates : function(w, h) {
       selection.select("text.subtitle")
         .attr("x", function(d) { return d.label_x - d.x })
         .attr("y", function(d) { return d.label_y - d.y + 6 })
-        .text(function(d) { return replay && d.index[currentIndex] ? Humanize.intcomma(d.index[currentIndex].count) : ""; })
+        .text(function(d) { return replay && d.indices[currentIndex] ? Humanize.intcomma(d.indices[currentIndex].count) : ""; })
       ;
 
       exit.remove();
@@ -272,7 +272,7 @@ updateTransitions : function(w, h) {
         .attr("x", function(d) { return d.label_x })
         .attr("y", function(d) { return d.label_y })
         .text(function(d) {
-          return Humanize.intcomma(d.index[currentIndex] ? d.index[currentIndex].count : 0);
+          return Humanize.intcomma(d.indices[currentIndex] ? d.indices[currentIndex].count : 0);
         })
       ;
 
@@ -286,8 +286,8 @@ updateBrush : function(w, h) {
 
   var data = [];
   states.forEach(function(state) {
-    for(var index in state.index) {
-      data.push({state:state, index:parseInt(index), count:state.index[index].count});
+    for(var index in state.indices) {
+      data.push({state:state, index:parseInt(index), count:state.indices[index].count});
     }
   });
 
@@ -350,7 +350,7 @@ updateBrush : function(w, h) {
   this.g.brush.select(".background").remove();
   this.g.brush.select(".resize").remove();
 
-  var quantity = Math.round(currentIndex * (replay ? replay.step : 0));
+  var quantity = Math.round(currentIndex * (replay ? replay.step : 0)) + 1;
   var unit = (replay && replay.unit ? replay.unit.toLowerCase() : null);
   if(unit == "second") unit = "sec";
   if(unit == "minute") unit = "min";

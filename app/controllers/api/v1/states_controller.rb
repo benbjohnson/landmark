@@ -12,6 +12,7 @@ module Api::V1
       # Generate the Sky query.
       query = []
       query << @project.codegen_state_decl
+      query << "DECLARE index AS INTEGER"
       query << @project.codegen_states(
         after: lambda {|state|
           out = []
@@ -25,26 +26,36 @@ module Api::V1
             out << "  SELECT count() AS count GROUP BY index, state INTO 'states'"
             out << "END"
           else
-            out << "SELECT count() AS count GROUP BY prev_state, state INTO 'transitions'"
+            out << "SELECT count() AS count GROUP BY index, prev_state, state INTO 'transitions'"
           end
           return out.join("\n")
         }
        )
       query = query.join("\n")
-      warn(query)
+      # warn(query)
       results = @project.run_query(query: query)
 
       # Normalize states.
-      states = @project.states.as_json(only: [:id, :name, :parent_id])
-      attach_state_counts(states, results["states"]) if replay_from > 0
+      states = @project.states.as_json(only: [:id, :name])
+      lookup = states.inject({}) {|h,state| h[state["id"]] = state; h}
+      if replay_from > 0
+        results["states"] = SkyDB.denormalize(results["states"], ["index", "state"])
+        SkyDB.normalize(results["states"], ["index"], ["count"]).each do |item|
+          state = lookup[item["state"].to_i]
+          state["index"] = item["index"] unless state.nil?
+        end
+      end
 
       # Normalize transitions into something usable.
-      if replay_from > 0
-        transitions = normalize_replay_transitions(results["transitions"])
-      else
-        transitions = normalize_transitions(results["transitions"])
+      transitions = results["transitions"]
+      transitions = SkyDB.denormalize(transitions, ["index", "prev_state", "state"])
+      transitions = SkyDB.normalize(transitions, ["index"], ["count"])
+      transitions.each do |transition|
+        transition["source"] = transition.delete("prev_state")
+        transition["target"] = transition.delete("state")
+        transition["label"] = transition["weight"] = transition["index"].values.first["count"]
       end
-      transitions = collapse_transitions(transitions)
+      transitions.reject! {|transition| transition["source"] == "0" || transition["target"] == "0"}
 
       # Generate the layout.
       width, height = generate_layout(states, transitions)
@@ -82,69 +93,6 @@ module Api::V1
       states.each {|s| s.delete("label")}
 
       return graph.width, graph.height
-    end
-
-    def attach_state_counts(states, results)
-      states.each {|state| state["indices"] = {}}
-      lookup = states.inject({}) {|h, state| h[state["id"]] = state; h }
-      results["index"].each_pair do |index, v1|
-        v1["state"].each_pair do |state_id, v2|
-          state = lookup[state_id.to_i]
-          state["indices"][index.to_i-1] = v2 unless state.nil?
-        end
-      end
-    end
-
-    # Converts prev_state/state nested data to an array of source/target transitions.
-    def normalize_transitions(results)
-      transitions = []
-      results["prev_state"].delete("0")
-      results["prev_state"].each_pair do |source, v|
-        source = source.to_i
-        v["state"].each_pair do |target, v|
-          target = target.to_i
-          transitions << {"source" => source, "target" => target, "count" => v["count"]}
-        end
-      end
-      return transitions
-    end
-
-    # Converts prev_state/state nested data when using replay.
-    def normalize_replay_transitions(results)
-      transitions = []
-      if results["index"]
-        results["index"].each_pair do |index, v|
-          tmp = normalize_transitions(v)
-          tmp.each {|t| t["index"] = index.to_i}
-          transitions.concat(tmp)
-        end
-      end
-      return transitions
-    end
-
-    # Collapses transitions to group by source/target.
-    def collapse_transitions(arr)
-      lookup = {}
-      arr.each do |transition|
-        lookup[transition["source"]] ||= {}
-        lookup[transition["source"]][transition["target"]] ||= {
-          "source" => transition["source"],
-          "target" => transition["target"], 
-          "label" => transition["count"].to_i,
-          "weight" => transition["count"].to_i,
-          "indices" => {},
-        }
-        index = (transition["index"] || 1) - 1
-        lookup[transition["source"]][transition["target"]]["indices"][index] = {"count" => transition["count"]}
-      end
-
-      transitions = []
-      lookup.keys.each do |source|
-        lookup[source].keys.each do |target|
-          transitions << lookup[source][target]
-        end
-      end
-      return transitions
     end
   end
 end
