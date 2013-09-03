@@ -1,0 +1,49 @@
+#states
+  #chart
+    svg
+      border: 1px solid #ccc
+      overflow: hidden
+      .channel
+        shape-rendering: crispEdges
+        cursor: pointer
+        rect
+          fill: #fff
+          stroke: #0b7359
+          stroke-width: 2
+        text.title
+          font: 14px Helvetica
+          font-weight: bold
+          text-align: center
+          fill: #000000
+      .node
+        shape-rendering: crispEdges
+        cursor: pointer
+        rect
+          fill: #fff
+          stroke: #0b7359
+          stroke-width: 2
+        text.title
+          font: 14px Helvetica
+          text-align: center
+          fill: #0b7359
+      .transition
+        path
+          fill: none
+          stroke: #333
+        polygon.arrowhead
+          fill: #333
+          stroke: #333
+        text.subtitle
+          font: 12px Helvetica
+          text-align: center
+
+.popover
+  border: none
+  box-shadow: none
+  -webkit-box-shadow: none
+  .popover-content
+    padding: 0
+    .dropdown
+      position: static
+      .dropdown-menu
+        margin-top: 0px

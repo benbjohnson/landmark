@@ -7,6 +7,7 @@
  *= require typeahead
  *= require chosen
  *= require states
+ *= require actions
  *= require_self
  */
 

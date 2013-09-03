@@ -11,6 +11,7 @@
 //= require d3
 //= require landmark
 //= require state
+//= require action
 //= require application
 
 $(document).ready(function() {

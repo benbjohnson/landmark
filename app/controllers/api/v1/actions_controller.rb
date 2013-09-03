@@ -1,0 +1,113 @@
+module Api::V1
+  class ActionsController < Api::V1::BaseController
+    # GET /projects/:id/actions/query
+    def query
+      # Generate the Sky query.
+      query = []
+      query << "DECLARE __prev_channel__ AS FACTOR(__channel__)"
+      query << "DECLARE __prev_resource__ AS FACTOR(__resource__)"
+      query << "DECLARE __prev_action__ AS FACTOR(__action__)"
+      query << "WHEN __action__ != '' && __action__ != 'Loaded a Page' && __action__ != 'Identified' THEN"
+      query << "  SELECT count() AS count GROUP BY __channel__, __resource__, __action__ INTO 'nodes'"
+      query << "  WHEN __action__ != '' THEN"
+      query << "    SELECT count() AS count GROUP BY __prev_channel__, __prev_resource__, __prev_action__, __channel__, __resource__, __action__ INTO 'transitions'"
+      query << "  END"
+      query << "  SET __prev_channel__ = __channel__"
+      query << "  SET __prev_resource__ = __resource__"
+      query << "  SET __prev_action__ = __action__"
+      query << "END"
+      query = query.join("\n")
+      # warn(query)
+      results = @project.run_query(query: query)
+
+      # Normalize nodes.
+      channels = []
+      nodes = SkyDB.denormalize(results["nodes"], ["__channel__", "__resource__", "__action__"])
+      nodes.group_by {|node| node["__channel__"]}.each_pair do |k,v|
+        channels << {"name" => k, "nodes" => v}
+      end
+      channels.map {|channel| channel["name"] = channel["nodes"].first["__channel__"].titleize.strip}
+      lookup = nodes.inject({}) do |h,n|
+        t = h
+        t = t[n["__channel__"]] ||= {}
+        t = t[n["__resource__"]] ||= {}
+        t = t[n["__action__"]] = n
+        h
+      end
+      
+      # Normalize transitions.
+      transitions = SkyDB.denormalize(results["transitions"], ["__prev_channel__", "__prev_resource__", "__prev_action__", "__channel__", "__resource__", "__action__"])
+
+      # Trim to top nodes/transitions.
+      transitions.reject! {|t| t["__prev_channel__"] == t["__channel__"] && t["__prev_resource__"] == t["__resource__"] && t["__prev_action__"] == t["__action__"]}
+      transitions = transitions.sort {|a,b| a["count"] <=> b["count"]}.reverse
+      transitions = transitions[0,50]
+      transitions.reject! do |t|
+        source = (lookup[t["__prev_channel__"]][t["__prev_resource__"]][t["__prev_action__"]] rescue nil)
+        target = (lookup[t["__channel__"]][t["__resource__"]][t["__action__"]] rescue nil)
+        rejected = (source.nil? || target.nil?)
+        source["marked"] = target["marked"] = true unless rejected
+        rejected
+      end
+      channels.each do |channel|
+        channel["nodes"].select! {|n| n["marked"]}
+      end
+      nodes.select! {|n| n["marked"]}
+      nodes.each {|n| n.delete("marked")}
+
+      # Generate the layout.
+      width, height = generate_layout(channels, transitions)
+      channels.each {|channel| channel.delete("nodes")}
+      json = {
+        width: width,
+        height: height,
+        channels: channels,
+        nodes: nodes,
+        transitions: transitions,
+      }
+      render :json => json
+    end
+
+
+    private
+
+    # Generates the layout using graphviz.
+    def generate_layout(nodes, transitions)
+      # Transform for the layout engine.
+      nodes.each do |node|
+        node["id"] = node["name"]
+        node["label"] = node["name"]
+        node["nodes"].each do |n|
+          n["id"] = [n["__channel__"], n["__resource__"], n["__action__"]].join("---")
+          n["label"] = n["__action__"]
+        end
+      end
+      transitions.each do |transition|
+        transition["source"] = [transition["__prev_channel__"], transition["__prev_resource__"], transition["__prev_action__"]].join("---")
+        transition["target"] = [transition["__channel__"], transition["__resource__"], transition["__action__"]].join("---")
+        transition["weight"] = transition["label"] = transition["count"]
+      end
+
+      graph = Miniviz::Graph.new(nodes:nodes, edges:transitions)
+      graph.rankdir = "TB"
+      graph.fontname = "Helvetica"
+      graph.fontsize = 14
+      errors = graph.layout()
+      graph.apply_layout()
+
+      # Remove transforms.
+      nodes.each do |node|
+        node.delete("label")
+        node["nodes"].each {|n| n.delete("id"); n.delete("label")}
+      end
+      transitions.each do |transition|
+        transition.delete("source")
+        transition.delete("target")
+        transition.delete("weight")
+        transition.delete("label")
+      end
+
+      return graph.width, graph.height
+    end
+  end
+end
