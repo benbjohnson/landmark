@@ -2,7 +2,10 @@
 var projectId = 0;
 var channels = [], nodes = [], nodeLookup = {}, transitions = [];
 var popoverNode = null;
-var offset = {x:0, y:0};
+var scales = {x:d3.scale.linear(), y:d3.scale.linear()};
+var translation = {x:0, y:0, scale:1};
+
+var zoom = d3.behavior.zoom()
 
 var settings = {};
 
@@ -17,10 +20,10 @@ window.landmark.action = {
 
 layout : { width:0, height:0 },
 
-offset : function(value) {
-  if(arguments.length == 0) return offset;
-  offset = value;
-  var transform = "translate(" + offset.x + "," + offset.y + ")";
+translation : function(value) {
+  if(arguments.length == 0) return translation;
+  translation = value;
+  var transform = "translate(" + translation.x + "," + translation.y + ") scale(" + translation.scale + ")";
   this.g.channels.attr("transform", transform);
   this.g.nodes.attr("transform", transform);
   this.g.transitions.attr("transform", transform);
@@ -85,21 +88,32 @@ initialize : function(projectId) {
   this.g = {
     root: this.svg.append("g")
   }
+
+  zoom
+    .scaleExtent([0.1, 10])
+    .on("zoom", function() {
+      $this.translation({
+        x: d3.event.translate[0],
+        y: d3.event.translate[1],
+        scale: d3.event.scale
+      });
+    });
+  this.g.root.append("rect")
+    .call(zoom)
+    .on("mousedown", function() { d3.event.preventDefault() })
+
   this.g.channels = this.g.root.append("g");
   this.g.transitions = this.g.root.append("g");
   this.g.nodes = this.g.root.append("g");
-
-  var drag = d3.behavior.drag()
-    .on("drag", function() {
-      $this.offset({
-        x: offset.x + d3.event.dx,
-        y: offset.y + d3.event.dy
-      });
-    });
-  this.g.root.append("rect").call(drag)
     
   this.update();
   this.load();
+
+  var onresize = window.onresize;
+  window.onresize = function() {
+    landmark.action.onresize();
+    if(typeof(onresize) == "function") onresize();
+  }
 },
 
 
@@ -119,8 +133,13 @@ load : function() {
       $this.nodes(json.nodes);
       $this.transitions(json.transitions);
 
+      var w = $(this.chart).width();
       var h = window.innerHeight - $(this.chart).offset().top - 40;
-      $this.offset({x:10, y:((h/2)-($this.layout.height/2))});
+      var scale = Math.min(1, w/$this.layout.width);
+      zoom.scale(scale);
+      zoom.translate([(w/2)-($this.layout.width/2)*scale, 10*scale])
+      zoom.event($this.g.root.select("rect"))
+
       $this.update();
     }
   );
@@ -151,8 +170,8 @@ update : function() {
 updateChannels : function(w, h) {
   var $this = this;
 
-  this.g.channels.selectAll(".node")
-    .data(this.channels(), function(d) { return d.id; })
+  this.g.channels.selectAll(".channel")
+    .data(this.channels(), function(d) { return d.name; })
     .call(function(selection) {
       var enter = selection.enter(), exit = selection.exit();
 
@@ -251,7 +270,7 @@ updateTransitions : function(w, h) {
           this.select("path")
             .transition()
             .attr("d", function(d) { return d.d })
-            .attr("stroke-width", function(d) { return 2 })
+            .attr("stroke-width", function(d) { return d.stroke_width })
           ;
           this.select("polygon.arrowhead")
             .transition()
@@ -309,12 +328,6 @@ showNodeActions_onClick : function() {
   this.removePopover();
 },
 
-}
-
-var onresize = window.onresize;
-window.onresize = function() {
-  landmark.action.onresize();
-  if(typeof(onresize) == "function") onresize();
 }
 
 })()

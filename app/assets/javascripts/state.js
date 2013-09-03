@@ -97,6 +97,12 @@ initialize : function(projectId) {
 
   this.update();
   this.load();
+
+  var onresize = window.onresize;
+  window.onresize = function() {
+    landmark.state.onresize();
+    if(typeof(onresize) == "function") onresize();
+  }
 },
 
 
@@ -221,7 +227,7 @@ updateStates : function(w, h) {
       selection.select("text.subtitle")
         .attr("x", function(d) { return d.label_x - d.x })
         .attr("y", function(d) { return d.label_y - d.y + 6 })
-        .text(function(d) { return replay && d.index[currentIndex] ? Humanize.intcomma(d.index[currentIndex].count) : ""; })
+        .text(function(d) { return replay && d.index && d.index[currentIndex] ? Humanize.intcomma(d.index[currentIndex].count) : ""; })
       ;
 
       exit.remove();
@@ -431,7 +437,6 @@ node_onClick : function(d) {
       '  <ul class="dropdown-menu dropdown-inverse">' +
       '    <li class="show-next-actions">' +
       '      <a class="show-replay" href="#">Show Replay</a>' +
-      '      <a class="show-node-actions" href="#">Show Actions</a>' +
       '      <div class="divider"></div>' +
       '      <a href="' + window.location.pathname + '/' + d.id + '/edit">Edit State</a>' +
       '      <a href="' + window.location.pathname + '/' + d.id + '" data-method="delete" data-confirm="Are you sure?">Remove State</a>' +
@@ -471,12 +476,6 @@ showNodeActions_onClick : function() {
   this.removePopover();
 },
 
-}
-
-var onresize = window.onresize;
-window.onresize = function() {
-  landmark.state.onresize();
-  if(typeof(onresize) == "function") onresize();
 }
 
 })()

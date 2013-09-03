@@ -7,11 +7,9 @@ module Api::V1
       query << "DECLARE __prev_channel__ AS FACTOR(__channel__)"
       query << "DECLARE __prev_resource__ AS FACTOR(__resource__)"
       query << "DECLARE __prev_action__ AS FACTOR(__action__)"
-      query << "WHEN __action__ != '' && __action__ != 'Loaded a Page' && __action__ != 'Identified' THEN"
+      query << "WHEN __action__ != '' THEN"
       query << "  SELECT count() AS count GROUP BY __channel__, __resource__, __action__ INTO 'nodes'"
-      query << "  WHEN __action__ != '' THEN"
-      query << "    SELECT count() AS count GROUP BY __prev_channel__, __prev_resource__, __prev_action__, __channel__, __resource__, __action__ INTO 'transitions'"
-      query << "  END"
+      query << "  SELECT count() AS count GROUP BY __prev_channel__, __prev_resource__, __prev_action__, __channel__, __resource__, __action__ INTO 'transitions'"
       query << "  SET __prev_channel__ = __channel__"
       query << "  SET __prev_resource__ = __resource__"
       query << "  SET __prev_action__ = __action__"
@@ -26,7 +24,10 @@ module Api::V1
       nodes.group_by {|node| node["__channel__"]}.each_pair do |k,v|
         channels << {"name" => k, "nodes" => v}
       end
-      channels.map {|channel| channel["name"] = channel["nodes"].first["__channel__"].titleize.strip}
+      channels.map {|channel| channel["id"] = channel["nodes"].first["__channel__"]}
+      channels.each do |channel|
+        channel["name"] = channel["id"].titleize.strip
+      end
       lookup = nodes.inject({}) do |h,n|
         t = h
         t = t[n["__channel__"]] ||= {}
@@ -41,7 +42,7 @@ module Api::V1
       # Trim to top nodes/transitions.
       transitions.reject! {|t| t["__prev_channel__"] == t["__channel__"] && t["__prev_resource__"] == t["__resource__"] && t["__prev_action__"] == t["__action__"]}
       transitions = transitions.sort {|a,b| a["count"] <=> b["count"]}.reverse
-      transitions = transitions[0,50]
+      transitions = transitions[0,40]
       transitions.reject! do |t|
         source = (lookup[t["__prev_channel__"]][t["__prev_resource__"]][t["__prev_action__"]] rescue nil)
         target = (lookup[t["__channel__"]][t["__resource__"]][t["__action__"]] rescue nil)
@@ -82,10 +83,14 @@ module Api::V1
           n["label"] = n["__action__"]
         end
       end
+      counts = transitions.map{|t| t["count"]}
+      min_count, max_count = counts.min.to_f, counts.max.to_f
+      max_penwidth = 5.0
       transitions.each do |transition|
         transition["source"] = [transition["__prev_channel__"], transition["__prev_resource__"], transition["__prev_action__"]].join("---")
         transition["target"] = [transition["__channel__"], transition["__resource__"], transition["__action__"]].join("---")
         transition["weight"] = transition["label"] = transition["count"]
+        transition["penwidth"] = (((transition["count"].to_f - min_count) / (max_count - min_count)) * (max_penwidth-1)) + 1
       end
 
       graph = Miniviz::Graph.new(nodes:nodes, edges:transitions)

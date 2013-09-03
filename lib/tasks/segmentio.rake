@@ -5,7 +5,7 @@ namespace :segmentio do
     abort("Path required") if args.path.blank?
 
     project = Project.find_by_name("segmentio")
-    project.sky_client.delete_table(project.sky_table)
+    project.sky_client.delete_table(project.sky_table) rescue nil
     project.create_sky_table()
 
     filenames = Dir.glob("#{args.path}/**/*").reject{|f| File.directory?(f)}
@@ -22,6 +22,9 @@ namespace :segmentio do
         # Skip test data.
         if id == "serverside-vs-client-side-test"
           print "."
+          next
+        elsif event["channel"] == "server" || event["event"] == "Loaded a Page" || event["event"] == "Identified"
+          puts "SKIP: #{event["event"]}"
           next
         end
 
@@ -51,7 +54,7 @@ namespace :segmentio do
         end
 
         begin
-          project.track(id, traits, properties)
+          project.track(id, traits, properties, timestamp:timestamp)
         rescue StandardError => e
           File.open(File.join(Rails.root, "log/segmentio.error.log"), 'a') do |f|
             f.puts("#{filename}:#{$.} #{e.message}")
