@@ -28,9 +28,11 @@
             <li class="<%= request.path.index(/\/projects\/\d+$/) == 0 ? 'active' : '' %>">
               <%= link_to('Home', project_path(current_project)) %>
             </li>
+            <!--
             <li class="<%= request.path.index(/\/projects\/\d+\/states/) == 0 ? 'active' : '' %>">
               <%= link_to('User States', project_states_path(current_project)) %>
             </li>
+            -->
             <li class="<%= request.path.index(/\/projects\/\d+\/actions/) == 0 ? 'active' : '' %>">
               <%= link_to('User Actions', project_actions_path(current_project)) %>
             </li>
