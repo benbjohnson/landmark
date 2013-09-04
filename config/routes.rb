@@ -34,6 +34,7 @@ Landmark::Application.routes.draw do
         resources :actions do
           collection do
             get :query
+            post :query
           end
         end
       end

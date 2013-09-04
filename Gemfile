@@ -12,6 +12,7 @@ gem 'high_voltage', '~> 1.2.3'
 gem 'airbrake', '~> 3.1.12'
 gem 'json', '~> 1.7.7'
 gem 'yajl-ruby', '~> 1.1.0', :require => false
+gem 'ruby-progressbar', '~> 1.2.0', require: false
 gem 'weighted_randomizer', '~> 0.1', require: false
 gem 'miniviz', path:"/projects/benbjohnson/miniviz" # '~> 0.1'
 gem 'skydb', :git => 'git@github.com:skydb/sky.rb.git', :ref => 'd174840'

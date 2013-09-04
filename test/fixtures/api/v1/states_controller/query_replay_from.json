@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Visited",
-      "indices": {
+      "index": {
         "0": {
           "count": 3
         },
@@ -24,7 +24,7 @@
     {
       "id": 2,
       "name": "Registered",
-      "indices": {
+      "index": {
         "0": {
           "count": 1
         },
@@ -45,7 +45,7 @@
     {
       "id": 3,
       "name": "Trialing",
-      "indices": {
+      "index": {
         "3": {
           "count": 1
         },
@@ -59,7 +59,7 @@
     {
       "source": 1,
       "target": 2,
-      "indices": {
+      "index": {
         "0": {
           "count": 1
         },
@@ -74,7 +74,7 @@
     {
       "source": 2,
       "target": 3,
-      "indices": {
+      "index": {
         "3": {
           "count": 1
         }

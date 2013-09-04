@@ -1,6 +1,7 @@
 (function() {
 var projectId = 0;
 var channels = [], nodes = [], nodeLookup = {}, transitions = [];
+var funnel = [];
 var popoverNode = null;
 var scales = {x:d3.scale.linear(), y:d3.scale.linear()};
 var translation = {x:0, y:0, scale:1};
@@ -81,7 +82,11 @@ initialize : function(projectId) {
   this.projectId = projectId;
 
   $(document).on("click", function() { $this.document_onClick() });
-  
+  $(document).on("click", ".show-next-actions", function() { $this.showNextActions_onClick(popoverNode) });
+  $(document).on("click", ".funnel-step", function() { $this.funnelStep_onClick() });
+  $(document).on("click", "#clear-funnel-btn", function() { $this.clearFunnelBtn_onClick() });
+
+
   this.chart = $("#chart")[0];
   this.svg = {};
   this.svg = d3.select(this.chart).append("svg").attr("class", "focus");
@@ -90,7 +95,7 @@ initialize : function(projectId) {
   }
 
   zoom
-    .scaleExtent([0.1, 10])
+    .scaleExtent([0.1, 1])
     .on("zoom", function() {
       $this.translation({
         x: d3.event.translate[0],
@@ -123,9 +128,13 @@ initialize : function(projectId) {
 
 load : function() {
   var $this = this;
-  d3.json("/api/v1/projects/" + this.projectId + "/actions/query",
-    function(error, json) {
+  var xhr = d3.xhr("/api/v1/projects/" + this.projectId + "/actions/query");
+  xhr.header("Content-Type", "application/json");
+  xhr.post(JSON.stringify({"funnel":funnel}),
+    function(error, req) {
       if(error) return console.warn(error);
+      json = JSON.parse(req.response);
+
       $this.layout.width = json.width;
       $this.layout.height = json.height;
 
@@ -152,6 +161,8 @@ load : function() {
 
 update : function() {
   var $this = this;
+  this.updateBreadcrumb();
+
   var w = $(this.chart).width();
   var h = window.innerHeight - $(this.chart).offset().top - 40;
 
@@ -165,6 +176,29 @@ update : function() {
   this.updateChannels(w, h);
   this.updateNodes(w, h);
   this.updateTransitions(w, h);
+},
+
+updateBreadcrumb : function(w, h) {
+  var $this = this;
+  breadcrumb = $("#breadcrumb")
+  breadcrumb.empty();
+
+  for(var i=0; i<funnel.length; i++) {
+    var step = funnel[i];
+    var item = $('<li><a class="funnel-step" href="#"></a></li>');
+    if(i == funnel.length - 1) item.attr("class", "active");
+    item.find("a")
+      .data("index", i)
+      .text(step.__resource__);
+    breadcrumb.append(item);
+  }
+  breadcrumb.append('<i id="clear-funnel-btn" class="pull-right fui-cross-inverted text-primary"></i>')
+
+  if(funnel.length == 0) {
+    breadcrumb.hide();
+  } else {
+    breadcrumb.show();
+  }
 },
 
 updateChannels : function(w, h) {
@@ -285,6 +319,7 @@ updateTransitions : function(w, h) {
       ;
 
       selection.select("text")
+        .transition()
         .attr("x", function(d) { return d.label_x })
         .attr("y", function(d) { return d.label_y })
         .text(function(d) { return Humanize.intcomma(d.count); })
@@ -322,10 +357,47 @@ document_onClick : function() {
 },
 
 node_onClick : function(d) {
+  this.removePopover();
+  $(this).popover({
+    html: true, container:"body", trigger:"manual",
+    placement: "left",
+    template: '<div class="popover node-popover"><div class="popover-content"></div></div>',
+    content:
+      '<div class="dropdown open">' +
+      '  <ul class="dropdown-menu dropdown-inverse">' +
+      '    <li>' +
+      '      <a class="show-next-actions" href="#">Show Next Actions</a>' +
+      '    </li>' +
+      '  </ul>' +
+      '</div>'
+  });
+  $(this).popover("show");
+  popoverNode = d;
+  var popover = $(this).data("popover").$tip
+  popover.css("left", d3.event.x + 10);
+  popover.css("top", d3.event.y + 10);
+  d3.event.stopPropagation();
 },
 
-showNodeActions_onClick : function() {
+showNextActions_onClick : function(d) {
   this.removePopover();
+  funnel.push({
+    __channel__:d.__channel__,
+    __resource__:d.__resource__,
+    __action__:d.__action__,
+  });
+  this.load()
+},
+
+funnelStep_onClick : function() {
+  var index = $(event.toElement).data("index");
+  funnel = funnel.slice(0, index+1);
+  this.load();
+},
+
+clearFunnelBtn_onClick : function() {
+  funnel = [];
+  this.load();
 },
 
 }

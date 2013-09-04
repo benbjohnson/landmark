@@ -1,18 +1,41 @@
 module Api::V1
   class ActionsController < Api::V1::BaseController
+    respond_to :json
+
     # GET /projects/:id/actions/query
     def query
+      funnel = params[:funnel].to_a
+      has_funnel = !funnel.empty?
+
+      # The selection and previous variable clause.
+      selection = []
+      selection << "  SELECT count() AS count GROUP BY __channel__, __resource__, __action__ INTO 'nodes'"
+      selection << "  SELECT count() AS count GROUP BY __prev_channel__, __prev_resource__, __prev_action__, __channel__, __resource__, __action__ INTO 'transitions'"
+      selection << "  SET __prev_channel__ = __channel__"
+      selection << "  SET __prev_resource__ = __resource__"
+      selection << "  SET __prev_action__ = __action__"
+      selection.join("\n")
+
       # Generate the Sky query.
       query = []
       query << "DECLARE __prev_channel__ AS FACTOR(__channel__)"
       query << "DECLARE __prev_resource__ AS FACTOR(__resource__)"
       query << "DECLARE __prev_action__ AS FACTOR(__action__)"
       query << "WHEN __action__ != '' THEN"
-      query << "  SELECT count() AS count GROUP BY __channel__, __resource__, __action__ INTO 'nodes'"
-      query << "  SELECT count() AS count GROUP BY __prev_channel__, __prev_resource__, __prev_action__, __channel__, __resource__, __action__ INTO 'transitions'"
-      query << "  SET __prev_channel__ = __channel__"
-      query << "  SET __prev_resource__ = __resource__"
-      query << "  SET __prev_action__ = __action__"
+      if has_funnel
+        funnel.each_with_index do |step, index|
+          query << "WHEN __channel__ == #{step["__channel__"].to_s.to_lua} && __resource__ == #{step["__resource__"].to_s.to_lua} && __action__ == #{step["__action__"].to_s.to_lua} #{index > 0 ? "WITHIN 1 .. 1000000 STEPS" : ""} THEN"
+          query << selection
+        end
+        query << "FOR EACH EVENT"
+      end
+      query << selection
+      if has_funnel
+        funnel.each do |step|
+          query << "END"
+        end
+        query << "END"
+      end
       query << "END"
       query = query.join("\n")
       # warn(query)
@@ -90,7 +113,11 @@ module Api::V1
         transition["source"] = [transition["__prev_channel__"], transition["__prev_resource__"], transition["__prev_action__"]].join("---")
         transition["target"] = [transition["__channel__"], transition["__resource__"], transition["__action__"]].join("---")
         transition["weight"] = transition["label"] = transition["count"]
-        transition["penwidth"] = (((transition["count"].to_f - min_count) / (max_count - min_count)) * (max_penwidth-1)) + 1
+        if max_count == min_count
+          transition["penwidth"] = 1
+        else
+          transition["penwidth"] = (((transition["count"].to_f - min_count) / (max_count - min_count)) * (max_penwidth-1)) + 1
+        end
       end
 
       graph = Miniviz::Graph.new(nodes:nodes, edges:transitions)

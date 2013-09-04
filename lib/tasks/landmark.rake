@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'weighted_randomizer'
+require 'ruby-progressbar'
 
 namespace :landmark do
   task :js do
@@ -16,6 +17,8 @@ namespace :landmark do
   desc "Imports a CSV file into a project with a given name"
   namespace :profiles do
     task :run, [:name, :path, :iterations] => :environment do |t, args|
+      iterations = args.iterations.to_i
+
       # Find project.
       abort("Project name required") if args.name.blank?
       project = Project.find_by_name(args.name)
@@ -34,17 +37,18 @@ namespace :landmark do
       weights = profiles.inject({}) {|h, p| h[p.name] = p.weight; h}
       randomizer = WeightedRandomizer.new(weights)
 
+      # Output
+      puts("PROJECT #{project.id} (#{iterations} USERS)")
+      progress_bar = ProgressBar.create(:total => iterations, :format => '%E |%B| %P%%')
+
       # Apply profiles.
       index = 0
-      iterations = args.iterations.to_i
-      puts("PROJECT #{project.id} (#{iterations} USERS)")
       iterations.times do |i|
         profile_name = randomizer.sample()
         profile = lookup[profile_name]
         profile.generate(project, i.to_s)
-        print "."
+        progress_bar.increment()
       end
-      puts("")
     end
   end
 end
