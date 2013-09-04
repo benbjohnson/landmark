@@ -3,7 +3,7 @@ class Resource < ActiveRecord::Base
   has_many :hits, :class_name => 'ResourceHit', :dependent => :destroy
 
   validates :slug, :name, presence: true  
-  validates :slug, :name, uniqueness: {scope: :project_id}
+  validates :slug, :name, uniqueness: {scope: [:project_id, :channel]}
   attr_accessible :label, :name
 
   before_validation :generate_slug

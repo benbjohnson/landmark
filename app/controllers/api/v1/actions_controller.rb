@@ -80,7 +80,7 @@ module Api::V1
         node["label"] = node["name"]
         node["nodes"].each do |n|
           n["id"] = [n["__channel__"], n["__resource__"], n["__action__"]].join("---")
-          n["label"] = n["__action__"]
+          n["label"] = n["__resource__"]
         end
       end
       counts = transitions.map{|t| t["count"]}

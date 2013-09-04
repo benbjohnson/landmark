@@ -240,7 +240,7 @@ updateNodes : function(w, h) {
       selection.select("text.title")
         .attr("x", function(d) { return d.label_x - d.x })
         .attr("y", function(d) { return d.label_y - d.y - 2 })
-        .text(function(d) { return d.__action__; })
+        .text(function(d) { return d.__resource__; })
       ;
 
       exit.remove();

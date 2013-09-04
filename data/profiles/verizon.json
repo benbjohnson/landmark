@@ -1,0 +1,170 @@
+[
+  {
+    "name": "web::find_store",
+    "weight": 200,
+    "events": [
+      {"channel":"web", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0.2},
+      {"channel":"web", "resource":"/store_locator", "action":"page_view", "duration":[2,4], "bounce_rate":0.3},
+      {"channel":"web", "resource":"/store_map", "action":"page_view", "duration":[3,7], "bounce_rate":0.4},
+      {"channel":"web", "resource":"/store_details", "action":"page_view", "duration":[2,5], "bounce_rate":0.6},
+      {"channel":"web", "resource":"/store_map", "action":"page_view", "duration":[1,3], "bounce_rate":0.7},
+      {"channel":"web", "resource":"/store_details", "action":"page_view", "duration":[1,4], "bounce_rate":0.8},
+      {"channel":"web", "resource":"/store_map", "action":"page_view", "duration":[1,2], "bounce_rate":0.8},
+      {"channel":"web", "resource":"/store_details", "action":"page_view", "duration":[2,3], "bounce_rate":1}
+    ]
+  },
+  {
+    "name": "web::shop::monthly",
+    "weight": 100,
+    "events": [
+      {"channel":"web", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0.2},
+      {"channel":"web", "resource":"/plans", "action":"page_view", "duration":[2,4], "bounce_rate":0.3},
+      {"channel":"web", "resource":"/plans/monthly", "action":"page_view", "duration":[3,7], "bounce_rate":0.4},
+      {"channel":"web", "resource":"/shop/phones", "action":"page_view", "duration":[2,5], "bounce_rate":0.6},
+      {"channel":"web", "resource":"/checkout", "action":"page_view", "duration":[2,5], "bounce_rate":0.6},
+      {"channel":"web", "resource":"/checkout/process", "action":"page_view", "duration":[2,5], "bounce_rate":0.6}
+    ]
+  },
+  {
+    "name": "web::shop::prepaid",
+    "weight": 20,
+    "events": [
+      {"channel":"web", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0.2},
+      {"channel":"web", "resource":"/plans", "action":"page_view", "duration":[2,4], "bounce_rate":0.3},
+      {"channel":"web", "resource":"/plans/prepaid", "action":"page_view", "duration":[3,7], "bounce_rate":0.4},
+      {"channel":"web", "resource":"/shop/phones", "action":"page_view", "duration":[2,5], "bounce_rate":0.6},
+      {"channel":"web", "resource":"/checkout", "action":"page_view", "duration":[2,5], "bounce_rate":0.6},
+      {"channel":"web", "resource":"/checkout/process", "action":"page_view", "duration":[2,5], "bounce_rate":0.6}
+    ]
+  },
+
+  {
+    "name": "web::pay-bill",
+    "weight": 50,
+    "events": [
+      {"channel":"web", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0.2},
+      {"channel":"web", "resource":"/login", "action":"page_view", "duration":[3,5], "bounce_rate":0.3},
+      {"channel":"web", "resource":"/account", "action":"page_view", "duration":[3,7], "bounce_rate":0.1},
+      {"channel":"web", "resource":"/account/pay_bill", "action":"page_view", "duration":[10,25], "bounce_rate":0.6},
+      {"channel":"web", "resource":"/account/confirm", "action":"page_view", "duration":[5,8], "bounce_rate":0.8},
+      {"channel":"web", "resource":"/account/thankyou", "action":"page_view", "duration":[2,4], "bounce_rate":1}
+    ]
+  },
+
+  {
+    "name": "mobile::pay-bill",
+    "weight": 50,
+    "events": [
+      {"channel":"mobile", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0.2},
+      {"channel":"mobile", "resource":"/login", "action":"page_view", "duration":[3,5], "bounce_rate":0.3},
+      {"channel":"mobile", "resource":"/account", "action":"page_view", "duration":[3,7], "bounce_rate":0.1},
+      {"channel":"mobile", "resource":"/account/pay_bill", "action":"page_view", "duration":[10,25], "bounce_rate":0.6},
+      {"channel":"mobile", "resource":"/account/confirm", "action":"page_view", "duration":[5,8], "bounce_rate":0.8},
+      {"channel":"mobile", "resource":"/account/thankyou", "action":"page_view", "duration":[2,4], "bounce_rate":1}
+    ]
+  },
+
+  {
+    "name": "mobile-ivr::pay-bill",
+    "weight": 50,
+    "events": [
+      {"channel":"mobile", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0.2},
+      {"channel":"mobile", "resource":"/login", "action":"page_view", "duration":[3,5], "bounce_rate":0.3},
+      {"channel":"mobile", "resource":"/account", "action":"page_view", "duration":[3,7], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Menu", "action":"call", "duration":[10,25], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Pay Bill", "action":"call", "duration":[10,15], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Operator", "action":"call", "duration":[10,25], "bounce_rate":0.1}
+    ]
+  },
+
+  {
+    "name": "web-ivr::pay-bill",
+    "weight": 50,
+    "events": [
+      {"channel":"web", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0.2},
+      {"channel":"web", "resource":"/contact-us", "action":"page_view", "duration":[3,5], "bounce_rate":0.3},
+      {"channel":"IVR", "resource":"Menu", "action":"call", "duration":[10,25], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Pay Bill", "action":"call", "duration":[10,15], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Operator", "action":"call", "duration":[10,25], "bounce_rate":0.1}
+    ]
+  },
+
+  {
+    "name": "ivr::pay-bill-cancel",
+    "weight": 50,
+    "events": [
+      {"channel":"IVR", "resource":"Menu", "action":"call", "duration":[10,25], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Pay Bill", "action":"call", "duration":[10,15], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Cancel Account", "action":"call", "duration":[10,25], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Operator", "action":"call", "duration":[10,25], "bounce_rate":0.1}
+    ]
+  },
+
+  {
+    "name": "ivr::cancel",
+    "weight": 50,
+    "events": [
+      {"channel":"IVR", "resource":"Menu", "action":"call", "duration":[10,25], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Cancel Account", "action":"call", "duration":[10,25], "bounce_rate":0.1},
+      {"channel":"IVR", "resource":"Operator", "action":"call", "duration":[10,25], "bounce_rate":0.1}
+    ]
+  },
+
+  {
+    "name": "web::autopay",
+    "weight": 20,
+    "events": [
+      {"channel":"web", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0.2},
+      {"channel":"web", "resource":"/login", "action":"page_view", "duration":[3,5], "bounce_rate":0.3},
+      {"channel":"web", "resource":"/account", "action":"page_view", "duration":[3,7], "bounce_rate":0.1},
+      {"channel":"web", "resource":"/account/autopay", "action":"page_view", "duration":[10,25], "bounce_rate":0.3},
+      {"channel":"web", "resource":"/account/autopay/confirm", "action":"page_view", "duration":[3,5], "bounce_rate":0.3},
+      {"channel":"web", "resource":"/account", "action":"page_view", "duration":[2,3], "bounce_rate":1}
+    ]
+  },
+
+
+  {
+    "name": "mobile::find_store",
+    "weight": 300,
+    "events": [
+      {"channel":"mobile", "resource":"/", "action":"page_view", "duration":[2,5], "bounce_rate":0},
+      {"channel":"mobile", "resource":"/store_locator", "action":"page_view", "duration":[3,5], "bounce_rate":0.3},
+      {"channel":"mobile", "resource":"/store_map", "action":"page_view", "duration":[3,7], "bounce_rate":0.4},
+      {"channel":"mobile", "resource":"/store_details", "action":"page_view", "duration":[2,5], "bounce_rate":0.6}
+    ]
+  },
+
+  {
+    "name": "email-mobile::can-you-hear-me-now",
+    "weight": 100,
+    "events": [
+      {"channel":"email", "resource":"Can You Hear Me Now", "action":"click", "duration":[1,1], "bounce_rate":0},
+      {"channel":"mobile", "resource":"/landing/can-you-hear-me", "action":"page_view", "duration":[3,5], "bounce_rate":0.8},
+      {"channel":"mobile", "resource":"/shop/phones", "action":"page_view", "duration":[3,7], "bounce_rate":0.4},
+      {"channel":"mobile", "resource":"/checkout", "action":"page_view", "duration":[2,5], "bounce_rate":0.6},
+      {"channel":"mobile", "resource":"/checkout/process", "action":"page_view", "duration":[2,5], "bounce_rate":0.6}
+    ]
+  },
+  {
+    "name": "email-mobile::can-you-hear-me-now",
+    "weight": 100,
+    "events": [
+      {"channel":"email", "resource":"Can You Hear Me Now", "action":"click", "duration":[1,1], "bounce_rate":0},
+      {"channel":"mobile", "resource":"/landing/can-you-hear-me", "action":"page_view", "duration":[3,5], "bounce_rate":0.8},
+      {"channel":"mobile", "resource":"/store_locator", "action":"page_view", "duration":[3,7], "bounce_rate":0.4}
+    ]
+  },
+  {
+    "name": "email-mobile-web::can-you-hear-me-now",
+    "weight": 100,
+    "events": [
+      {"channel":"email", "resource":"Can You Hear Me Now", "action":"click", "duration":[1,1], "bounce_rate":0},
+      {"channel":"mobile", "resource":"/landing/can-you-hear-me", "action":"page_view", "duration":[3,5], "bounce_rate":0.8},
+      {"channel":"web", "resource":"/", "action":"page_view", "duration":[2,4], "bounce_rate":0.1},
+      {"channel":"web", "resource":"/shop/phones", "action":"page_view", "duration":[3,7], "bounce_rate":0.4},
+      {"channel":"web", "resource":"/checkout", "action":"page_view", "duration":[2,5], "bounce_rate":0.6},
+      {"channel":"web", "resource":"/checkout/process", "action":"page_view", "duration":[2,5], "bounce_rate":0.6}
+    ]
+  }
+]
