@@ -1,11 +1,6 @@
 class DemosController < ApplicationController
-  layout "demo"
-
-  def show; end
-  def pricing; end
-  def blog; end
-  def about; end
-  def contact; end
-  def signup; end
-  def test; end
+  def show
+    user = User.find_by_authentication_token(params[:id])
+    sign_in_and_redirect(:user, user)
+  end
 end

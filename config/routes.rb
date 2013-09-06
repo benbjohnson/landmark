@@ -7,15 +7,7 @@ Landmark::Application.routes.draw do
     resources :actions
   end
 
-  resource :demo, :only => [:show] do
-    get :pricing
-    get :blog
-    get :about
-    get :contact
-    get :signup
-    get '/test/:id/edit', to: 'demos#test'
-  end
-  match "demo/signup/:plan" => 'demos#signup'
+  resources :demos, :only => [:show]
 
   namespace :api do
     namespace :v1 do
