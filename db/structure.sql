@@ -329,7 +329,8 @@ CREATE TABLE users (
     current_sign_in_ip character varying(255),
     last_sign_in_ip character varying(255),
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    authentication_token character varying(255)
 );
 
 
@@ -509,6 +510,13 @@ CREATE INDEX index_resources_on_project_id_and_slug ON resources USING btree (pr
 
 
 --
+-- Name: index_users_on_authentication_token; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_users_on_authentication_token ON users USING btree (authentication_token);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -564,3 +572,5 @@ INSERT INTO schema_migrations (version) VALUES ('20130829225037');
 INSERT INTO schema_migrations (version) VALUES ('20130831235917');
 
 INSERT INTO schema_migrations (version) VALUES ('20130901010745');
+
+INSERT INTO schema_migrations (version) VALUES ('20130906144124');
