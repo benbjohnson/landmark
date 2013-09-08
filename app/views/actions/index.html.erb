@@ -1,10 +1,50 @@
 <div id="actions" style="padding: 0 32px; margin-top:20px">
   <div>
-    <h3>User Actions</h3>
+    <div class="clearfix">
+      <h3 style="display:inline">
+        User Actions
+        <small id="filter-desc"></small>
+      </h3>
 
-    <ul id="breadcrumb" class="breadcrumb"></ul>
+      <div class="pull-right">
+        <div class="btn-toolbar" style="margin:0px">
+          <div class="btn-group">
+            <a href="#date-filter-modal" class="btn btn-primary" title="Date Filter" data-toggle="modal"><i class="fui-calendar"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ul id="breadcrumb" class="breadcrumb" style="margin:0 0 10px"></ul>
 
     <div id="chart"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="date-filter-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="opens-model" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4>Filter Actions by Date</h4>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="start-date">From Date</label>
+        <div class="controls">
+          <input type="date" id="start-date">
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="start-date">Thru Date</label>
+        <div class="controls">
+          <input type="date" id="end-date">
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button id="date-filter-apply-btn" data-dismiss="modal" class="btn btn-primary">Apply</button>
   </div>
 </div>
 

@@ -4,16 +4,27 @@ module Api::V1
 
     # GET /projects/:id/actions/query
     def query
+      start_date, end_date = params[:start_date], params[:end_date]
+      start_date = start_date.blank? ? nil : DateTime.iso8601(start_date).to_i
+      end_date = end_date.blank? ? nil : DateTime.iso8601(end_date).to_i + 86400
+
       funnel = params[:funnel].to_a
       has_funnel = !funnel.empty?
 
+      # Timestamp filter.
+      condition = []
+      condition << "timestamp >= #{start_date}" unless start_date.nil?
+      condition << "timestamp < #{end_date}" unless end_date.nil?
+
       # The selection and previous variable clause.
       selection = []
+      selection << "  WHEN  #{condition.join(" && ")} THEN" unless condition.empty?
       selection << "  SELECT count() AS count GROUP BY __channel__, __resource__, __action__ INTO 'nodes'"
       selection << "  SELECT count() AS count GROUP BY __prev_channel__, __prev_resource__, __prev_action__, __channel__, __resource__, __action__ INTO 'transitions'"
       selection << "  SET __prev_channel__ = __channel__"
       selection << "  SET __prev_resource__ = __resource__"
       selection << "  SET __prev_action__ = __action__"
+      selection << "  END" unless condition.empty?
       selection.join("\n")
 
       # Generate the Sky query.

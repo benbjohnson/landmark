@@ -83,6 +83,7 @@ initialize : function(projectId) {
 
   $(document).on("click", function() { $this.document_onClick() });
   $(document).on("click", ".show-next-actions", function() { $this.showNextActions_onClick(popoverNode) });
+  $(document).on("click", "#date-filter-apply-btn", function() { $this.dateFilterApplyBtn_onClick() });
   $(document).on("click", ".funnel-step", function() { $this.funnelStep_onClick() });
   $(document).on("click", "#clear-funnel-btn", function() { $this.clearFunnelBtn_onClick() });
 
@@ -128,9 +129,32 @@ initialize : function(projectId) {
 
 load : function() {
   var $this = this;
+  var startDate = $("#start-date").val() != "" ? moment($("#start-date").val()) : null;
+  var endDate = $("#end-date").val() != "" ? moment($("#end-date").val()) : null;
+
+  // Update filter description.
+  if(startDate && endDate) {
+    if(startDate.isSame(endDate)) {
+      $("#filter-desc").text("On " + startDate.format("ll"));
+    } else {
+      $("#filter-desc").text("Between " + startDate.format("ll") + " and " + endDate.format("ll"));
+    }
+  } else if(startDate) {
+    $("#filter-desc").text("Since " + startDate.format("ll"));
+  } else if(endDate) {
+    $("#filter-desc").text("On or before " + endDate.format("ll"));
+  } else {
+    $("#filter-desc").text();
+  }
+
+  // Create query parameters.
+  var data = {"funnel":funnel};
+  if(startDate) data.start_date = startDate.toISOString();
+  if(endDate) data.end_date = endDate.toISOString();
+
   var xhr = d3.xhr("/api/v1/projects/" + this.projectId + "/actions/query");
   xhr.header("Content-Type", "application/json");
-  xhr.post(JSON.stringify({"funnel":funnel}),
+  xhr.post(JSON.stringify(data),
     function(error, req) {
       if(error) return console.warn(error);
       json = JSON.parse(req.response);
@@ -397,6 +421,10 @@ funnelStep_onClick : function() {
 
 clearFunnelBtn_onClick : function() {
   funnel = [];
+  this.load();
+},
+
+dateFilterApplyBtn_onClick : function() {
   this.load();
 },
 

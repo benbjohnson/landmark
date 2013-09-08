@@ -7,6 +7,7 @@
 //= require flatui-radio
 //= require flatui
 //= require humanize
+//= require moment
 //= require chosen.jquery
 //= require d3
 //= require landmark
