@@ -125,9 +125,9 @@ module Api::V1
         transition["target"] = [transition["__channel__"], transition["__resource__"], transition["__action__"]].join("---")
         transition["weight"] = transition["label"] = transition["count"]
         if max_count == min_count
-          transition["penwidth"] = 1
+          transition["penwidth"] = max_penwidth
         else
-          transition["penwidth"] = (((transition["count"].to_f - min_count) / (max_count - min_count)) * (max_penwidth-1)) + 1
+          transition["penwidth"] = (((transition["count"].to_f - min_count) / (max_count - min_count)) * max_penwidth)
         end
       end
 

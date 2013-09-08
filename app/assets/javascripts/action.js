@@ -309,6 +309,9 @@ updateNodes : function(w, h) {
 updateTransitions : function(w, h) {
   var $this = this;
 
+  var interpolator = {};
+  interpolator.opacity = d3.interpolateNumber(0.3, 1);
+
   this.g.transitions.selectAll(".transition")
     .data(this.transitions(), function(d) { return d.source.id + "---" + d.target.id; })
     .call(function(selection) {
@@ -328,15 +331,19 @@ updateTransitions : function(w, h) {
           this.select("path")
             .transition()
             .attr("d", function(d) { return d.d })
-            .attr("stroke-width", function(d) { return d.stroke_width })
+            .attr("stroke-opacity", function(d) { return interpolator.opacity(d.stroke_width) })
+            .attr("stroke-width", function(d) { return Math.max(1, d.stroke_width) })
           ;
           this.select("polygon.arrowhead")
             .transition()
             .attr("stroke", "black")
+            .attr("stroke-opacity", function(d) { return interpolator.opacity(d.stroke_width) })
             .attr("fill", "black")
+            .attr("fill-opacity", function(d) { return interpolator.opacity(d.stroke_width) })
             .attr("points", function(d) { return d.arrowhead })
           ;
           this.append("text")
+            .attr("fill-opacity", function(d) { return interpolator.opacity(d.stroke_width) })
             .attr("text-anchor", "middle")
           ;
         })
