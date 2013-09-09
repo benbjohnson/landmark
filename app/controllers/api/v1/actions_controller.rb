@@ -11,6 +11,9 @@ module Api::V1
       funnel = params[:funnel].to_a
       has_funnel = !funnel.empty?
 
+      segment_by = params[:segment_by]
+      segment_by = nil if segment_by.blank?
+
       # Timestamp filter.
       condition = []
       condition << "timestamp >= #{start_date}" unless start_date.nil?
