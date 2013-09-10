@@ -20,7 +20,7 @@ class Project < ActiveRecord::Base
   # Generate the API key and check if Sky is running.
   def before_create
     self.generate_api_key
-    self.errors.add("Unable to connect to tracking server") if !sky_client.ping
+    self.errors.add("Unable to connect to tracking server: #{sky_client.host}:#{sky_client.port}") if !sky_client.ping
   end
 
   # Creates a tracking table in Sky that is associated with this project.

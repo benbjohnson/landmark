@@ -32,19 +32,26 @@ group :test do
   gem 'mocha', '~> 0.13.2', :require => false
   gem 'webmock', '~> 1.13.0'
   gem "timecop", "~> 0.6.1"
-  gem 'test_after_commit', '~> 0.2.0'
   gem 'capybara', '~> 2.1.0'
   gem 'poltergeist', '~> 1.3.0'
   gem 'launchy', '~> 2.3.0'
   gem 'unindentable', '~> 0.1.0'
-  gem 'm', '~> 1.3'
+  gem 'factory_girl_rails', '~> 4.2'
+  gem 'test_after_commit', '~> 0.2.1'
+end
+
+group :development, :test do
+  gem 'rspec-rails', '~> 2.0'
+  gem 'pry'
 end
 
 group :development, :test do
   gem 'debugger', '~> 1.5.0'
-  gem 'pry', '~> 0.9.12.2'
   gem 'capistrano', '~> 2.15.4'
   gem 'jasmine', '~> 1.3.2'
   gem 'simplecov', '~> 0.7.1', :require => false
+  gem 'guard-rspec', '~> 3.0'
+  gem 'ruby-graphviz', '~> 1.0'
+  gem 'zeus', '~> 0.13.3'
 end
 
