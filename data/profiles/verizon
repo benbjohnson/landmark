@@ -209,16 +209,32 @@ END
 # User receives a "Can You Hear Me Now" e-mail.
 EVENT WEIGHT 100
 SET __channel__ = "email", __resource__ = "Can You Hear Me Now", __action__ = "click"
-
-  # User calls to cancels account.
   EVENT AFTER 1s EXIT PROBABILITY 80%
   SET __channel__ = "mobile", __resource__ = "/landing/can-you-hear-me", __action__ = "page_view"
-    EVENT AFTER 3s - 5s EXIT PROBABILITY 40%
+
+    # Clicks through to buy a phone.
+    EVENT AFTER 3s - 5s WEIGHT 100 EXIT PROBABILITY 40%
     SET __channel__ = "mobile", __resource__ = "/shop/phones", __action__ = "page_view"
       EVENT AFTER 3s - 5s EXIT PROBABILITY 60%
       SET __channel__ = "mobile", __resource__ = "/checkout", __action__ = "page_view"
-        EVENT AFTER 3s - 5s EXIT PROBABILITY 60%
+        EVENT AFTER 3s - 5s
         SET __channel__ = "mobile", __resource__ = "/checkout/process", __action__ = "page_view"
+        END
+      END
+    END
+
+    # Clicks through to locate a store.
+    EVENT AFTER 3s - 5s WEIGHT 100
+    SET __channel__ = "mobile", __resource__ = "/store_locator", __action__ = "page_view"
+    END
+
+    # Goes to their desktop and buys a phone.
+    EVENT AFTER 3s - 5s WEIGHT 100 EXIT PROBABILITY 40%
+    SET __channel__ = "web", __resource__ = "/shop/phones", __action__ = "page_view"
+      EVENT AFTER 3s - 5s EXIT PROBABILITY 60%
+      SET __channel__ = "web", __resource__ = "/checkout", __action__ = "page_view"
+        EVENT AFTER 3s - 5s
+        SET __channel__ = "web", __resource__ = "/checkout/process", __action__ = "page_view"
         END
       END
     END
