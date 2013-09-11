@@ -17,6 +17,12 @@ RSpec.configure do |config|
 
   config.before(:each) do
     ActionMailer::Base.deliveries.clear
+
+    # Clear Sky test data.
+    client = SkyDB::Client.new(:host => 'localhost', :port => 8585)
+    client.get_tables.each do |table|
+      client.delete_table(table) unless table.name.index(/^landmark-test/).nil?
+    end
   end
 
   load("#{Rails.root}/db/seeds.rb")

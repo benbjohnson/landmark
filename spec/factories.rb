@@ -9,6 +9,10 @@ FactoryGirl.define do
     end
   end
 
+  factory :project do
+    account
+  end
+
   factory :user do
     email
     password "password"

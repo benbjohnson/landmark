@@ -3,6 +3,7 @@ class Project < ActiveRecord::Base
   has_many :resources
   has_many :flows
   has_many :states
+  before_save lambda{ generate_api_key if api_key.blank? }
   before_create :before_create
   after_create :after_create
 
@@ -17,9 +18,8 @@ class Project < ActiveRecord::Base
   # Callbacks
   ######################################
 
-  # Generate the API key and check if Sky is running.
+  # Generate check if Sky is running.
   def before_create
-    self.generate_api_key
     self.errors.add("Unable to connect to tracking server: #{sky_client.host}:#{sky_client.port}") if !sky_client.ping
   end
 
