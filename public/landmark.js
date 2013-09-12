@@ -58,7 +58,7 @@
       var pageViewCount = 0;
       for(var i=0; i<this.pending.length; i++) {
         var e = this.pending[i];
-        if(e && e.__action__ == "page_view") {
+        if(e && e.action == "page_view") {
           pageViewCount++;
         }
       }
@@ -162,10 +162,10 @@
 
       // Construct the base parameters to track.
       var base = {
-        __channel__: "web",
-        __action__: action,
-        __resource__: this.resource(),
-        __url__: this.url(),
+        channel: "web",
+        action: action,
+        resource: this.resource(),
+        url: this.url(),
       };
 
       // Send event to server.
@@ -190,7 +190,7 @@
      * @param {Object} options
      */
     trackClick : function(href, properties, options) {
-      properties = extend({__href__: href}, properties);
+      properties = extend({href: href}, properties);
       return this.track('__click__', properties, options);
     },
 

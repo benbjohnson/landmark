@@ -71,12 +71,12 @@ class Project < ActiveRecord::Base
   # Creates a table for this project on the Sky database.
   def create_sky_table
     @sky_table = sky_client.create_table(:name => sky_table_name)
-    @sky_table.create_property(:name => '__channel__', :transient => true, :data_type => 'factor')
-    @sky_table.create_property(:name => '__resource__', :transient => true, :data_type => 'factor')
-    @sky_table.create_property(:name => '__action__', :transient => true, :data_type => 'factor')
-    @sky_table.create_property(:name => '__href__', :transient => true, :data_type => 'factor')
-    @sky_table.create_property(:name => '__anonymous__', :transient => true, :data_type => 'boolean')
-    @sky_table.create_property(:name => '__url__', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => 'channel', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => 'resource', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => 'action', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => 'href', :transient => true, :data_type => 'factor')
+    @sky_table.create_property(:name => 'anonymous', :transient => true, :data_type => 'boolean')
+    @sky_table.create_property(:name => 'url', :transient => true, :data_type => 'factor')
   end
 
   # Creates tables for each project.
@@ -121,8 +121,8 @@ class Project < ActiveRecord::Base
     data = {}.merge(traits || {}).merge(properties || {})
 
     # Add resource to SQL database if it doesn't exist yet.
-    if !data['__resource__'].blank?
-      resource = resources.find_or_create_by_channel_and_name!(data['__channel__'], data['__resource__'])
+    if !data['resource'].blank?
+      resource = resources.find_or_create_by_channel_and_name!(data['channel'], data['resource'])
       resource.increment_hit_count
     end
 

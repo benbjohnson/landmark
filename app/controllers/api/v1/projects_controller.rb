@@ -39,7 +39,7 @@ module Api::V1
       
       # Mark the action as anonymous if we do not have a source system id.
       anonymous = id.blank?
-      properties['__anonymous__'] = anonymous
+      properties['anonymous'] = anonymous
 
       # Use the tracking id if we do not have a source system id.
       if anonymous

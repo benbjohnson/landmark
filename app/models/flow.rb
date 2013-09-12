@@ -13,7 +13,7 @@ class Flow < ActiveRecord::Base
     steps.each_with_index do |step, index|
       condition = {
         :type => 'condition',
-        :expression => "__resource__ == #{step.resource.to_s.to_lua} && __action__ == '__page_view__'",
+        :expression => "resource == #{step.resource.to_s.to_lua} && action == '__page_view__'",
         :within => (index == 0 ? [0,0] : [1, 1000000]),
         :steps => [
           {:type => 'selection',

@@ -7,10 +7,10 @@ module Api::V1
       results = {}
       if !@resource.nil?
         q = {sessionIdleTime:7200, steps:[
-          {:type => 'condition', :expression => "__resource__ == #{@resource.name.to_s.to_lua} && __action__ == '__page_view__'", :steps => [
+          {:type => 'condition', :expression => "resource == #{@resource.name.to_s.to_lua} && action == '__page_view__'", :steps => [
             {:type => 'selection', :dimensions => [], :fields => [:name => 'count', :expression => 'count()']},
-            {:type => 'condition', :expression => "__resource__ == #{@resource.name.to_s.to_lua} && __action__ != '__page_view__'", :within => [1,1], :steps => [
-              {:type => 'selection', :dimensions => ['__href__'], :fields => [:name => 'count', :expression => 'count()']}
+            {:type => 'condition', :expression => "resource == #{@resource.name.to_s.to_lua} && action != '__page_view__'", :within => [1,1], :steps => [
+              {:type => 'selection', :dimensions => ['href'], :fields => [:name => 'count', :expression => 'count()']}
             ]}
           ]}
         ]}

@@ -34,11 +34,11 @@ namespace :segmentio do
 
         properties = event["properties"] || {}
         if !event["event"].blank?
-          properties["__channel__"] = (event["channel"] == "client" ? "__web__" : "__server__")
-          properties["__action__"] = event["event"]
-          properties["__anonymous__"] = anonymous
+          properties["channel"] = (event["channel"] == "client" ? "__web__" : "__server__")
+          properties["action"] = event["event"]
+          properties["anonymous"] = anonymous
           if properties.has_key?("url")
-            properties["__url__"] = properties.delete("url").to_s.gsub(/#.+$/, "")
+            properties["url"] = properties.delete("url").to_s.gsub(/#.+$/, "")
           end
         end
         properties.delete_if {|k,v| v.is_a?(Hash) || v.is_a?(Array)}

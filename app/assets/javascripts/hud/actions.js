@@ -149,14 +149,14 @@ visible : function(enabled) {
 
 normalize : function(data) {
   var $this = this;
-  if(!data.__href__) return [];
+  if(!data.href) return [];
 
   // Normalize action data.
-  return Object.keys(data.__href__).map(function(href) {
+  return Object.keys(data.href).map(function(href) {
     return {
       id: href,
       href: href,
-      count: data.__href__[href].count,
+      count: data.href[href].count,
     }
   });
 },

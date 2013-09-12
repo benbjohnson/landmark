@@ -65,9 +65,9 @@ module Landmark
         bounce_rate = event["bounce_rate"] || 0.0
         traits = event["traits"] || {}
         properties = event["properties"] || {}
-        properties["__channel__"] = event["channel"] if event.has_key?("channel")
-        properties["__resource__"] = event["resource"] if event.has_key?("resource")
-        properties["__action__"] = event["action"] if event.has_key?("action")
+        properties["channel"] = event["channel"] if event.has_key?("channel")
+        properties["resource"] = event["resource"] if event.has_key?("resource")
+        properties["action"] = event["action"] if event.has_key?("action")
 
         # Randomly determine the duration.
         min_duration, max_duration = *event["duration"]

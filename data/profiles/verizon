@@ -1,7 +1,7 @@
 SCHEMA
-  PROPERTY __channel__ FACTOR TRANSIENT
-  PROPERTY __resource__ FACTOR TRANSIENT
-  PROPERTY __action__ FACTOR TRANSIENT
+  PROPERTY channel FACTOR TRANSIENT
+  PROPERTY resource FACTOR TRANSIENT
+  PROPERTY action FACTOR TRANSIENT
 END
 
 
@@ -13,23 +13,23 @@ END
 
 # User lands on the home page.
 EVENT WEIGHT 420 EXIT PROBABILITY 20%
-SET __channel__ = "web", __resource__ = "/", __action__ = "page_view"
+SET channel = "web", resource = "/", action = "page_view"
 
   # User is looking for a store.
   EVENT AFTER 2s - 5s WEIGHT 100 EXIT PROBABILITY 30%
-  SET __channel__ = "web", __resource__ = "/store_locator", __action__ = "page_view"
+  SET channel = "web", resource = "/store_locator", action = "page_view"
     EVENT AFTER 2s - 4s EXIT PROBABILITY 40%
-    SET __channel__ = "web", __resource__ = "/store_map", __action__ = "page_view"
+    SET channel = "web", resource = "/store_map", action = "page_view"
       EVENT AFTER 3s - 7s EXIT PROBABILITY 60%
-      SET __channel__ = "web", __resource__ = "/store_details", __action__ = "page_view"
+      SET channel = "web", resource = "/store_details", action = "page_view"
         EVENT AFTER 2s - 5s EXIT PROBABILITY 70%
-        SET __channel__ = "web", __resource__ = "/store_map", __action__ = "page_view"
+        SET channel = "web", resource = "/store_map", action = "page_view"
           EVENT AFTER 1s - 3s EXIT PROBABILITY 80%
-          SET __channel__ = "web", __resource__ = "/store_details", __action__ = "page_view"
+          SET channel = "web", resource = "/store_details", action = "page_view"
             EVENT AFTER 1s - 2s EXIT PROBABILITY 80%
-            SET __channel__ = "web", __resource__ = "/store_map", __action__ = "page_view"
+            SET channel = "web", resource = "/store_map", action = "page_view"
               EVENT AFTER 2s - 3s
-              SET __channel__ = "web", __resource__ = "/store_details", __action__ = "page_view"
+              SET channel = "web", resource = "/store_details", action = "page_view"
               END
             END
           END
@@ -40,17 +40,17 @@ SET __channel__ = "web", __resource__ = "/", __action__ = "page_view"
 
   # User is shopping for a phone.
   EVENT AFTER 2s - 5s WEIGHT 120 EXIT PROBABILITY 30%
-  SET __channel__ = "web", __resource__ = "/plans", __action__ = "page_view"
+  SET channel = "web", resource = "/plans", action = "page_view"
 
     # User decides to shop for a monthly plan.
     EVENT AFTER 2s - 4s WEIGHT 100 EXIT PROBABILITY 40%
-    SET __channel__ = "web", __resource__ = "/plans/monthly", __action__ = "page_view"
+    SET channel = "web", resource = "/plans/monthly", action = "page_view"
       EVENT AFTER 3s - 7s EXIT PROBABILITY 60%
-      SET __channel__ = "web", __resource__ = "/shop/phones", __action__ = "page_view"
+      SET channel = "web", resource = "/shop/phones", action = "page_view"
         EVENT AFTER 2s - 5s EXIT PROBABILITY 60%
-        SET __channel__ = "web", __resource__ = "/checkout", __action__ = "page_view"
+        SET channel = "web", resource = "/checkout", action = "page_view"
           EVENT AFTER 1s - 3s EXIT PROBABILITY 60%
-          SET __channel__ = "web", __resource__ = "/checkout/process", __action__ = "page_view"
+          SET channel = "web", resource = "/checkout/process", action = "page_view"
           END
         END
       END
@@ -58,13 +58,13 @@ SET __channel__ = "web", __resource__ = "/", __action__ = "page_view"
 
     # User decides to shop for a prepaid plan.
     EVENT AFTER 2s - 4s WEIGHT 20 EXIT PROBABILITY 40%
-    SET __channel__ = "web", __resource__ = "/plans/monthly", __action__ = "page_view"
+    SET channel = "web", resource = "/plans/monthly", action = "page_view"
       EVENT AFTER 3s - 7s EXIT PROBABILITY 60%
-      SET __channel__ = "web", __resource__ = "/shop/phones", __action__ = "page_view"
+      SET channel = "web", resource = "/shop/phones", action = "page_view"
         EVENT AFTER 2s - 5s EXIT PROBABILITY 60%
-        SET __channel__ = "web", __resource__ = "/checkout", __action__ = "page_view"
+        SET channel = "web", resource = "/checkout", action = "page_view"
           EVENT AFTER 1s - 3s EXIT PROBABILITY 60%
-          SET __channel__ = "web", __resource__ = "/checkout/process", __action__ = "page_view"
+          SET channel = "web", resource = "/checkout/process", action = "page_view"
           END
         END
       END
@@ -73,28 +73,28 @@ SET __channel__ = "web", __resource__ = "/", __action__ = "page_view"
 
   # User logs into their account.
   EVENT AFTER 3s - 5s WEIGHT 50 EXIT PROBABILITY 30%
-  SET __channel__ = "web", __resource__ = "/login", __action__ = "page_view"
+  SET channel = "web", resource = "/login", action = "page_view"
     EVENT AFTER 3s - 4s EXIT PROBABILITY 10%
-    SET __channel__ = "web", __resource__ = "/account", __action__ = "page_view"
+    SET channel = "web", resource = "/account", action = "page_view"
       
       # User wants to pay their bill.
       EVENT AFTER 10s - 25s EXIT PROBABILITY 60%
-      SET __channel__ = "web", __resource__ = "/account/pay_bill", __action__ = "page_view"
+      SET channel = "web", resource = "/account/pay_bill", action = "page_view"
         EVENT AFTER 5s - 8s EXIT PROBABILITY 80%
-        SET __channel__ = "web", __resource__ = "/account/confirm", __action__ = "page_view"
+        SET channel = "web", resource = "/account/confirm", action = "page_view"
           EVENT AFTER 2s - 4s
-          SET __channel__ = "web", __resource__ = "/account/thankyou", __action__ = "page_view"
+          SET channel = "web", resource = "/account/thankyou", action = "page_view"
           END
         END
       END
 
       # User wants to set up autopay.
       EVENT AFTER 10s - 25s EXIT PROBABILITY 30%
-      SET __channel__ = "web", __resource__ = "/account/autopay", __action__ = "page_view"
+      SET channel = "web", resource = "/account/autopay", action = "page_view"
         EVENT AFTER 3s - 5s EXIT PROBABILITY 30%
-        SET __channel__ = "web", __resource__ = "/account/autopay/confirm", __action__ = "page_view"
+        SET channel = "web", resource = "/account/autopay/confirm", action = "page_view"
           EVENT AFTER 2s - 3s
-          SET __channel__ = "web", __resource__ = "/account", __action__ = "page_view"
+          SET channel = "web", resource = "/account", action = "page_view"
           END
         END
       END
@@ -103,13 +103,13 @@ SET __channel__ = "web", __resource__ = "/", __action__ = "page_view"
 
   # User is looking for contact information.
   EVENT AFTER 3s - 5s WEIGHT 50 EXIT PROBABILITY 30%
-  SET __channel__ = "web", __resource__ = "/contact-us", __action__ = "page_view"
+  SET channel = "web", resource = "/contact-us", action = "page_view"
     EVENT AFTER 10s - 25s EXIT PROBABILITY 10%
-    SET __channel__ = "IVR", __resource__ = "Menu", __action__ = "call"
+    SET channel = "IVR", resource = "Menu", action = "call"
       EVENT AFTER 10s - 15s EXIT PROBABILITY 10%
-      SET __channel__ = "IVR", __resource__ = "Pay Bill", __action__ = "call"
+      SET channel = "IVR", resource = "Pay Bill", action = "call"
         EVENT AFTER 10s - 25s
-        SET __channel__ = "IVR", __resource__ = "Operator", __action__ = "call"
+        SET channel = "IVR", resource = "Operator", action = "call"
         END
       END
     END
@@ -125,43 +125,43 @@ END
 
 # User lands on the home page.
 EVENT WEIGHT 400 EXIT PROBABILITY 20%
-SET __channel__ = "mobile", __resource__ = "/", __action__ = "page_view"
+SET channel = "mobile", resource = "/", action = "page_view"
 
   # User is looking for a store.
   EVENT AFTER 2s - 5s WEIGHT 300 EXIT PROBABILITY 30%
-  SET __channel__ = "mobile", __resource__ = "/store_locator", __action__ = "page_view"
+  SET channel = "mobile", resource = "/store_locator", action = "page_view"
     EVENT AFTER 2s - 4s EXIT PROBABILITY 40%
-    SET __channel__ = "mobile", __resource__ = "/store_map", __action__ = "page_view"
+    SET channel = "mobile", resource = "/store_map", action = "page_view"
       EVENT AFTER 3s - 7s EXIT PROBABILITY 60%
-      SET __channel__ = "mobile", __resource__ = "/store_details", __action__ = "page_view"
+      SET channel = "mobile", resource = "/store_details", action = "page_view"
       END
     END
   END
 
   # User is paying their bill.
   EVENT AFTER 3s - 5s WEIGHT 50 EXIT PROBABILITY 30%
-  SET __channel__ = "mobile", __resource__ = "/login", __action__ = "page_view"
+  SET channel = "mobile", resource = "/login", action = "page_view"
     EVENT AFTER 3s - 4s EXIT PROBABILITY 10%
-    SET __channel__ = "mobile", __resource__ = "/account", __action__ = "page_view"
+    SET channel = "mobile", resource = "/account", action = "page_view"
 
       # User continue to pay bill on mobile.
       EVENT AFTER 10s - 25s EXIT PROBABILITY 60%
-      SET __channel__ = "mobile", __resource__ = "/account/pay_bill", __action__ = "page_view"
+      SET channel = "mobile", resource = "/account/pay_bill", action = "page_view"
         EVENT AFTER 5s - 8s EXIT PROBABILITY 80%
-        SET __channel__ = "mobile", __resource__ = "/account/confirm", __action__ = "page_view"
+        SET channel = "mobile", resource = "/account/confirm", action = "page_view"
           EVENT AFTER 2s - 4s
-          SET __channel__ = "mobile", __resource__ = "/account/thankyou", __action__ = "page_view"
+          SET channel = "mobile", resource = "/account/thankyou", action = "page_view"
           END
         END
       END
 
       # User moves to IVR to pay bill.
       EVENT AFTER 10s - 25s EXIT PROBABILITY 10%
-      SET __channel__ = "IVR", __resource__ = "Menu", __action__ = "call"
+      SET channel = "IVR", resource = "Menu", action = "call"
         EVENT AFTER 10s - 15s EXIT PROBABILITY 10%
-        SET __channel__ = "IVR", __resource__ = "Pay Bill", __action__ = "call"
+        SET channel = "IVR", resource = "Pay Bill", action = "call"
           EVENT AFTER 10s - 25s
-          SET __channel__ = "IVR", __resource__ = "Operator", __action__ = "call"
+          SET channel = "IVR", resource = "Operator", action = "call"
           END
         END
       END
@@ -177,24 +177,24 @@ END
 ################################################################################
 
 EVENT AFTER 10s - 25s WEIGHT 100 EXIT PROBABILITY 10%
-SET __channel__ = "IVR", __resource__ = "Menu", __action__ = "call"
+SET channel = "IVR", resource = "Menu", action = "call"
   
   # User wants to pay bill but cancels account.
   EVENT AFTER 10s - 25s EXIT PROBABILITY 10%
-  SET __channel__ = "IVR", __resource__ = "Pay Bill", __action__ = "call"
+  SET channel = "IVR", resource = "Pay Bill", action = "call"
     EVENT AFTER 10s - 25s
-    SET __channel__ = "IVR", __resource__ = "Cancel Account", __action__ = "call"
+    SET channel = "IVR", resource = "Cancel Account", action = "call"
       EVENT AFTER 10s - 25s
-      SET __channel__ = "IVR", __resource__ = "Operator", __action__ = "call"
+      SET channel = "IVR", resource = "Operator", action = "call"
       END
     END
   END
 
   # User calls to cancels account.
   EVENT AFTER 10s - 25s
-  SET __channel__ = "IVR", __resource__ = "Cancel Account", __action__ = "call"
+  SET channel = "IVR", resource = "Cancel Account", action = "call"
     EVENT AFTER 10s - 25s
-    SET __channel__ = "IVR", __resource__ = "Operator", __action__ = "call"
+    SET channel = "IVR", resource = "Operator", action = "call"
     END
   END
 END
@@ -208,33 +208,33 @@ END
 
 # User receives a "Can You Hear Me Now" e-mail.
 EVENT WEIGHT 100
-SET __channel__ = "email", __resource__ = "Can You Hear Me Now", __action__ = "click"
+SET channel = "email", resource = "Can You Hear Me Now", action = "click"
   EVENT AFTER 1s EXIT PROBABILITY 80%
-  SET __channel__ = "mobile", __resource__ = "/landing/can-you-hear-me", __action__ = "page_view"
+  SET channel = "mobile", resource = "/landing/can-you-hear-me", action = "page_view"
 
     # Clicks through to buy a phone.
     EVENT AFTER 3s - 5s WEIGHT 100 EXIT PROBABILITY 40%
-    SET __channel__ = "mobile", __resource__ = "/shop/phones", __action__ = "page_view"
+    SET channel = "mobile", resource = "/shop/phones", action = "page_view"
       EVENT AFTER 3s - 5s EXIT PROBABILITY 60%
-      SET __channel__ = "mobile", __resource__ = "/checkout", __action__ = "page_view"
+      SET channel = "mobile", resource = "/checkout", action = "page_view"
         EVENT AFTER 3s - 5s
-        SET __channel__ = "mobile", __resource__ = "/checkout/process", __action__ = "page_view"
+        SET channel = "mobile", resource = "/checkout/process", action = "page_view"
         END
       END
     END
 
     # Clicks through to locate a store.
     EVENT AFTER 3s - 5s WEIGHT 100
-    SET __channel__ = "mobile", __resource__ = "/store_locator", __action__ = "page_view"
+    SET channel = "mobile", resource = "/store_locator", action = "page_view"
     END
 
     # Goes to their desktop and buys a phone.
     EVENT AFTER 3s - 5s WEIGHT 100 EXIT PROBABILITY 40%
-    SET __channel__ = "web", __resource__ = "/shop/phones", __action__ = "page_view"
+    SET channel = "web", resource = "/shop/phones", action = "page_view"
       EVENT AFTER 3s - 5s EXIT PROBABILITY 60%
-      SET __channel__ = "web", __resource__ = "/checkout", __action__ = "page_view"
+      SET channel = "web", resource = "/checkout", action = "page_view"
         EVENT AFTER 3s - 5s
-        SET __channel__ = "web", __resource__ = "/checkout/process", __action__ = "page_view"
+        SET channel = "web", resource = "/checkout/process", action = "page_view"
         END
       END
     END

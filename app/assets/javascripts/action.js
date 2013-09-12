@@ -48,10 +48,10 @@ nodes : function(value) {
   // Create lookup.
   for(var i=0; i<nodes.length; i++) {
     var node = nodes[i];
-    node.id = [node.__channel__, node.__resource__, node.__action__].join("---");
-    if(!nodeLookup[node.__channel__]) nodeLookup[node.__channel__] = {};
-    if(!nodeLookup[node.__channel__][node.__resource__]) nodeLookup[node.__channel__][node.__resource__] = {};
-    nodeLookup[node.__channel__][node.__resource__][node.__action__] = node
+    node.id = [node.channel, node.resource, node.action].join("---");
+    if(!nodeLookup[node.channel]) nodeLookup[node.channel] = {};
+    if(!nodeLookup[node.channel][node.resource]) nodeLookup[node.channel][node.resource] = {};
+    nodeLookup[node.channel][node.resource][node.action] = node
   }
 },
 
@@ -61,8 +61,8 @@ transitions : function(value) {
 
   for(var i=0; i<transitions.length; i++) {
     var transition = transitions[i];
-    transition.source = this.node(transition.__prev_channel__, transition.__prev_resource__, transition.__prev_action__);
-    transition.target = this.node(transition.__channel__, transition.__resource__, transition.__action__);
+    transition.source = this.node(transition.prev_channel, transition.prev_resource, transition.prev_action);
+    transition.target = this.node(transition.channel, transition.resource, transition.action);
   }
 },
 
@@ -213,7 +213,7 @@ updateBreadcrumb : function(w, h) {
     if(i == funnel.length - 1) item.attr("class", "active");
     item.find("a")
       .data("index", i)
-      .text(step.__resource__);
+      .text(step.resource);
     breadcrumb.append(item);
   }
   breadcrumb.append('<i id="clear-funnel-btn" class="pull-right fui-cross-inverted text-primary"></i>')
@@ -298,7 +298,7 @@ updateNodes : function(w, h) {
       selection.select("text.title")
         .attr("x", function(d) { return d.label_x - d.x })
         .attr("y", function(d) { return d.label_y - d.y - 2 })
-        .text(function(d) { return d.__resource__; })
+        .text(function(d) { return d.resource; })
       ;
 
       exit.remove();
@@ -413,9 +413,9 @@ node_onClick : function(d) {
 showNextActions_onClick : function(d) {
   this.removePopover();
   funnel.push({
-    __channel__:d.__channel__,
-    __resource__:d.__resource__,
-    __action__:d.__action__,
+    channel:d.channel,
+    resource:d.resource,
+    action:d.action,
   });
   this.load()
 },
