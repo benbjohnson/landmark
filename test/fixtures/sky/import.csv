@@ -1,5 +1,0 @@
-id,timestamp,channel,anonymous,action,resource,href
-0001,2012-01-01T00:00:00Z,true,web,__page_view__,http://localhost/demo
-0001,2012-01-01T00:00:20Z,true,web,__page_view__,http://localhost/demo/pricing
-0001,2012-01-01T00:00:30Z,true,web,__page_view__,http://localhost/demo/signup
-0001,2012-01-02T00:00:00Z,true,web,__page_view__,http://localhost/
