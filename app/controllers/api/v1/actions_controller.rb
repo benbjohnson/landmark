@@ -22,11 +22,15 @@ module Api::V1
       # The selection and previous variable clause.
       selection = []
       selection << "  WHEN  #{condition.join(" && ")} THEN" unless condition.empty?
-      selection << "  SELECT count() AS count GROUP BY channel, resource, action INTO 'nodes'"
-      selection << "  SELECT count() AS count GROUP BY prev_channel, prev_resource, prev_action, channel, resource, action INTO 'transitions'"
-      selection << "  SET prev_channel = channel"
-      selection << "  SET prev_resource = resource"
-      selection << "  SET prev_action = action"
+      selection << "  FOR EACH SESSION DELIMITED BY 2 HOURS"
+      selection << "    FOR EACH EVENT"
+      selection << "      SELECT count() AS count GROUP BY channel, resource, action INTO 'nodes'"
+      selection << "      SELECT count() AS count GROUP BY prev_channel, prev_resource, prev_action, channel, resource, action INTO 'transitions'"
+      selection << "      SET prev_channel = channel"
+      selection << "      SET prev_resource = resource"
+      selection << "      SET prev_action = action"
+      selection << "    END"
+      selection << "  END"
       selection << "  END" unless condition.empty?
       selection.join("\n")
 
@@ -35,7 +39,6 @@ module Api::V1
       query << "DECLARE prev_channel AS FACTOR(channel)"
       query << "DECLARE prev_resource AS FACTOR(resource)"
       query << "DECLARE prev_action AS FACTOR(action)"
-      query << "WHEN action != '' THEN"
       if has_funnel
         funnel.each_with_index do |step, index|
           query << "WHEN channel == #{step["channel"].to_s.to_lua} && resource == #{step["resource"].to_s.to_lua} && action == #{step["action"].to_s.to_lua} #{index > 0 ? "WITHIN 1 .. 1000000 STEPS" : ""} THEN"
@@ -50,7 +53,6 @@ module Api::V1
         end
         query << "END"
       end
-      query << "END"
       query = query.join("\n")
       # warn(query)
       results = @project.run_query(query: query)

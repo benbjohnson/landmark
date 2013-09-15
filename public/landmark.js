@@ -45,7 +45,6 @@
      */
     initialize : function(apiKey) {
       this.apiKey = apiKey;
-      this.hud();
       return true;
     },
 
@@ -257,36 +256,6 @@
       );
     },
 
-
-    //----------------------------------
-    // HUD
-    //----------------------------------
-
-    /**
-     * Initializes the HUD display by loading the hud.js dependency.
-     */
-    hud : function() {
-      var $this = this;
-      var xhr = this.createXMLHttpRequest("GET", "/api/v1/projects/auth?apiKey=" + this.apiKey, true,
-        function() {
-          if(this.status != 200) return;
-          
-          var src = "";
-          if($this.host() != null) src += ('https:' === document.location.protocol ? 'https://' : 'http://') + $this.host() + ($this.port() > 0 ? ":" + $this.port() : "");
-          src += "/assets/hud.js";
-
-          var script = document.createElement('script');
-          script.type = "text/javascript";
-          script.async = true;
-          script.src = src;
-          $this.scriptTag.parentNode.appendChild(script);
-        },
-        function() {}
-      );
-      if(xhr) {
-        xhr.send();
-      }
-    },
 
     //----------------------------------
     // Resource

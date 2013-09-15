@@ -10,10 +10,9 @@
 //= require moment
 //= require chosen.jquery
 //= require d3
-//= require landmark
+//= require application
 //= require state
 //= require action
-//= require application
 
 $(document).ready(function() {
   $("select[name='large']").selectpicker({style: 'btn-large', menuStyle: 'dropdown-inverse'});
@@ -21,3 +20,5 @@ $(document).ready(function() {
   $(".chosen-select").chosen()
   $('[title]').tooltip();
 });
+
+var landmark = {};

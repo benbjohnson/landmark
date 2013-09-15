@@ -8,13 +8,11 @@ module Api
       protected
 
       def authenticate_api_user!
-        head 401 if !user_signed_in? && params[:apiKey] != "demo"
+        head 401 if !user_signed_in?
       end
 
       def find_project
-        if params[:apiKey] == 'demo'
-          @project = Project.find_by_api_key(params[:apiKey])
-        elsif user_signed_in?
+        if user_signed_in?
           if params[:project_id]
             @project = current_user.account.projects.find(params[:project_id])
           else
