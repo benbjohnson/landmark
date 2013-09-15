@@ -24,11 +24,17 @@ module Api::V1
       selection << "  WHEN  #{condition.join(" && ")} THEN" unless condition.empty?
       selection << "  FOR EACH SESSION DELIMITED BY 2 HOURS"
       selection << "    FOR EACH EVENT"
-      selection << "      SELECT count() AS count GROUP BY channel, resource, action INTO 'nodes'"
-      selection << "      SELECT count() AS count GROUP BY prev_channel, prev_resource, prev_action, channel, resource, action INTO 'transitions'"
+      selection << "      SET eos = false"
+      selection << "      SELECT count() AS count GROUP BY channel, resource, action, eos INTO 'nodes'"
+      selection << "      SELECT count() AS count GROUP BY prev_channel, prev_resource, prev_action, channel, resource, action, eos INTO 'transitions'"
       selection << "      SET prev_channel = channel"
       selection << "      SET prev_resource = resource"
       selection << "      SET prev_action = action"
+      selection << "      SET eos = @@eos"
+      selection << "      WHEN eos THEN"
+      selection << "        SELECT count() AS count GROUP BY channel, resource, action, eos INTO 'nodes'"
+      selection << "        SELECT count() AS count GROUP BY prev_channel, prev_resource, prev_action, channel, resource, action, eos INTO 'transitions'"
+      selection << "      END"
       selection << "    END"
       selection << "  END"
       selection << "  END" unless condition.empty?
@@ -39,6 +45,10 @@ module Api::V1
       query << "DECLARE prev_channel AS FACTOR(channel)"
       query << "DECLARE prev_resource AS FACTOR(resource)"
       query << "DECLARE prev_action AS FACTOR(action)"
+
+      # Hack EOS dimension for now.
+      query << "DECLARE eos AS BOOLEAN"
+
       if has_funnel
         funnel.each_with_index do |step, index|
           query << "WHEN channel == #{step["channel"].to_s.to_lua} && resource == #{step["resource"].to_s.to_lua} && action == #{step["action"].to_s.to_lua} #{index > 0 ? "WITHIN 1 .. 1000000 STEPS" : ""} THEN"
@@ -54,12 +64,12 @@ module Api::V1
         query << "END"
       end
       query = query.join("\n")
-      # warn(query)
+      warn(query)
       results = @project.run_query(query: query)
 
       # Normalize nodes.
       channels = []
-      nodes = SkyDB.denormalize(results["nodes"], ["channel", "resource", "action"])
+      nodes = SkyDB.denormalize(results["nodes"], ["channel", "resource", "action", "eos"])
       nodes.group_by {|node| node["channel"]}.each_pair do |k,v|
         channels << {"name" => k, "nodes" => v}
       end
@@ -71,20 +81,21 @@ module Api::V1
         t = h
         t = t[n["channel"]] ||= {}
         t = t[n["resource"]] ||= {}
-        t = t[n["action"]] = n
+        t = t[n["action"]] ||= {}
+        t = t[n["eos"]] = n
         h
       end
       
       # Normalize transitions.
-      transitions = SkyDB.denormalize(results["transitions"], ["prev_channel", "prev_resource", "prev_action", "channel", "resource", "action"])
+      transitions = SkyDB.denormalize(results["transitions"], ["prev_channel", "prev_resource", "prev_action", "channel", "resource", "action", "eos"])
 
       # Trim to top nodes/transitions.
-      transitions.reject! {|t| t["prev_channel"] == t["channel"] && t["prev_resource"] == t["resource"] && t["prev_action"] == t["action"]}
+      transitions.reject! {|t| t["prev_channel"] == t["channel"] && t["prev_resource"] == t["resource"] && t["prev_action"] == t["action"] && t["eos"] == "false"}
       transitions = transitions.sort {|a,b| a["count"] <=> b["count"]}.reverse
       transitions = transitions[0,40]
       transitions.reject! do |t|
-        source = (lookup[t["prev_channel"]][t["prev_resource"]][t["prev_action"]] rescue nil)
-        target = (lookup[t["channel"]][t["resource"]][t["action"]] rescue nil)
+        source = (lookup[t["prev_channel"]][t["prev_resource"]][t["prev_action"]]["false"] rescue nil)
+        target = (lookup[t["channel"]][t["resource"]][t["action"]][t["eos"]] rescue nil)
         rejected = (source.nil? || target.nil?)
         source["marked"] = target["marked"] = true unless rejected
         rejected
@@ -118,17 +129,19 @@ module Api::V1
         node["id"] = node["name"]
         node["label"] = node["name"]
         node["nodes"].each do |n|
-          n["id"] = [n["channel"], n["resource"], n["action"]].join("---")
+          n["id"] = [n["channel"], n["resource"], n["action"], n["eos"]].join("---")
           n["label"] = n["resource"]
+          n["shape"] = "point" if n["eos"] == "true"
         end
       end
       counts = transitions.map{|t| t["count"]}
       min_count, max_count = counts.min.to_f, counts.max.to_f
-      max_penwidth = 5.0
+      max_penwidth = 10.0
       transitions.each do |transition|
-        transition["source"] = [transition["prev_channel"], transition["prev_resource"], transition["prev_action"]].join("---")
-        transition["target"] = [transition["channel"], transition["resource"], transition["action"]].join("---")
+        transition["source"] = [transition["prev_channel"], transition["prev_resource"], transition["prev_action"], "false"].join("---")
+        transition["target"] = [transition["channel"], transition["resource"], transition["action"], transition["eos"]].join("---")
         transition["weight"] = transition["label"] = transition["count"]
+        # transition["arrowhead"] = "box" if transition["eos"] == "true"
         if max_count == min_count
           transition["penwidth"] = max_penwidth
         else

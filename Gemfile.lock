@@ -1,18 +1,16 @@
 GIT
-  remote: git@github.com:benbjohnson/miniviz.git
-  revision: 3c7ec7c25ef20da4ebce9f41f57e3dbfaf8b462f
-  ref: 3c7ec7c
-  specs:
-    miniviz (0.1.0)
-      nokogiri (~> 1.6)
-      ruby-graphviz (~> 1.0)
-
-GIT
   remote: git@github.com:skydb/sky.rb.git
   revision: 38a7eb98b2e5d02ff8207d1ec2bfcd20e97da62b
   ref: 38a7eb9
   specs:
     skydb (0.3.0)
+
+PATH
+  remote: /projects/benbjohnson/miniviz
+  specs:
+    miniviz (0.1.0)
+      nokogiri (~> 1.6)
+      ruby-graphviz (~> 1.0)
 
 GEM
   remote: https://rubygems.org/

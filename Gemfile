@@ -14,7 +14,7 @@ gem 'json', '~> 1.7.7'
 gem 'yajl-ruby', '~> 1.1.0', :require => false
 gem 'ruby-progressbar', '~> 1.2.0', require: false
 gem 'weighted_randomizer', '~> 0.1', require: false
-gem 'miniviz', :git => 'git@github.com:benbjohnson/miniviz.git', :ref => '3c7ec7c'
+gem 'miniviz', path:"/projects/benbjohnson/miniviz"  # :git => 'git@github.com:benbjohnson/miniviz.git', :ref => '76b0fa1'
 gem 'skydb', :git => 'git@github.com:skydb/sky.rb.git', :ref => '38a7eb9'
 
 gem 'rvm-capistrano', '~> 1.3.4'

@@ -35,9 +35,9 @@ channels : function(value) {
   channels = value;
 },
 
-node : function(channel, resource, action) {
-  if(!nodeLookup[channel] || !nodeLookup[channel][resource]) return null;
-  return nodeLookup[channel][resource][action];
+node : function(channel, resource, action, eos) {
+  if(!nodeLookup[channel] || !nodeLookup[channel][resource] || !nodeLookup[channel][resource][action]) return null;
+  return nodeLookup[channel][resource][action][eos];
 },
 
 nodes : function(value) {
@@ -48,10 +48,11 @@ nodes : function(value) {
   // Create lookup.
   for(var i=0; i<nodes.length; i++) {
     var node = nodes[i];
-    node.id = [node.channel, node.resource, node.action].join("---");
+    node.id = [node.channel, node.resource, node.action, node.eos].join("---");
     if(!nodeLookup[node.channel]) nodeLookup[node.channel] = {};
     if(!nodeLookup[node.channel][node.resource]) nodeLookup[node.channel][node.resource] = {};
-    nodeLookup[node.channel][node.resource][node.action] = node
+    if(!nodeLookup[node.channel][node.resource][node.action]) nodeLookup[node.channel][node.resource][node.action] = {};
+    nodeLookup[node.channel][node.resource][node.action][node.eos] = node
   }
 },
 
@@ -61,8 +62,8 @@ transitions : function(value) {
 
   for(var i=0; i<transitions.length; i++) {
     var transition = transitions[i];
-    transition.source = this.node(transition.prev_channel, transition.prev_resource, transition.prev_action);
-    transition.target = this.node(transition.channel, transition.resource, transition.action);
+    transition.source = this.node(transition.prev_channel, transition.prev_resource, transition.prev_action, false);
+    transition.target = this.node(transition.channel, transition.resource, transition.action, transition.eos);
   }
 },
 
@@ -292,10 +293,12 @@ updateNodes : function(w, h) {
       );
 
       selection.select("rect")
+        .attr("visibility", function(d) { return d.eos == "true" ? "hidden" : "visible" })
         .attr("width", function(d) { return d.width })
         .attr("height", function(d) { return d.height })
       ;
       selection.select("text.title")
+        .attr("visibility", function(d) { return d.eos == "true" ? "hidden" : "visible" })
         .attr("x", function(d) { return d.label_x - d.x })
         .attr("y", function(d) { return d.label_y - d.y - 2 })
         .text(function(d) { return d.resource; })
@@ -331,18 +334,20 @@ updateTransitions : function(w, h) {
           this.select("path")
             .transition()
             .attr("d", function(d) { return d.d })
+            .attr("stroke", function(d) { return d.eos == "true" ? "#e74c3c" : "#333" })
             .attr("stroke-opacity", function(d) { return interpolator.opacity(d.stroke_width) })
             .attr("stroke-width", function(d) { return Math.max(1, d.stroke_width) })
           ;
           this.select("polygon.arrowhead")
             .transition()
-            .attr("stroke", "black")
+            .attr("stroke", function(d) { return d.eos == "true" ? "#e74c3c" : "#333" })
             .attr("stroke-opacity", function(d) { return interpolator.opacity(d.stroke_width) })
-            .attr("fill", "black")
+            .attr("fill", function(d) { return d.eos == "true" ? "#e74c3c" : "#333" })
             .attr("fill-opacity", function(d) { return interpolator.opacity(d.stroke_width) })
-            .attr("points", function(d) { return d.arrowhead })
+            .attr("points", function(d) { return d.arrowhead_points })
           ;
           this.append("text")
+            .attr("fill", function(d) { return d.eos == "true" ? "#e74c3c" : "#333" })
             .attr("fill-opacity", function(d) { return interpolator.opacity(d.stroke_width) })
             .attr("text-anchor", "middle")
           ;
@@ -416,6 +421,7 @@ showNextActions_onClick : function(d) {
     channel:d.channel,
     resource:d.resource,
     action:d.action,
+    eos:d.eos,
   });
   this.load()
 },
