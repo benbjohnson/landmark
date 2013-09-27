@@ -102,7 +102,7 @@ SET channel = "web", resource = "/", action = "page_view"
   END
 
   # User is looking for contact information.
-  EVENT AFTER 3s - 5s WEIGHT 50 EXIT PROBABILITY 30%
+  EVENT AFTER 3s - 5s WEIGHT 100 EXIT PROBABILITY 30%
   SET channel = "web", resource = "/contact-us", action = "page_view"
     EVENT AFTER 10s - 25s EXIT PROBABILITY 10%
     SET channel = "IVR", resource = "Menu", action = "call"
@@ -128,7 +128,7 @@ EVENT WEIGHT 400 EXIT PROBABILITY 20%
 SET channel = "mobile", resource = "/", action = "page_view"
 
   # User is looking for a store.
-  EVENT AFTER 2s - 5s WEIGHT 300 EXIT PROBABILITY 30%
+  EVENT AFTER 2s - 5s WEIGHT 200 EXIT PROBABILITY 30%
   SET channel = "mobile", resource = "/store_locator", action = "page_view"
     EVENT AFTER 2s - 4s EXIT PROBABILITY 40%
     SET channel = "mobile", resource = "/store_map", action = "page_view"
@@ -139,7 +139,7 @@ SET channel = "mobile", resource = "/", action = "page_view"
   END
 
   # User is paying their bill.
-  EVENT AFTER 3s - 5s WEIGHT 50 EXIT PROBABILITY 30%
+  EVENT AFTER 3s - 5s WEIGHT 150 EXIT PROBABILITY 30%
   SET channel = "mobile", resource = "/login", action = "page_view"
     EVENT AFTER 3s - 4s EXIT PROBABILITY 10%
     SET channel = "mobile", resource = "/account", action = "page_view"
@@ -207,9 +207,9 @@ END
 ################################################################################
 
 # User receives a "Can You Hear Me Now" e-mail.
-EVENT WEIGHT 100
+EVENT WEIGHT 250
 SET channel = "email", resource = "Can You Hear Me Now", action = "click"
-  EVENT AFTER 1s EXIT PROBABILITY 80%
+  EVENT AFTER 1s WEIGHT 130 EXIT PROBABILITY 30%
   SET channel = "mobile", resource = "/landing/can-you-hear-me", action = "page_view"
 
     # Clicks through to buy a phone.
@@ -238,5 +238,9 @@ SET channel = "email", resource = "Can You Hear Me Now", action = "click"
         END
       END
     END
+  END
+
+  EVENT AFTER 1s WEIGHT 100 EXIT PROBABILITY 50%
+  SET channel = "web", resource = "/", action = "page_view"
   END
 END

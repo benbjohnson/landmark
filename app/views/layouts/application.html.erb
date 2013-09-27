@@ -51,7 +51,11 @@
             <li><%= link_to('Sign Out', destroy_user_session_path, :method => :delete) %></li>
           </ul>
 
-          <% if current_account.projects.count > 1 %>
+          <% if current_project.name == 'verizon' %>
+            <div class="pull-right">
+              <img src="/assets/misc/vzw.png" style="margin-right:30px; padding-top:8px"/>
+            </div>
+          <% elsif current_account.projects.count > 1 %>
             <div class="btn-group pull-right" style="margin-right:20px; padding-top:15px">
                 <i class="dropdown-toggle dropdown-toggle-inverse"></i>
                 <button class="btn btn-warning btn-small"><%= current_project.public_name %></button>

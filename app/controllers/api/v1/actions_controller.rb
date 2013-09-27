@@ -136,7 +136,7 @@ module Api::V1
       end
       counts = transitions.map{|t| t["count"]}
       min_count, max_count = counts.min.to_f, counts.max.to_f
-      max_penwidth = 10.0
+      max_penwidth = 7.0
       transitions.each do |transition|
         transition["source"] = [transition["prev_channel"], transition["prev_resource"], transition["prev_action"], "false"].join("---")
         transition["target"] = [transition["channel"], transition["resource"], transition["action"], transition["eos"]].join("---")
